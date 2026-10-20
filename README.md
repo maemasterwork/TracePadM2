@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Tracepad
 
 A web platform that teaches Python to beginners. Learners read a lesson, run every example in their browser (real CPython via WebAssembly, no server, no install), and keep their progress offline-first. Persian (right-to-left) and English are both first-class.
@@ -83,3 +84,6 @@ Every screen was opened in a real browser at desktop and phone width, light and 
 - [docs/database.md](docs/database.md): tables, policies, functions
 - [docs/deployment.md](docs/deployment.md): hosting, headers, Supabase settings, backups
 - [docs/user-guides/](docs/user-guides/): learner, teacher, administrator, in English and Persian
+=======
+# TracePadM2
+>>>>>>> 7eb8443ed2eeea91bcf00a7644f0369148d02801
