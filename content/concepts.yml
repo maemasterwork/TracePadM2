@@ -1,0 +1,55 @@
+# Display names of concept tags (every tag used in any labs.yml needs one; the content build fails otherwise).
+# fa_status: machine = drafted, not yet reviewed by a Persian-speaking teacher.
+accumulate: {en: Accumulating a total, fa: جمع کردن مقدار در یک متغیر}
+alias: {en: Two names, one object (aliasing), fa: دو نام برای یک شیء (نام‌مستعار)}
+append-extend: {en: append vs extend, fa: تفاوت append و extend}
+augmented: {en: Augmented assignment (+=), fa: انتساب افزایشی (+=)}
+bool-int: {en: Booleans are integers, fa: بولی‌ها هم عدد صحیح‌اند}
+case-membership: {en: Case and the in operator, fa: بزرگی و کوچکی حروف و عملگر in}
+dict-comp: {en: Dictionary comprehensions, fa: فشرده‌نویسی دیکشنری}
+dict-get: {en: Safe lookup with get, fa: جست‌وجوی ایمن با get}
+dict-in: {en: Keys and the in operator, fa: کلیدها و عملگر in}
+dict-sort: {en: Sorting a dictionary, fa: مرتب‌سازی دیکشنری}
+dict-update: {en: Updating dictionaries, fa: به‌روزرسانی دیکشنری}
+empty-set: {en: The empty set, fa: مجموعهٔ تهی}
+file-encoding: {en: File encodings, fa: کدگذاری فایل}
+file-iter: {en: Reading a file line by line, fa: خواندن فایل خط‌به‌خط}
+file-modes: {en: File modes, fa: حالت‌های باز کردن فایل}
+find-index: {en: Finding a position, fa: پیدا کردن جایگاه}
+float-eq: {en: Comparing floats, fa: مقایسهٔ اعداد اعشاری}
+floor-neg: {en: Floor division with negatives, fa: تقسیم صحیح با اعداد منفی}
+fmt-align: {en: Alignment in format strings, fa: چینش در رشته‌های قالب‌بندی}
+fmt-base: {en: Number bases in format strings, fa: مبنای عددی در قالب‌بندی}
+fmt-choice: {en: Choosing a format, fa: انتخاب قالب}
+fmt-nested: {en: Nested format fields, fa: فیلدهای تودرتو در قالب}
+fmt-spec: {en: Format specifiers, fa: مشخصه‌های قالب}
+hashable: {en: Hashable keys, fa: کلیدهای قابل هش}
+inplace-add: {en: In-place add on lists, fa: افزودن درجا به فهرست}
+is-eq: {en: is vs ==, fa: تفاوت is و ==}
+list-ops: {en: List operations, fa: عملیات روی فهرست}
+method-returns-new: {en: Methods that return a new value, fa: متدهایی که مقدار تازه برمی‌گردانند}
+naming: {en: Naming rules, fa: قواعد نام‌گذاری}
+one-tuple: {en: One-item tuples, fa: چندتایی تک‌عضوی}
+precedence: {en: Operator precedence, fa: تقدم عملگرها}
+print-sep: {en: print separators, fa: جداکننده‌ها در print}
+rebinding: {en: Rebinding a name, fa: اتصال دوبارهٔ یک نام}
+repeat: {en: Repeating with *, fa: تکرار با *}
+replace-count: {en: replace and its count, fa: replace و شمارنده‌اش}
+round-even: {en: Rounding to even, fa: گرد کردن به زوج}
+set-equal: {en: Comparing sets, fa: مقایسهٔ مجموعه‌ها}
+set-ops: {en: Set operations, fa: عملیات روی مجموعه}
+setdefault: {en: setdefault, fa: setdefault}
+shadowing: {en: Shadowing built-in names, fa: پوشاندن نام‌های داخلی}
+short-circuit: {en: Short-circuit logic, fa: منطق میان‌بر}
+slice-step: {en: Slicing with a step, fa: برش با گام}
+slice-stop: {en: Slice end positions, fa: انتهای برش}
+sort-key: {en: Sorting with a key, fa: مرتب‌سازی با کلید}
+sort-none: {en: sort returns None, fa: sort مقدار None برمی‌گرداند}
+swap: {en: Swapping values, fa: جابه‌جایی مقدارها}
+true-division: {en: Division, floor division and remainder, fa: تقسیم، تقسیم صحیح و باقی‌مانده}
+truthiness: {en: Truthy and falsy values, fa: مقدارهای درست‌نما و نادرست‌نما}
+tuple-methods: {en: Tuple methods, fa: متدهای چندتایی}
+tuple-return: {en: Returning several values, fa: برگرداندن چند مقدار}
+tuple-shallow: {en: Tuples hold references, fa: چندتایی‌ها ارجاع نگه می‌دارند}
+unpack-star: {en: Star unpacking, fa: باز کردن با ستاره}
+with-stmt: {en: The with statement, fa: دستور with}
