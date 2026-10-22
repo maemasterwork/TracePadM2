@@ -7,7 +7,7 @@ const executablePath = process.env.CHROMIUM_PATH ?? (existsSync(LOCAL) ? LOCAL :
 export default defineConfig({
   testDir: './e2e',
   testMatch: /.*\.spec\.ts/,
-  testIgnore: /auth\.spec\.ts/, // needs the stand-in backend: run with e2e/run-auth.sh
+  testIgnore: /(auth|classes)\.spec\.ts/, // needs the stand-in backend: run with e2e/run-auth.sh
   timeout: 90_000,
   expect: { timeout: 30_000, toHaveScreenshot: { maxDiffPixelRatio: 0.02 } },
   fullyParallel: false,

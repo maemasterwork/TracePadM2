@@ -162,3 +162,92 @@ dialog.shortcuts::backdrop { background: rgba(0, 0, 0, 0.45); }
 dialog.shortcuts table { border-collapse: collapse; width: 100%; margin: 8px 0; }
 dialog.shortcuts th { text-align: start; padding: 6px 12px 6px 0; white-space: nowrap; }
 kbd { font-family: var(--font-mono); background: var(--surface-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; }
+
+/* ---- Milestone 3: classes, teaching, gradebook ---- */
+.plain-list { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 10px; }
+.plain-list > li { padding-block: 4px; border-block-end: 1px solid var(--line); }
+.plain-list > li:last-child { border-block-end: 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; align-items: start; }
+.grid-2 > .card + .card { margin-top: 0; }
+button.linklike { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--accent); text-decoration: underline; cursor: pointer; text-align: start; min-height: 32px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; border-block-end: 2px solid var(--line); margin-block: 12px 16px; }
+.tab { font: inherit; font-weight: 600; min-height: 44px; padding: 8px 14px; border: 2px solid transparent; border-block-end: 0; background: none; color: var(--ink); cursor: pointer; border-radius: var(--radius) var(--radius) 0 0; }
+.tab[aria-selected="true"] { background: var(--surface); border-color: var(--line); color: var(--accent); margin-block-end: -2px; border-block-end: 2px solid var(--surface); }
+.stats { list-style: none; padding: 0; display: flex; gap: 24px; flex-wrap: wrap; }
+.stats strong { font-size: 1.5rem; display: block; }
+
+.heat { border-collapse: separate; border-spacing: 2px; min-width: 0; }
+.heat th, .heat td { padding: 6px 8px; text-align: center; font-size: 0.88rem; }
+.heat thead th { vertical-align: bottom; max-inline-size: 7rem; }
+.heat .heat-h { display: block; overflow-wrap: anywhere; line-height: 1.2; }
+.heat tbody th { text-align: start; white-space: nowrap; position: sticky; inset-inline-start: 0; background: var(--surface); }
+.heat td { border-radius: 4px; font-weight: 600; min-inline-size: 3.2rem; }
+.heat .h-none { background: var(--surface-2); color: var(--muted); }
+.heat .h-a { background: #1f7a4d; color: #fff; }
+.heat .h-b { background: var(--good-soft); color: var(--good); }
+.heat .h-c { background: var(--warn-soft); color: var(--warn); }
+.heat .h-d { background: var(--bad-soft); color: var(--bad); }
+.heat tr.avg th, .heat tr.avg td { border-block-end: 2px solid var(--line); }
+:root[data-theme="dark"] .heat .h-a { background: #2f9461; color: #04140b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) .heat .h-a { background: #2f9461; color: #04140b; } }
+
+.bars { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; }
+.bars li { display: grid; grid-template-columns: 4.5rem 1fr 2rem; gap: 8px; align-items: center; font-size: 0.88rem; }
+.bars .bar { display: block; block-size: 16px; background: var(--accent); border-radius: 3px; min-inline-size: 2px; }
+.bars .bar-n { text-align: end; font-weight: 600; }
+
+.gradebook th, .gradebook td { vertical-align: top; }
+.gradebook td { min-inline-size: 7rem; }
+.gradebook .gb-missing { background: var(--bad-soft); }
+.gradebook .gb-late { background: var(--warn-soft); }
+.gradebook .gb-graded { background: var(--accent-soft); }
+.rv-item { padding-block: 10px; border-block-end: 1px solid var(--line); }
+.rv-item:last-child { border-block-end: 0; }
+.announce + .announce { border-block-start: 1px solid var(--line); padding-block-start: 12px; margin-block-start: 12px; }
+.notes-list li.unread { border-inline-start: 4px solid var(--accent); padding-inline-start: 10px; }
+.print-only { display: none; }
+@media print {
+  .app-header, .skip-link, .no-print, .tabs, #main > p:last-child, .notice { display: none !important; }
+  .print-only { display: block; }
+  body { background: #fff; color: #000; }
+  .card { box-shadow: none; border: 0; padding: 0; }
+  .table-wrap { overflow: visible; }
+  .gradebook a { color: #000; text-decoration: none; }
+}
+
+/* ---- flowcharts (flow/Flowchart.tsx): drawn from build-time coordinates; colours follow the theme tokens ---- */
+.flow-wrap { margin: 8px 0; }
+.flow-fig { margin: 8px 0 14px; }
+.flow-fig figcaption { font-weight: 600; font-size: 0.92rem; margin-bottom: 4px; color: var(--muted); }
+.flow-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 6px; max-width: 100%; }
+.flow-scroll:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+svg.flow { display: block; margin-inline: auto; font-family: var(--font-body); height: auto; }
+.flow-edge { fill: none; stroke: var(--wire); stroke-width: 1.6; }
+.flow-edge.dashed { stroke-dasharray: 6 4; }
+.flow-edge.back { stroke-width: 1.4; }
+.flow-arrow { fill: var(--wire); }
+.flow-elabel { font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; font-weight: 600; }
+.flow-node > :is(rect, polygon, circle) { fill: var(--surface-2); stroke: var(--wire); stroke-width: 1.6; }
+.flow-node line { stroke: var(--wire); stroke-width: 1.2; }
+.flow-node.k-start > rect, .flow-node.k-end > rect { fill: var(--accent-soft); }
+.flow-node.k-decision > polygon, .flow-node.k-loop > polygon { fill: var(--warn-soft); }
+.flow-node.k-io > polygon { fill: var(--good-soft); }
+.flow-node.k-return > rect, .flow-node.k-break > rect, .flow-node.k-continue > rect { fill: var(--accent-soft); }
+.flow-node.k-error > rect { fill: var(--bad-soft); }
+.flow-node.k-merge > circle { fill: var(--wire); }
+.flow-node.seen > :is(rect, polygon, circle) { fill: var(--accent-soft); }
+.flow-node.on > :is(rect, polygon, circle) { fill: var(--accent); stroke: var(--accent); stroke-width: 3; }
+.flow-node.on .flow-text, .flow-node.on .flow-code { fill: var(--accent-ink); }
+.flow-text { font-size: 13px; fill: var(--ink); }
+.flow-code { font-size: 12px; fill: var(--ink); font-family: var(--font-mono); }
+.flow-count { font-size: 11px; font-weight: 700; fill: var(--ink); }
+.flow-node.on .flow-count { fill: var(--accent-ink); }
+.flow-outline { margin-top: 6px; font-size: 0.92rem; }
+.flow-outline summary { cursor: pointer; font-weight: 600; }
+.flow-outline ol { margin: 6px 0; padding-inline-start: 1.4em; }
+.flow-legend { font-size: 0.9rem; margin: 4px 0 0; padding-inline-start: 1.2em; }
+@media (forced-colors: active) {
+  .flow-node > :is(rect, polygon, circle) { fill: Canvas; stroke: CanvasText; }
+  .flow-node.on > :is(rect, polygon, circle) { fill: Highlight; stroke: Highlight; }
+  .flow-node.on .flow-text { fill: HighlightText; }
+}

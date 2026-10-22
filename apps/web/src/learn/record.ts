@@ -38,7 +38,7 @@ export async function recordAnswer(store: ProgressStore, kind: 'pred' | 'quiz', 
 }
 
 /** Save one Check of an exercise. attempts and hints only ever go up (the server takes the larger value). */
-export async function recordExercise(store: ProgressStore, ch: number, id: string, o: { pass: boolean; passed: number; total: number; code: string; hints: number; secs: number; usedSolution?: boolean }, now = Date.now()): Promise<void> {
+export async function recordExercise(store: ProgressStore, ch: number, id: string, o: { pass: boolean; passed: number; total: number; code: string; hints: number; secs: number; usedSolution?: boolean; pastes?: number }, now = Date.now()): Promise<void> {
   const key = itemKey('ex', ch, id);
   const prev = (await store.get(key))?.data;
   const attempts = (typeof prev?.attempts === 'number' ? prev.attempts : 0) + 1;
@@ -47,6 +47,8 @@ export async function recordExercise(store: ProgressStore, ch: number, id: strin
     pass: wasPass || o.pass, attempts, hints: Math.max(o.hints, typeof prev?.hints === 'number' ? prev.hints : 0),
     code: o.code.slice(0, 8000), secs: Math.max(o.secs, typeof prev?.secs === 'number' ? prev.secs : 0),
     ...(o.usedSolution || prev?.sol ? { sol: true } : {}),
+    // pastes into the editor, counted across visits (an observation for teachers, never a penalty)
+    ...((o.pastes ?? 0) > 0 || typeof prev?.pastes === 'number' ? { pastes: (typeof prev?.pastes === 'number' ? prev.pastes : 0) + (o.pastes ?? 0) } : {}),
     last: { passed: o.passed, total: o.total },
     hist: pushAttempt(asHist(prev), { t: now, ok: o.pass, ...(o.hints > 0 ? { hint: true } : {}) }),
   });

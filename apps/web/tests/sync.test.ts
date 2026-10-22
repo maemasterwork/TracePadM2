@@ -23,6 +23,10 @@ describe('mergeRows mirrors the server rules', () => {
     expect(r.row.data).toEqual({ pass: true, attempts: 3, hints: 2, code: 'new' });
     expect(r.row.client_ts).toBe(200);
   });
+  it('ex: pastes, secs and the revealed-solution flag follow the same rule as the database', () => {
+    const r = mergeRows(row('ex:1:e1', { pastes: 2, secs: 500, sol: true }, 300), row('ex:1:e1', { pastes: 1, secs: 900 }, 100));
+    expect(r.row.data).toMatchObject({ pastes: 2, secs: 900, sol: true });
+  });
   it('read: and bm: keys never go back to false', () => {
     const r = mergeRows(row('read:3', { done: true }, 100), row('read:3', { done: false, at: 5 }, 200));
     expect(r.row.data).toEqual({ done: true, at: 5 });

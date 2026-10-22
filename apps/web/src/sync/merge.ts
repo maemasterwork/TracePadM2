@@ -18,6 +18,10 @@ export function mergeRows(stored: Row | undefined, incoming: Row): { row: Row; a
     data.pass = isTrue(stored.data.pass) || isTrue(incoming.data.pass);
     data.attempts = Math.max(num(stored.data.attempts), num(incoming.data.attempts));
     data.hints = Math.max(num(stored.data.hints), num(incoming.data.hints));
+    if (isTrue(stored.data.sol) || isTrue(incoming.data.sol)) data.sol = true;
+    for (const k of ['pastes', 'secs']) {
+      if (typeof stored.data[k] === 'number' || typeof incoming.data[k] === 'number') data[k] = Math.max(num(stored.data[k]), num(incoming.data[k]));
+    }
     return { row: { key: incoming.key, data, client_ts: ts }, applied: true };
   }
   if (incoming.key.startsWith('read:') || incoming.key.startsWith('bm:')) {

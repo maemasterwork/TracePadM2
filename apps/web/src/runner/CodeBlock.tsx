@@ -2,6 +2,9 @@ import { useCallback, useEffect, useId, useState } from 'react';
 import { useI18n } from '../i18n';
 import { TraceView } from '../learn/Cards';
 import { ErrorCoach } from '../learn/ErrorCoach';
+import { Flowchart } from '../flow/Flowchart';
+import { useFlowEntry } from '../flow/FlowContext';
+import { useLiveFlow } from '../flow/useLiveFlow';
 import { Editor } from './Editor';
 import { useEngineStatus, useRunner } from './RunnerProvider';
 import type { RunResult } from './types';
@@ -29,6 +32,12 @@ export function CodeBlock({ id, code, prelude, stdin = '', usesEarlier }: CodeBl
   const [prompt, setPrompt] = useState<{ text: string; resolve: (v: string | null) => void } | null>(null);
   const [typed, setTyped] = useState('');
   const uid = useId();
+  const flow = useFlowEntry(`block:${id}`);
+  const [flowOpen, setFlowOpen] = useState(false);
+  const [stepIdx, setStepIdx] = useState(0);
+  const edited = value !== code;
+  const live = useLiveFlow(value, flowOpen && edited);
+  const shown = edited ? live.entry : flow;
 
   useEffect(() => setValue(code), [code]);
 
@@ -61,7 +70,7 @@ export function CodeBlock({ id, code, prelude, stdin = '', usesEarlier }: CodeBl
     }
   };
   const stop = () => { prompt?.resolve(null); runner.interrupt(); };
-  const reset = () => { setValue(code); setResult(null); setTrace(null); };
+  const reset = () => { setValue(code); setResult(null); setTrace(null); setStepIdx(0); };
   const copy = async () => {
     try { await navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* clipboard blocked */ }
   };
@@ -75,6 +84,7 @@ export function CodeBlock({ id, code, prelude, stdin = '', usesEarlier }: CodeBl
           {running ? t('code.running') : t('code.run')}
         </button>
         <button type="button" className="btn small alt" onClick={() => void doTrace()} disabled={running || tracing}>{tracing ? t('mem.tracing') : t('mem.run')}</button>
+        {flow && <button type="button" className="btn small alt" aria-pressed={flowOpen} onClick={() => setFlowOpen((v) => !v)}>{flowOpen ? t('flow.hide') : t('flow.show')}</button>}
         {(running || tracing) && <button type="button" className="btn small quiet" onClick={stop}>{t('code.stop')}</button>}
         <span className="grow" />
         {changed && <button type="button" className="btn small quiet" onClick={reset}>{t('code.reset')}</button>}
@@ -110,7 +120,13 @@ export function CodeBlock({ id, code, prelude, stdin = '', usesEarlier }: CodeBl
         {result?.timedOut && <div className="note">{t('code.timeout', { s: Math.round(runner.timeoutMs / 1000) })}</div>}
         {result?.interrupted && <div className="note">{t('code.stopped')}</div>}
       </div>
-      {trace && <div style={{ padding: '0 10px 10px' }}><button type="button" className="btn small quiet" onClick={() => setTrace(null)}>{t('lab.hideMemory')}</button><TraceView result={trace} code={value} /></div>}
+      {flow && flowOpen && (
+        <div style={{ padding: '4px 10px 10px' }}>
+          {edited && !live.entry && <p className="note" role="status">{live.busy ? t('flow.drawing') : t('flow.cannotDraw')}</p>}
+          {shown && <Flowchart entry={shown} currentLine={trace?.steps?.length ? trace.steps[Math.min(stepIdx, trace.steps.length - 1)]?.line : null} history={trace?.steps?.slice(0, stepIdx + 1).map((s) => s.line)} />}
+        </div>
+      )}
+      {trace && <div style={{ padding: '0 10px 10px' }}><button type="button" className="btn small quiet" onClick={() => setTrace(null)}>{t('lab.hideMemory')}</button><TraceView result={trace} code={value} onStep={setStepIdx} /></div>}
       {err && err.type !== 'KeyboardInterrupt' && <ErrorCoach error={err} code={value} />}
     </div>
   );

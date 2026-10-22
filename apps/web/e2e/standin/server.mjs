@@ -6,6 +6,9 @@
 import crypto from 'node:crypto';
 import http from 'node:http';
 import pg from 'pg';
+// PostgREST serialises numeric as JSON numbers; node-postgres would give strings
+pg.types.setTypeParser(1700, (v) => parseFloat(v));
+pg.types.setTypeParser(20, (v) => Number(v));
 import { sign, verify, ANON_KEY } from './anon.mjs';
 
 const PORT = Number(process.argv[2] ?? process.env.STANDIN_PORT ?? 54321);
@@ -57,7 +60,7 @@ async function auth(req, res, url, body) {
     const meta = body.data ?? {};
     try {
       await pool.query('insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, $3)', [id, email, JSON.stringify(meta)]);
-    } catch {
+    } catch (e) { console.log('SIGNUPERR', e.message);
       // Real GoTrue hides the trigger's message behind a generic one; the app maps it to "username taken".
       return gtErr(res, 500, 'unexpected_failure', 'Database error saving new user');
     }
@@ -167,7 +170,8 @@ async function rest(req, res, url, body) {
       if (set === null) throw Object.assign(new Error(`Could not find the function public.${fn} in the schema cache`), { status: 404, code: 'PGRST202' });
       const keys = Object.keys(body ?? {}).filter((k) => ID.test(k));
       const args = keys.map((k, i) => `${k} => $${i + 1}`).join(', ');
-      const vals = keys.map((k) => (typeof body[k] === 'object' && body[k] !== null ? JSON.stringify(body[k]) : body[k]));
+      // arrays of primitives are Postgres arrays (uuid[], text[]); objects and arrays of objects are jsonb
+      const vals = keys.map((k) => (Array.isArray(body[k]) && body[k].every((x) => typeof x !== 'object') ? body[k] : typeof body[k] === 'object' && body[k] !== null ? JSON.stringify(body[k]) : body[k]));
       const r = set ? await client.query(`select * from public.${fn}(${args})`, vals) : await client.query(`select public.${fn}(${args}) as result`, vals);
       out = set ? r.rows : r.rows[0].result;
     } else {
@@ -191,15 +195,41 @@ async function rest(req, res, url, body) {
         const sets = cols.map((k, i) => `${k} = $${i + 1}${typeof body[k] === 'object' && body[k] !== null ? '::jsonb' : ''}`);
         const vals = cols.map((k) => (typeof body[k] === 'object' && body[k] !== null ? JSON.stringify(body[k]) : body[k]));
         const f = filters(url, cols.length + 1);
-        const r = await client.query(`update public.${table} set ${sets.join(', ')}${f.where} returning *`, [...vals, ...f.params]);
-        out = (req.headers.prefer ?? '').includes('return=representation') ? r.rows : undefined;
-      } else throw Object.assign(new Error('stand-in supports GET and PATCH on tables'), { status: 405, code: 'PGRST117' });
+        const wantRows = (req.headers.prefer ?? '').includes('return=representation');
+        const r = await client.query(`update public.${table} set ${sets.join(', ')}${f.where}${wantRows ? ' returning *' : ''}`, [...vals, ...f.params]);
+        out = wantRows ? r.rows : undefined;
+      } else if (req.method === 'POST') {
+        const rowsIn = Array.isArray(body) ? body : [body];
+        const cols = [...new Set(rowsIn.flatMap((r) => Object.keys(r)))].filter((k) => ID.test(k));
+        const vals = [], tuples = [];
+        for (const r of rowsIn) {
+          tuples.push('(' + cols.map((k) => { const v = r[k] === undefined ? null : r[k]; vals.push(typeof v === 'object' && v !== null ? JSON.stringify(v) : v); return `$${vals.length}`; }).join(', ') + ')');
+        }
+        const oc = url.searchParams.get('on_conflict');
+        const merge = (req.headers.prefer ?? '').includes('resolution=merge-duplicates');
+        let conflict = '';
+        if (oc && merge) {
+          const keys = oc.split(',').filter((k) => ID.test(k));
+          const upd = cols.filter((k) => !keys.includes(k)).map((k) => `${k} = excluded.${k}`).join(', ');
+          conflict = ` on conflict (${keys.join(', ')}) do ${upd ? 'update set ' + upd : 'nothing'}`;
+        }
+        const want = (req.headers.prefer ?? '').includes('return=representation');
+        const r = await client.query(`insert into public.${table} (${cols.join(', ')}) values ${tuples.join(', ')}${conflict}${want ? ' returning *' : ''}`, vals);
+        out = want ? r.rows : undefined;
+        if (!want) { await client.query('commit'); return send(res, 201); }
+      } else if (req.method === 'DELETE') {
+        const f = filters(url, 1);
+        if (!f.where) throw Object.assign(new Error('refusing DELETE without a filter'), { status: 400, code: 'PGRST100' });
+        await client.query(`delete from public.${table}${f.where}`, f.params);
+        out = undefined;
+      } else throw Object.assign(new Error('stand-in supports GET, POST, PATCH and DELETE on tables'), { status: 405, code: 'PGRST117' });
     }
     await client.query('commit');
     return out === undefined ? send(res, 204) : send(res, 200, out);
   } catch (e) {
     await client.query('rollback').catch(() => undefined);
     const status = e.status ?? (e.code === '42501' ? (authed ? 403 : 401) : e.code === '23505' ? 409 : e.code === 'P0001' || e.code === '22023' || e.code === '23514' ? 400 : 400);
+    console.log('RPCERR', e.message);
     return send(res, status, { code: e.code ?? 'PGRST000', message: e.message, details: e.detail ?? null, hint: e.hint ?? null });
   } finally {
     client.release();
@@ -210,12 +240,14 @@ async function rest(req, res, url, body) {
 async function control(req, res, url, body) {
   if (url.pathname === '/__test/outbox') return send(res, 200, outbox);
   if (url.pathname === '/__test/reset') {
-    await pool.query('truncate auth.users cascade');
+    // grade_history refuses TRUNCATE for the API; test resets bypass triggers the way a superuser restore would
+    const c = await pool.connect();
+    try { await c.query("set session_replication_role = replica"); await c.query('truncate auth.users cascade'); } finally { await c.query('reset session_replication_role').catch(() => {}); c.release(); }
     users.clear(); sessions.clear(); refresh.clear(); codes.clear(); outbox = [];
     return send(res, 200, { ok: true });
   }
   if (url.pathname === '/__test/sql') {
-    try { const r = await pool.query(body.sql, body.params ?? []); return send(res, 200, r.rows); } catch (e) { return send(res, 400, { message: e.message }); }
+    try { let r = await pool.query(body.sql, body.params ?? []); if (Array.isArray(r)) r = r[r.length - 1]; return send(res, 200, r.rows ?? []); } catch (e) { return send(res, 400, { message: e.message }); }
   }
   if (url.pathname === '/__test/anon') return send(res, 200, { key: ANON_KEY });
   return send(res, 404, { message: 'no such control endpoint' });

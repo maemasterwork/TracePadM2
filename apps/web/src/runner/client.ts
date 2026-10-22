@@ -30,6 +30,7 @@ export class PyRunner {
   private seq = 0;
   private chain: Promise<unknown> = Promise.resolve();
   private pending = new Map<number, { resolve: (r: Omit<RunResult, 'ms'>) => void }>();
+  private flowPending = new Map<number, (json: string | null) => void>();
   private inputHandler: InputHandler | null = null;
   private stopRequested = false;
   private inFlight = false; // a run has been posted to the worker and has not finished
@@ -75,6 +76,9 @@ export class PyRunner {
           const p = this.pending.get(m.id);
           this.pending.delete(m.id);
           p?.resolve(m.result);
+        } else if (m.type === 'flow-result') {
+          this.flowPending.get(m.id)?.(m.json);
+          this.flowPending.delete(m.id);
         } else if (m.type === 'input-request') void this.answerInput(m.prompt);
       };
       w.onerror = (ev) => {
@@ -134,10 +138,25 @@ export class PyRunner {
       p.resolve({ ok: false, exit_code: 1, stdout: '', stderr: '', events: [['note', 'Stopped.']], error: { type: 'KeyboardInterrupt', message: 'Stopped.', line: null, col: null, frames: [], traceback: 'KeyboardInterrupt' } });
     }
     this.pending.clear();
+    for (const [, f] of this.flowPending) f(null);
+    this.flowPending.clear();
   }
 
   run(req: RunRequest): Promise<RunResult> {
     const job = this.chain.then(() => this.runOne(req));
+    this.chain = job.catch(() => undefined);
+    return job;
+  }
+
+  /** Flowchart of any program text, drawn by the same generator the build uses (runs in the Python worker, after any run in progress). */
+  flow(code: string): Promise<import('../flow/types').FlowEntry | { skip: string }> {
+    const job = this.chain.then(async () => {
+      await this.ensureReady();
+      const id = ++this.seq;
+      const json = await new Promise<string | null>((resolve) => { this.flowPending.set(id, resolve); this.worker!.postMessage({ type: 'flow', id, code } satisfies ToWorker); });
+      if (json === null) return { skip: 'stopped' };
+      return JSON.parse(json) as import('../flow/types').FlowEntry | { skip: string };
+    });
     this.chain = job.catch(() => undefined);
     return job;
   }

@@ -98,7 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (sig === last.current) return;
     const h = setTimeout(() => {
       last.current = sig;
-      void api.updateProfile(user.id, { locale, display_prefs: { ...display, touched: true } }).catch(() => undefined);
+      // notification choices live in display_prefs.notify (read by the database when it creates a notification); keep them
+      const notify = (profile.display_prefs as { notify?: unknown }).notify;
+      void api.updateProfile(user.id, { locale, display_prefs: { ...display, ...(notify ? { notify } : {}), touched: true } as Record<string, unknown> }).catch(() => undefined);
     }, 800);
     return () => clearTimeout(h);
   }, [prefs, api, user, profile]);

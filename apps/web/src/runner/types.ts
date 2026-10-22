@@ -60,13 +60,15 @@ export interface RunRequest {
 
 export type ToWorker =
   | { type: 'init'; baseUrl: string; userKey: string; interruptBuf?: SharedArrayBuffer; inputBuf?: SharedArrayBuffer }
-  | { type: 'run'; id: number; req: RunRequest };
+  | { type: 'run'; id: number; req: RunRequest }
+  | { type: 'flow'; id: number; code: string };
 
 export type FromWorker =
   | { type: 'status'; stage: 'downloading' | 'starting' | 'files' }
   | { type: 'ready'; python: string; pyodide: string; live: boolean }
   | { type: 'failed'; message: string }
   | { type: 'result'; id: number; result: Omit<RunResult, 'ms'> }
+  | { type: 'flow-result'; id: number; json: string }
   | { type: 'input-request'; id: number; prompt: string };
 
 /** Layout of the shared input buffer: Int32[0] = state (0 idle, 1 text ready, 2 end of input), Int32[1] = byte length, bytes from offset 8. */

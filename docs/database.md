@@ -1,4 +1,4 @@
-# Tracepad database (Milestone 1)
+# Tracepad database (Milestones 1 to 3)
 
 Supabase / PostgreSQL 15+. Source of truth: `supabase/migrations/*.sql` (idempotent, applied in filename order).
 `supabase/prototype_schema.sql` is the old single-file prototype and is superseded by the migrations.
@@ -18,7 +18,15 @@ Supabase / PostgreSQL 15+. Source of truth: `supabase/migrations/*.sql` (idempot
 |---|---|---|
 | `profiles` | one per auth user (created by trigger `handle_new_user`, always role `student`) | `role` in student/teacher/platform_admin/content_editor; `locale` en/fa; `age_band` null/under13/13_15/16_17/adult; `display_prefs` jsonb < 8 KB; `username` unique ignoring case. No date of birth anywhere. |
 | `app_settings` | secrets (teacher invite code) | no policy, no grant: only security definer functions read it |
-| `classes`, `enrollments`, `assignments` | classes, membership, assignments | joining only via `join_class()` |
+| `classes`, `enrollments`, `assignments` | classes, membership, assignments | joining only via `join_class()`; classes are created only via `create_class()`; `join_code` is never readable through the API (column grants) |
+| `organizations`, `org_members` | school / company, with `admin` and `teacher` members | `invite_code` is not readable (column grants); read it with `org_invite_code()` as an admin; optional `seat_limit` counts distinct learners across the organization's classes |
+| `class_teachers` | co-teachers (`teacher`) and teaching assistants (`ta`) | the owner and organization admins manage them; a TA can grade but cannot delete the class or change staff |
+| `submissions` | one row per hand-in: server time, late seconds, penalty, raw/final/max score, per-item `detail`, frozen `snapshot`, `signals` | no direct grants: written by `submit_assignment` only; unique `(assignment, student, n)` |
+| `grades` | manual override, comment, `returned_at` (hidden from the learner until set) | written by `set_grade` / `return_grades` only |
+| `grade_history` | every manual score change: who, when, old, new, reason | triggers refuse UPDATE and TRUNCATE; the API cannot write it at all |
+| `extensions` | per-learner deadline | teacher of the class |
+| `announcements`, `comments` | class news; teacher-learner comments on a submission | comments are visible to that learner and the class's staff only |
+| `notifications` | in-app, one row per event per user | created by `_notify` (honours `display_prefs.notify`); a user can read and mark their own read |
 | `progress` | one row per `(user_id, key)` | `client_ts` bigint (client clock, ms), `rev` int (server counter), `data` jsonb < 200 KB; key matches `[a-z0-9:_-]{1,120}` |
 | `rate_limits` | fixed-window counters per user and bucket | internal, no policy, no grant |
 | `audit_log` | append-only record of privileged actions | triggers refuse UPDATE, DELETE and TRUNCATE for everyone, including the owner |
@@ -47,6 +55,24 @@ Functions (all `security definer` with a fixed `search_path`; `anon` and PUBLIC 
 `claim_teacher`, `join_class`, `class_progress` (teacher of that class only), `save_progress`, `write_audit`, `export_my_data`, `delete_my_account` and the policy helpers `is_teacher`, `is_admin`, `teaches_class`, `in_class`, `teaches_student` are executable by `authenticated`.
 `check_rate`, `cleanup_rate_limits`, `_audit`, `_merge_ex`, `_merge_monotonic`, `handle_new_user` and the trigger functions are internal (no one can call them through the API).
 
+### Milestone 3 additions to the matrix
+
+| Table | learner (own) | other learner | class staff (teacher, TA) | org admin | other teacher |
+|---|---|---|---|---|---|
+| organizations | R (without `invite_code`) if a member | - | R if a member | R, U (name, seat limit) | - |
+| org_members | R own membership row | - | R own membership row (colleagues via `org_members_list`) | R own row; the full list and changes through `org_members_list` / `org_set_member` | - |
+| class_teachers | - | - | R (own rows and their classes'); changes via `class_set_teacher` (owner or org admin) | R (their organization's classes) | - |
+| assignments | R published, once released | - | R, C, U, D | R (class rows only; no learner data) | - |
+| submissions, grades, grade_history | via `my_results()` (grade shown only once returned) | - | via `get_submissions`, `class_gradebook`, `set_grade`, `return_grades` | **no access** (totals only through `org_report`) | - |
+| extensions | R own | - | R, C, U, D | - | - |
+| announcements | R of joined classes | - | R, C, U, D | - | - |
+| comments | R own; write via `add_comment` | - | R; write via `add_comment` | - | - |
+| notifications | R, U (mark read) own | - | own | own | own |
+
+An organization administrator is deliberately **not** a teacher of the classes: `org_report` returns, per class, name, teacher, learner count, assignment count, submission count, average percentage and last submission. Nothing about an individual.
+
+Functions added (all `security definer`, fixed `search_path`, no `anon`/PUBLIC execute; META tests enforce this): `create_org`, `org_join`, `rotate_org_invite`, `org_invite_code`, `org_members_list`, `org_set_member`, `org_leave`, `org_summary`, `org_report`, `create_class`, `rotate_join_code`, `close_joining`, `set_class_archived`, `duplicate_class`, `class_set_teacher`, `class_staff`, `class_join_info`, `submit_assignment`, `set_grade`, `return_grades`, `add_comment`, `class_gradebook`, `class_overall`, `get_submissions`, `get_grade_history`, `my_results`, `class_item_rows`. Internal: `_new_code`, `_notify`, `_score_items`, `_items_max`, `_clean_signals`, `_final_score`, `_effective_due`. `join_class` now refuses archived classes, expired or closed codes and a full organization; `export_my_data` includes every new table that holds a person's data (a META test fails if a table is missing from it).
+
 ## save_progress(items jsonb) returns jsonb
 
 `items` = `[{"key": "...", "data": {...}, "client_ts": 1760000000000}, ...]`, at most 200 items. Always writes to the caller's own rows.
@@ -68,6 +94,9 @@ Merge rules when a row already exists (S = stored, I = incoming; "newer" = large
 
 **In Milestone 1, ALL of `progress.data` is client-reported.** The browser runs the exercises and reports `pass`, `right`, `hints`, `attempts`, code, quiz choices; the server stores and aggregates them (`class_progress`) but verifies nothing. A student can write any value to their own rows, so teacher dashboards show self-reported progress, not graded results. Verified, server-recomputed grading from stored submissions arrives with the gradebook (Milestone 3). Server-controlled values: `rev`, `updated_at`, `profiles.role`, class membership, audit entries, rate counters.
 
+### Verified and not verified, after Milestone 3
+Verified by the database: who submitted, when (server clock), how late, the frozen list of items, the arithmetic of the score, the penalty, every manual change and who made it. **Still reported by the browser**: whether an exercise's tests passed, how many hints, the code, time spent and pastes. The snapshot stores the code so a teacher can re-run it; the server cannot.
+
 ## Granting platform_admin / content_editor
 
 Never possible through the API: the role column is not writable by `authenticated`, and a trigger (`profiles_guard_role`) refuses a change to these roles whenever a JWT user is present. Grant by hand in the SQL editor / psql as the database owner:
@@ -77,6 +106,9 @@ update public.profiles set role = 'platform_admin' where id = (select id from au
 ```
 `claim_teacher` never changes a non-student. Set the teacher code once: `update public.app_settings set value = '<long random string>' where key = 'teacher_code';` (the placeholder value is refused).
 `delete_my_account` refuses these roles, so remove such accounts by hand.
+
+## Demo data
+`supabase/demo/demo_seed.sql` is generated (`python3 tools/demo/gen_seed.py > supabase/demo/demo_seed.sql`, deterministic) and loads one organization, one teacher, one class, 30 simulated learners (auth users with no password), about 1,500 progress rows and three assignments. Submissions are made by calling the real `submit_assignment` as each learner; only `submitted_at` is moved into the past afterwards. Times are relative to load time. `remove.sql` removes everything; `adopt.sql` makes a real account an administrator and co-teacher of the demo.
 
 ## Tests
 

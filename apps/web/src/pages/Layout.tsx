@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { Logo } from '../design/ui';
 import { useI18n } from '../i18n';
 import { useRows } from '../learn/hooks';
+import { useNotificationCount } from './Notifications';
 import { dueItems } from '../learn/srs';
 import { setPrefs, usePrefs } from '../prefs/store';
 
@@ -29,7 +30,8 @@ function useOnline() {
 
 export function Layout() {
   const { t, locale, num } = useI18n();
-  const { status, user, api } = useAuth();
+  const { status, user, api, profile } = useAuth();
+  const unread = useNotificationCount();
   const revRows = useRows(['rev:']);
   const dueN = dueItems(revRows as never, Date.now(), 99).length;
   const prefs = usePrefs();
@@ -69,6 +71,9 @@ export function Layout() {
             <NavLink to="/search">{t('nav.search')}</NavLink>
             <NavLink to="/review">{t('nav.review')}{dueN > 0 && <span className="badge" aria-label={t('review.due', { n: num(dueN) })}>{num(dueN)}</span>}</NavLink>
             <NavLink to="/progress">{t('nav.progress')}</NavLink>
+            {user && <NavLink to="/classes">{t('nav.classes')}</NavLink>}
+            {profile?.role === 'teacher' && <NavLink to="/teach">{t('nav.teach')}</NavLink>}
+            {user && <NavLink to="/notifications">{t('nt.title')}{unread > 0 && <><span className="badge">{num(unread)}</span><span className="sr-only"> {t('nt.unreadSr')}</span></>}</NavLink>}
             <NavLink to="/settings">{t('nav.settings')}</NavLink>
             {user && <NavLink to="/account">{t('nav.account')}</NavLink>}
           </nav>

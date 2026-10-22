@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { FlowProvider } from '../flow/FlowContext';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { loadLesson } from '../content/api';
@@ -85,6 +86,7 @@ export function LessonPage() {
 
   return (
     <NotesProvider>
+    <FlowProvider lessonId={lessonId}>
     <div className="layout">
       <nav className="rail" aria-label={t('lesson.contents')}>
         <h2 style={{ fontSize: '1rem', marginTop: 0 }}>{t('lesson.contents')}</h2>
@@ -114,6 +116,7 @@ export function LessonPage() {
         </div>
       </div>
     </div>
+    </FlowProvider>
     </NotesProvider>
   );
 }

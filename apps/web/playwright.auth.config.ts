@@ -7,7 +7,7 @@ const executablePath = process.env.CHROMIUM_PATH ?? (existsSync(LOCAL) ? LOCAL :
 // Runs against the stand-in Supabase (e2e/standin) and a build configured for it. Started by e2e/run-auth.sh.
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /auth\.spec\.ts/,
+  testMatch: /(auth|classes)\.spec\.ts/,
   timeout: 90_000,
   expect: { timeout: 20_000 },
   fullyParallel: false,

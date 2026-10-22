@@ -9,7 +9,7 @@ import type { HeapObj, TraceStep, Val } from '../runner/types';
  * everything around it is translated. Arrows are decoration: every reference is also written as text (#id and type), and a live
  * sentence describes the current step for screen readers.
  */
-interface Props { code: string; steps: TraceStep[]; truncated?: boolean; failed?: boolean; maxSteps?: number }
+interface Props { code: string; steps: TraceStep[]; truncated?: boolean; failed?: boolean; maxSteps?: number; onStep?: (i: number) => void }
 
 const isRef = (v: Val): v is { r: number } => 'r' in v;
 const isMore = (v: Val): v is { more: true } => 'more' in v;
@@ -60,7 +60,7 @@ function ObjBox({ id, o, cls, note }: { id: number; o: HeapObj; cls: string; not
   );
 }
 
-export function MemoryModel({ code, steps, truncated, failed, maxSteps }: Props) {
+export function MemoryModel({ code, steps, truncated, failed, maxSteps, onStep }: Props) {
   const { t, num } = useI18n();
   const uid = useId();
   const [i, setI] = useState(0);
@@ -72,6 +72,7 @@ export function MemoryModel({ code, steps, truncated, failed, maxSteps }: Props)
   const prev = i > 0 ? steps[i - 1] : undefined;
 
   useEffect(() => { setI(0); setPlaying(false); }, [steps]);
+  useEffect(() => { onStep?.(Math.min(i, n - 1)); }, [i, n, onStep]);
   useEffect(() => {
     if (!playing) return;
     if (i >= n - 1) { setPlaying(false); return; }

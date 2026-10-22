@@ -12,6 +12,10 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).parent))
+import flowchart  # noqa: E402
+from verify import iter_blocks  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).parent
 BUILD = ROOT / "content" / "build"
@@ -50,6 +54,27 @@ def main() -> int:
             doc["block_meta"] = blocks_meta
             (out / "lesson.json").write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
             (out / "labs.json").write_text(json.dumps(labs, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+            # flowcharts: one per runnable example (lesson code blocks and prediction programs), generated from the code itself
+            flows, skipped = {}, []
+            def chart(key, code):
+                r = flowchart.build(code)
+                if "error" in r:
+                    sys.exit(f"flowchart for {key} is malformed: " + "; ".join(r["error"]))
+                if "skip" in r:
+                    skipped.append((key, r["skip"]))
+                else:
+                    flows[key] = {"charts": r["charts"], "control": r["control"]}
+            for b in iter_blocks(doc):
+                if b.get("type") == "code" and b.get("lang") in ("python", "py", None, ""):
+                    chart(f"block:{b['id']}", b["code"])
+            for chno, ch in labs["chapters"].items():
+                for p in ch.get("predictions", []):
+                    chart(f"pred:{chno}:{p['id']}", p["code"])
+            (out / "flow.json").write_text(json.dumps(flows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+            ctrl = sum(1 for v in flows.values() if v["control"])
+            print(f"flowcharts {les['id']}: {len(flows)} drawn ({ctrl} with branches or loops, {len(flows) - ctrl} straight-line), {len(skipped)} without a chart")
+            for k, why in skipped:
+                print(f"  no chart for {k}: {why}")
             for chno, ch in labs["chapters"].items():
                 for kind in ("predictions", "quizzes"):
                     for it in ch.get(kind, []):

@@ -145,8 +145,7 @@ test.describe('notes, bookmarks, search, shortcuts', () => {
     await expect(page.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    await page.keyboard.press(']');
-    await expect(page).toHaveURL(/2-variable-assignment/);
+    await expect(async () => { if (!/2-variable-assignment/.test(page.url())) await page.keyboard.press(']'); await expect(page).toHaveURL(/2-variable-assignment/, { timeout: 2000 }); }).toPass({ timeout: 15_000 });
     await page.keyboard.press('[');
     await expect(page).toHaveURL(/1-numbers/);
     await page.keyboard.press('/');

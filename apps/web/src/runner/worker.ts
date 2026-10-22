@@ -20,6 +20,7 @@ const post = (m: FromWorker) => ctx.postMessage(m);
 
 let py: PyodideLike | null = null;
 let runFn: ((...a: unknown[]) => PyProxyLike) | null = null;
+let flowFn: ((code: string) => string) | null = null;
 let mount = '/work';
 let interrupt: Uint8Array | null = null;
 let inputInt: Int32Array | null = null;
@@ -55,6 +56,12 @@ async function init(m: Extract<ToWorker, { type: 'init' }>) {
     const src = await (await fetch(base + 'runner.py')).text();
     py.runPython(src);
     runFn = py.globals.get('run');
+    // The flowchart generator (tools/content/flowchart.py, standard library only) lives in its own module so its names never clash with the runner's.
+    try {
+      const fsrc = await (await fetch(base + 'flowchart.py')).text();
+      py.runPython(`import sys, types, json\n__m = types.ModuleType('flowchart'); sys.modules['flowchart'] = __m\nexec(compile(${JSON.stringify(fsrc)}, 'flowchart.py', 'exec'), __m.__dict__)\ndef __flow_build(code):\n    return json.dumps(__m.build(code))`);
+      flowFn = py.globals.get('__flow_build') as unknown as (code: string) => string;
+    } catch { flowFn = null; /* no flowcharts for edited code; the run features are unaffected */ }
     if (m.interruptBuf) {
       interrupt = new Uint8Array(m.interruptBuf);
       py.setInterruptBuffer(interrupt);
@@ -105,8 +112,15 @@ async function run(id: number, req: RunRequest) {
   }
 }
 
+function flow(id: number, code: string) {
+  let json = JSON.stringify({ skip: 'the flowchart generator is not available' });
+  try { if (flowFn) json = String(flowFn(code)); } catch (e) { json = JSON.stringify({ skip: e instanceof Error ? e.message : String(e) }); }
+  post({ type: 'flow-result', id, json });
+}
+
 ctx.onmessage = (e) => {
   const m = e.data;
   if (m.type === 'init') void init(m);
   else if (m.type === 'run') void run(m.id, m.req);
+  else if (m.type === 'flow') flow(m.id, m.code);
 };

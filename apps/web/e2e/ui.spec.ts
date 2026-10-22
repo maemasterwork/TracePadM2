@@ -73,7 +73,7 @@ test('keyboard: skip link is the first stop, and Ctrl+Enter runs code', async ({
   const ta = page.locator('.codeblock textarea').first();
   await ta.fill('print("kb")');
   await ta.press('Control+Enter');
-  await expect(page.locator('.codeblock').first().locator('.outbox').last()).toContainText('kb');
+  await expect(page.locator('.codeblock').first().locator('.outbox').last()).toContainText('kb', { timeout: 60_000 }); // the first run starts the Python engine
 });
 
 for (const w of [320, 360, 768]) {

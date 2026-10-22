@@ -32,6 +32,35 @@ export interface Database {
           props?: Json
         }
       }
+      announcements: {
+        Row: {
+          id: string
+          class_id: string
+          author_id: string | null
+          title: string
+          body: string
+          pinned: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          class_id: string
+          author_id?: string | null
+          title: string
+          body?: string
+          pinned?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          class_id?: string
+          author_id?: string | null
+          title?: string
+          body?: string
+          pinned?: boolean
+          created_at?: string
+        }
+      }
       app_settings: {
         Row: {
           key: string
@@ -54,6 +83,16 @@ export interface Database {
           title: string
           due_at: string | null
           created_at: string
+          description: string
+          items: Json
+          status: string
+          release_at: string | null
+          close_at: string | null
+          late_policy: Json
+          weight: number
+          max_submissions: number
+          show_results: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -62,6 +101,16 @@ export interface Database {
           title?: string
           due_at?: string | null
           created_at?: string
+          description?: string
+          items?: Json
+          status?: string
+          release_at?: string | null
+          close_at?: string | null
+          late_policy?: Json
+          weight?: number
+          max_submissions?: number
+          show_results?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -70,6 +119,16 @@ export interface Database {
           title?: string
           due_at?: string | null
           created_at?: string
+          description?: string
+          items?: Json
+          status?: string
+          release_at?: string | null
+          close_at?: string | null
+          late_policy?: Json
+          weight?: number
+          max_submissions?: number
+          show_results?: string
+          updated_at?: string
         }
       }
       audit_log: {
@@ -98,6 +157,26 @@ export interface Database {
           details?: Json
         }
       }
+      class_teachers: {
+        Row: {
+          class_id: string
+          user_id: string
+          role: 'teacher' | 'ta'
+          added_at: string
+        }
+        Insert: {
+          class_id: string
+          user_id: string
+          role: 'teacher' | 'ta'
+          added_at?: string
+        }
+        Update: {
+          class_id?: string
+          user_id?: string
+          role?: 'teacher' | 'ta'
+          added_at?: string
+        }
+      }
       classes: {
         Row: {
           id: string
@@ -105,6 +184,10 @@ export interface Database {
           name: string
           join_code: string
           created_at: string
+          org_id: string | null
+          term: string
+          archived_at: string | null
+          join_code_expires_at: string | null
         }
         Insert: {
           id?: string
@@ -112,12 +195,46 @@ export interface Database {
           name: string
           join_code: string
           created_at?: string
+          org_id?: string | null
+          term?: string
+          archived_at?: string | null
+          join_code_expires_at?: string | null
         }
         Update: {
           id?: string
           teacher_id?: string
           name?: string
           join_code?: string
+          created_at?: string
+          org_id?: string | null
+          term?: string
+          archived_at?: string | null
+          join_code_expires_at?: string | null
+        }
+      }
+      comments: {
+        Row: {
+          id: number
+          assignment_id: string
+          student_id: string
+          author_id: string | null
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          assignment_id: string
+          student_id: string
+          author_id?: string | null
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          assignment_id?: string
+          student_id?: string
+          author_id?: string | null
+          body?: string
           created_at?: string
         }
       }
@@ -138,6 +255,32 @@ export interface Database {
           joined_at?: string
         }
       }
+      extensions: {
+        Row: {
+          assignment_id: string
+          student_id: string
+          due_at: string
+          reason: string
+          granted_by: string | null
+          created_at: string
+        }
+        Insert: {
+          assignment_id: string
+          student_id: string
+          due_at: string
+          reason?: string
+          granted_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          assignment_id?: string
+          student_id?: string
+          due_at?: string
+          reason?: string
+          granted_by?: string | null
+          created_at?: string
+        }
+      }
       feature_flags: {
         Row: {
           key: string
@@ -156,6 +299,145 @@ export interface Database {
           enabled?: boolean
           rollout?: Json
           updated_at?: string
+        }
+      }
+      grade_history: {
+        Row: {
+          id: number
+          assignment_id: string
+          student_id: string
+          actor: string | null
+          at: string
+          old_score: number | null
+          new_score: number | null
+          reason: string
+        }
+        Insert: {
+          id?: number
+          assignment_id: string
+          student_id: string
+          actor?: string | null
+          at?: string
+          old_score?: number | null
+          new_score?: number | null
+          reason?: string
+        }
+        Update: {
+          id?: number
+          assignment_id?: string
+          student_id?: string
+          actor?: string | null
+          at?: string
+          old_score?: number | null
+          new_score?: number | null
+          reason?: string
+        }
+      }
+      grades: {
+        Row: {
+          assignment_id: string
+          student_id: string
+          override_score: number | null
+          comment: string
+          returned_at: string | null
+          updated_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          assignment_id: string
+          student_id: string
+          override_score?: number | null
+          comment?: string
+          returned_at?: string | null
+          updated_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assignment_id?: string
+          student_id?: string
+          override_score?: number | null
+          comment?: string
+          returned_at?: string | null
+          updated_by?: string | null
+          updated_at?: string
+        }
+      }
+      notifications: {
+        Row: {
+          id: number
+          user_id: string
+          kind: 'assignment' | 'grade' | 'announcement' | 'comment' | 'class'
+          title: string
+          body: string
+          link: string
+          created_at: string
+          read_at: string | null
+        }
+        Insert: {
+          id?: number
+          user_id: string
+          kind: 'assignment' | 'grade' | 'announcement' | 'comment' | 'class'
+          title: string
+          body?: string
+          link?: string
+          created_at?: string
+          read_at?: string | null
+        }
+        Update: {
+          id?: number
+          user_id?: string
+          kind?: 'assignment' | 'grade' | 'announcement' | 'comment' | 'class'
+          title?: string
+          body?: string
+          link?: string
+          created_at?: string
+          read_at?: string | null
+        }
+      }
+      org_members: {
+        Row: {
+          org_id: string
+          user_id: string
+          role: 'admin' | 'teacher'
+          added_at: string
+        }
+        Insert: {
+          org_id: string
+          user_id: string
+          role: 'admin' | 'teacher'
+          added_at?: string
+        }
+        Update: {
+          org_id?: string
+          user_id?: string
+          role?: 'admin' | 'teacher'
+          added_at?: string
+        }
+      }
+      organizations: {
+        Row: {
+          id: string
+          name: string
+          seat_limit: number | null
+          invite_code: string
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          seat_limit?: number | null
+          invite_code: string
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          seat_limit?: number | null
+          invite_code?: string
+          created_by?: string | null
+          created_at?: string
         }
       }
       profiles: {
@@ -236,13 +518,98 @@ export interface Database {
           hits?: number
         }
       }
+      submissions: {
+        Row: {
+          id: string
+          assignment_id: string
+          student_id: string
+          n: number
+          submitted_at: string
+          late_seconds: number
+          penalty_pct: number
+          raw_score: number
+          score: number
+          max_score: number
+          detail: Json
+          snapshot: Json
+          signals: Json
+        }
+        Insert: {
+          id?: string
+          assignment_id: string
+          student_id: string
+          n: number
+          submitted_at?: string
+          late_seconds?: number
+          penalty_pct?: number
+          raw_score: number
+          score: number
+          max_score: number
+          detail?: Json
+          snapshot?: Json
+          signals?: Json
+        }
+        Update: {
+          id?: string
+          assignment_id?: string
+          student_id?: string
+          n?: number
+          submitted_at?: string
+          late_seconds?: number
+          penalty_pct?: number
+          raw_score?: number
+          score?: number
+          max_score?: number
+          detail?: Json
+          snapshot?: Json
+          signals?: Json
+        }
+      }
     }
     Functions: {
+      add_comment: {
+        Args: {
+          p_assignment: string
+          p_student: string
+          p_body: string
+        }
+        Returns: number
+      }
+      assignment_class: {
+        Args: {
+          p_assignment: string
+        }
+        Returns: string
+      }
       claim_teacher: {
         Args: {
           p_code: string
         }
         Returns: boolean
+      }
+      class_gradebook: {
+        Args: {
+          p_class: string
+        }
+        Returns: { student_id: string; assignment_id: string; submitted_at: string; submissions: number; late_seconds: number; penalty_pct: number; auto_score: number; max_score: number; override_score: number; final_score: number; source: string; returned: boolean; comment: string; due_at: string; signals: Json }[]
+      }
+      class_item_rows: {
+        Args: {
+          p_class: string
+        }
+        Returns: { student_id: string; key: string; data: Json; updated_at: string }[]
+      }
+      class_join_info: {
+        Args: {
+          p_class: string
+        }
+        Returns: { join_code: string; expires_at: string }[]
+      }
+      class_overall: {
+        Args: {
+          p_class: string
+        }
+        Returns: { student_id: string; pct: number; counted: number }[]
       }
       class_progress: {
         Args: {
@@ -250,13 +617,70 @@ export interface Database {
         }
         Returns: { student_id: string; ch: number; preds: number; preds_right: number; quizzes: number; quizzes_right: number; ex_pass: number; ex_tried: number; hints: number; is_read: boolean; last_at: string }[]
       }
+      class_set_teacher: {
+        Args: {
+          p_class: string
+          p_user: string
+          p_role: string
+        }
+        Returns: undefined
+      }
+      class_staff: {
+        Args: {
+          p_class: string
+        }
+        Returns: { user_id: string; full_name: string; role: string }[]
+      }
+      close_joining: {
+        Args: {
+          p_class: string
+        }
+        Returns: undefined
+      }
+      create_class: {
+        Args: {
+          p_name: string
+          p_term?: string
+          p_org?: string
+        }
+        Returns: string
+      }
+      create_org: {
+        Args: {
+          p_name: string
+        }
+        Returns: string
+      }
       delete_my_account: {
         Args: Record<string, never>
         Returns: undefined
       }
+      duplicate_class: {
+        Args: {
+          p_class: string
+          p_name: string
+          p_term?: string
+          p_copy_assignments?: boolean
+        }
+        Returns: string
+      }
       export_my_data: {
         Args: Record<string, never>
         Returns: ExportedData
+      }
+      get_grade_history: {
+        Args: {
+          p_assignment: string
+          p_student: string
+        }
+        Returns: { at: string; actor_name: string; old_score: number; new_score: number; reason: string }[]
+      }
+      get_submissions: {
+        Args: {
+          p_assignment: string
+          p_student: string
+        }
+        Returns: { n: number; submitted_at: string; late_seconds: number; penalty_pct: number; raw_score: number; score: number; max_score: number; detail: Json; snapshot: Json; signals: Json }[]
       }
       in_class: {
         Args: {
@@ -264,8 +688,20 @@ export interface Database {
         }
         Returns: boolean
       }
+      in_org: {
+        Args: {
+          p_org: string
+        }
+        Returns: boolean
+      }
       is_admin: {
         Args: Record<string, never>
+        Returns: boolean
+      }
+      is_org_admin: {
+        Args: {
+          p_org: string
+        }
         Returns: boolean
       }
       is_teacher: {
@@ -278,11 +714,112 @@ export interface Database {
         }
         Returns: { id: string; name: string }[]
       }
+      my_results: {
+        Args: {
+          p_class?: string
+        }
+        Returns: { assignment_id: string; class_id: string; title: string; description: string; page_id: string; items: Json; due_at: string; release_at: string; late_policy: Json; max_submissions: number; submissions: number; submitted_at: string; late_seconds: number; penalty_pct: number; visible: boolean; score: number; max_score: number; detail: Json; comment: string; returned_at: string; archived: boolean }[]
+      }
+      org_invite_code: {
+        Args: {
+          p_org: string
+        }
+        Returns: string
+      }
+      org_join: {
+        Args: {
+          p_code: string
+        }
+        Returns: { id: string; name: string }[]
+      }
+      org_leave: {
+        Args: {
+          p_org: string
+        }
+        Returns: undefined
+      }
+      org_members_list: {
+        Args: {
+          p_org: string
+        }
+        Returns: { user_id: string; full_name: string; username: string; role: string; classes: number }[]
+      }
+      org_report: {
+        Args: {
+          p_org: string
+        }
+        Returns: { class_id: string; name: string; term: string; archived: boolean; teacher_name: string; students: number; assignments: number; submissions: number; avg_pct: number; last_submission: string }[]
+      }
+      org_set_member: {
+        Args: {
+          p_org: string
+          p_user: string
+          p_role: string
+        }
+        Returns: undefined
+      }
+      org_summary: {
+        Args: {
+          p_org: string
+        }
+        Returns: Json
+      }
+      owns_class: {
+        Args: {
+          p_class: string
+        }
+        Returns: boolean
+      }
+      return_grades: {
+        Args: {
+          p_assignment: string
+          p_students?: string[]
+          p_return?: boolean
+        }
+        Returns: number
+      }
+      rotate_join_code: {
+        Args: {
+          p_class: string
+          p_expires_in_days?: number
+        }
+        Returns: string
+      }
+      rotate_org_invite: {
+        Args: {
+          p_org: string
+        }
+        Returns: string
+      }
       save_progress: {
         Args: {
           items: SaveProgressItem[]
         }
         Returns: SaveProgressResult
+      }
+      set_class_archived: {
+        Args: {
+          p_class: string
+          p_archived: boolean
+        }
+        Returns: undefined
+      }
+      set_grade: {
+        Args: {
+          p_assignment: string
+          p_student: string
+          p_score: number
+          p_comment: string
+          p_reason?: string
+        }
+        Returns: undefined
+      }
+      submit_assignment: {
+        Args: {
+          p_assignment: string
+          p_signals?: Json
+        }
+        Returns: Json
       }
       teaches_class: {
         Args: {
@@ -293,6 +830,12 @@ export interface Database {
       teaches_student: {
         Args: {
           p_student: string
+        }
+        Returns: boolean
+      }
+      views_class: {
+        Args: {
+          p_class: string
         }
         Returns: boolean
       }
@@ -318,15 +861,25 @@ export type FunctionArgs<F extends FunctionName> = Database['public']['Functions
 export type FunctionReturns<F extends FunctionName> = Database['public']['Functions'][F]['Returns']
 
 export type AnalyticsEventsRow = Row<'analytics_events'>
+export type AnnouncementsRow = Row<'announcements'>
 export type AppSettingsRow = Row<'app_settings'>
 export type AssignmentsRow = Row<'assignments'>
 export type AuditLogRow = Row<'audit_log'>
+export type ClassTeachersRow = Row<'class_teachers'>
 export type ClassesRow = Row<'classes'>
+export type CommentsRow = Row<'comments'>
 export type EnrollmentsRow = Row<'enrollments'>
+export type ExtensionsRow = Row<'extensions'>
 export type FeatureFlagsRow = Row<'feature_flags'>
+export type GradeHistoryRow = Row<'grade_history'>
+export type GradesRow = Row<'grades'>
+export type NotificationsRow = Row<'notifications'>
+export type OrgMembersRow = Row<'org_members'>
+export type OrganizationsRow = Row<'organizations'>
 export type ProfilesRow = Row<'profiles'>
 export type ProgressRow = Row<'progress'>
 export type RateLimitsRow = Row<'rate_limits'>
+export type SubmissionsRow = Row<'submissions'>
 
 // Hand-written shapes for the jsonb results (see docs/database.md).
 export interface SaveProgressItem { key: string; data: { [key: string]: Json }; client_ts: number }

@@ -10,6 +10,8 @@ for (const f of ['pyodide.mjs', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_st
   fs.copyFileSync(path.join(src, f), path.join(dst, f));
 }
 fs.copyFileSync(path.resolve(import.meta.dirname, '../src/runner/runner.py'), path.join(dst, 'runner.py'));
+// the flowchart generator runs in the browser too (for code the learner edited), from the same file the build uses
+fs.copyFileSync(path.resolve(import.meta.dirname, '../../../tools/content/flowchart.py'), path.join(dst, 'flowchart.py'));
 const v = JSON.parse(fs.readFileSync(path.join(src, 'package.json'), 'utf8')).version;
 fs.writeFileSync(path.join(dst, 'VERSION'), v + '\n');
 console.log(`pyodide ${v} copied to public/pyodide`);

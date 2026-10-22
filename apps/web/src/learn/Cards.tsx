@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import { useI18n } from '../i18n';
+import { Flowchart } from '../flow/Flowchart';
+import { useFlowEntry } from '../flow/FlowContext';
+import { useLiveFlow } from '../flow/useLiveFlow';
 import { MemoryModel } from '../memory/MemoryModel';
 import { Editor } from '../runner/Editor';
 import { useRunner } from '../runner/RunnerProvider';
@@ -66,6 +69,9 @@ export function PredictionCard({ ch, p, n, done, concepts, review, onResult }: {
     onResult?.(ok);
   };
   const trace = async () => setSteps(await run({ code: p.code, trace: true, ...{} }));
+  const flow = useFlowEntry(`pred:${ch}:${p.id}`);
+  const [flowOpen, setFlowOpen] = useState(false);
+  const [stepIdx, setStepIdx] = useState(0);
   const diff = res && !res.ok ? firstDifference(p.answer, guess) : null;
 
   return (
@@ -93,17 +99,19 @@ export function PredictionCard({ ch, p, n, done, concepts, review, onResult }: {
           {diff && <p className="muted-line" dir="auto">{t('lab.firstDiff', { line: diff.line, want: diff.want || '∅', got: diff.got || '∅' })}</p>}
           {res.err && <ErrorCoach error={res.err} code={p.code} />}
           <p><strong>{t('lab.why')}: </strong>{rich(p.why)}</p>
+          {flow && <button type="button" className="btn small alt" aria-pressed={flowOpen} onClick={() => setFlowOpen((v) => !v)}>{flowOpen ? t('flow.hide') : t('flow.show')}</button>}
+          {flow && flowOpen && <Flowchart entry={flow} currentLine={steps?.steps?.length ? steps.steps[Math.min(stepIdx, steps.steps.length - 1)]?.line : null} history={steps?.steps?.slice(0, stepIdx + 1).map((s) => s.line)} />}
           {p.memory_after && !steps && <button type="button" className="btn small alt" onClick={() => void trace()} disabled={busy}>{t('lab.showMemory')}</button>}
-          {steps && <><button type="button" className="btn small quiet" onClick={() => setSteps(null)}>{t('lab.hideMemory')}</button><TraceView result={steps} code={p.code} /></>}
+          {steps && <><button type="button" className="btn small quiet" onClick={() => setSteps(null)}>{t('lab.hideMemory')}</button><TraceView result={steps} code={p.code} onStep={setStepIdx} /></>}
         </div>
       )}
     </article>
   );
 }
 
-export function TraceView({ result, code }: { result: RunResult; code: string }) {
+export function TraceView({ result, code, onStep }: { result: RunResult; code: string; onStep?: (i: number) => void }) {
   if (!result.steps?.length) return null;
-  return <MemoryModel code={code} steps={result.steps} truncated={result.truncated} failed={!!result.error} maxSteps={MAX_TRACE_STEPS} />;
+  return <MemoryModel code={code} steps={result.steps} truncated={result.truncated} failed={!!result.error} maxSteps={MAX_TRACE_STEPS} onStep={onStep} />;
 }
 
 /* ------------------------------------------------------------------ quiz */
@@ -169,12 +177,15 @@ export function ExerciseCard({ ch, e, n, saved, concepts }: { ch: number; e: Exe
   const { run, busy } = useRun();
   const [code, setCode] = useState(e.starter);
   const touched = useRef(false);
+  const [flowOn, setFlowOn] = useState(false);
+  const liveFlow = useLiveFlow(code, flowOn);
   const [out, setOut] = useState<RunResult | null>(null);
   const [outcomes, setOutcomes] = useState<TestOutcome[] | null>(null);
   const [hints, setHints] = useState(0);
   const [showSol, setShowSol] = useState(false);
   const [history, setHistory] = useState<{ k: number; total: number }[]>([]);
   const active = useRef({ ms: 0, last: 0 });
+  const pasted = useRef(0); // pastes since the last saved Check
   const id = `ex-${ch}-${e.id}`;
 
   // Restore the learner's last code and hint count once, unless they have already started typing.
@@ -203,7 +214,8 @@ export function ExerciseCard({ ch, e, n, saved, concepts }: { ch: number; e: Exe
     const pass = passed === e.tests.length;
     setOutcomes(results);
     setHistory((h) => [...h, { k: passed, total: e.tests.length }].slice(-8));
-    await recordExercise(progress, ch, e.id, { pass, passed, total: e.tests.length, code, hints, secs: Math.round(active.current.ms / 1000), usedSolution: showSol });
+    await recordExercise(progress, ch, e.id, { pass, passed, total: e.tests.length, code, hints, secs: Math.round(active.current.ms / 1000), usedSolution: showSol, pastes: pasted.current });
+    pasted.current = 0;
   };
   const reset = () => { touched.current = true; setCode(e.starter); setOutcomes(null); setOut(null); };
   const done = saved?.pass === true || (outcomes?.every((o) => o.pass) ?? false);
@@ -224,10 +236,17 @@ export function ExerciseCard({ ch, e, n, saved, concepts }: { ch: number; e: Exe
         <div className="bar">
           <button type="button" className="btn small alt" onClick={() => void runFree()} disabled={busy}>{t('lab.run')}</button>
           <button type="button" className="btn small" onClick={() => void check()} disabled={busy}>{busy ? t('lab.checking') : t('lab.check')}</button>
+          <button type="button" className="btn small alt" aria-pressed={flowOn} onClick={() => setFlowOn((v) => !v)}>{flowOn ? t('flow.hide') : t('flow.show')}</button>
           <span className="grow" />
           <button type="button" className="btn small quiet" onClick={reset}>{t('lab.resetCode')}</button>
         </div>
-        <Editor value={code} onChange={edit} label={t('lab.editorLabel')} onRun={() => void runFree()} />
+        <Editor value={code} onChange={edit} label={t('lab.editorLabel')} onRun={() => void runFree()} onPaste={(n) => { if (n > 0) pasted.current += 1; }} />
+        {flowOn && (
+          <div style={{ padding: '4px 10px 10px' }}>
+            {!liveFlow.entry && <p className="note" role="status">{liveFlow.busy ? t('flow.drawing') : t('flow.cannotDraw')}</p>}
+            {liveFlow.entry && <Flowchart entry={liveFlow.entry} />}
+          </div>
+        )}
         {out && (
           <div className="outbox" tabIndex={0} role="region" aria-label={t('lab.output')}>
             {out.events.length === 0 && !out.error && <span className="note">{t('code.noOutput')}</span>}

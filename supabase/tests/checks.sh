@@ -30,8 +30,10 @@ expect "profile created as student" "student" "$(q "select role from profiles wh
 expect "wrong teacher code" "f" "$(as $T "select claim_teacher('nope')")"
 expect "right teacher code" "t" "$(as $T "select claim_teacher('SECRET1')")"
 as $T2 "select claim_teacher('SECRET1')" >/dev/null
-rlsdeny "student cannot make class" "$(as $S1 "insert into classes(teacher_id,name,join_code) values ('$S1','x','ZZZ') returning 1")"
-CL=$(as $T "insert into classes(teacher_id,name,join_code) values ('$T','Period 1','ABC123') returning id" | head -1)
+denied "student cannot insert a class directly" "$(as $S1 "insert into classes(teacher_id,name,join_code) values ('$S1','x','ZZZ') returning 1")"
+contains "student cannot call create_class" "teachers only" "$(as $S1 "select create_class('x')")"
+CL=$(as $T "select create_class('Period 1')" | head -1)
+q "update classes set join_code='ABC123' where id='$CL'" >/dev/null
 expect "teacher creates class" "36" "${#CL}"
 # CHANGED vs prototype: an unknown code returns no rows instead of raising P0002 (so attempts stay counted by the rate limit).
 expect "bad join code" "0" "$(as $S1 "select count(*) from join_class('zzzzzz')")"
@@ -50,7 +52,7 @@ expect "name editable" "UPDATE 1" "$(as $S1 "update profiles set full_name='New'
 expect "student reads own class" "Period 1" "$(as $S1 "select name from classes")"
 expect "non-member sees no classes" "0" "$(as $S3 "select count(*) from classes")"
 expect "teacher2 sees no classes" "0" "$(as $T2 "select count(*) from classes")"
-AID=$(as $T "insert into assignments(class_id,page_id,title,due_at) values ('$CL','1-numbers','Numbers','2030-01-01') returning id" | head -1)
+AID=$(as $T "insert into assignments(class_id,page_id,title,due_at,status,items) values ('$CL','1-numbers','Numbers','2030-01-01','published','[{\"key\":\"ex:1:e1\",\"points\":10}]') returning id" | head -1)
 expect "assignment created" "36" "${#AID}"
 expect "student reads assignment" "1" "$(as $S1 "select count(*) from assignments")"
 expect "outsider no assignment" "0" "$(as $S3 "select count(*) from assignments")"
@@ -256,7 +258,7 @@ expect "cleanup_rate_limits keeps current windows" "t" "$(q "select count(*) >= 
 echo "=== (b) export_my_data / delete_my_account ==="
 denied "anon cannot export" "$(anon "select export_my_data()")"
 denied "anon cannot delete account" "$(anon "select delete_my_account()")"
-expect "export covers every data table" "account,analytics_events,assignments,audit_log,classes,enrollments,exported_at,profile,progress,rate_limits" "$(as $S1 "select string_agg(k,',' order by k) from jsonb_object_keys(export_my_data()) k")"
+expect "export covers every data table" "account,analytics_events,announcements,assignments,audit_log,class_teachers,classes,comments,enrollments,exported_at,extensions,grade_history,grades,notifications,org_members,organizations,profile,progress,rate_limits,submissions" "$(as $S1 "select string_agg(k,',' order by k) from jsonb_object_keys(export_my_data()) k")"
 expect "export: own profile" "$S1" "$(as $S1 "select export_my_data()->'profile'->>'id'")"
 expect "export: account e-mail" "$S1@x" "$(as $S1 "select export_my_data()->'account'->>'email'")"
 expect "export: all own progress rows" "$(q "select count(*) from progress where user_id='$S1'")" "$(as $S1 "select jsonb_array_length(export_my_data()->'progress')")"
@@ -285,7 +287,8 @@ expect "delete: other students and the class are untouched" "t" "$(q "select (se
 contains "delete: second call reports no such account" "no such account" "$(as $D1 "select delete_my_account()")"
 # teacher account deletion
 expect "teacher to-be claims role" "t" "$(as $DT "select claim_teacher('SECRET1')")"
-DC=$(as $DT "insert into classes(teacher_id,name,join_code) values ('$DT','Doomed','DEL001') returning id" | head -1)
+DC=$(as $DT "select create_class('Doomed')" | head -1)
+q "update classes set join_code='DEL001' where id='$DC'" >/dev/null
 as $DT "insert into assignments(class_id,page_id) values ('$DC','1-numbers')" >/dev/null
 as $S5 "select * from join_class('DEL001')" >/dev/null
 as $S5 "insert into progress(user_id,key,data) values ('$S5','read:1','{}')" >/dev/null
@@ -314,16 +317,18 @@ expect "new table: not readable by anon" "f" "$(q "select has_table_privilege('a
 expect "new table: not readable by authenticated" "f" "$(q "select has_table_privilege('authenticated','public._probe_t','select')")"
 q "drop function public._probe(); drop table public._probe_t" >/dev/null
 
+source "$HERE/m3.sh"
+
 echo "=== (c) META ==="
 expect "every public table has RLS on" "0" "$(q "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','p') and not c.relrowsecurity")"
-expect "ten public tables (update tests when adding one)" "10" "$(q "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','p')")"
+expect "twenty public tables (update tests when adding one)" "20" "$(q "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','p')")"
 expect "every SECURITY DEFINER function sets search_path" "0" "$(q "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.prosecdef and not exists (select 1 from unnest(coalesce(p.proconfig,'{}')) c where c like 'search_path=%')")"
 expect "every public function sets search_path" "0" "$(q "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and not exists (select 1 from unnest(coalesce(p.proconfig,'{}')) c where c like 'search_path=%')")"
 expect "no public function is executable by anon" "0" "$(q "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and has_function_privilege('anon', p.oid, 'execute')")"
 expect "no public function is executable by PUBLIC" "0" "$(q "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace, aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a where n.nspname='public' and a.grantee=0 and a.privilege_type='EXECUTE'")"
 expect "anon holds no table privileges in public" "0" "$(q "select count(*) from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','PUBLIC')")"
-expect "tables without policies are exactly the secret ones" "app_settings,rate_limits" "$(q "select string_agg(relname,',' order by relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and not exists (select 1 from pg_policy where polrelid=c.oid)")"
-expect "authenticated has no privileges on secret tables" "0" "$(q "select count(*) from information_schema.role_table_grants where table_schema='public' and table_name in ('app_settings','rate_limits') and grantee='authenticated'")"
+expect "tables without policies are exactly the secret and function-only ones" "app_settings,grade_history,grades,rate_limits,submissions" "$(q "select string_agg(relname,',' order by relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and not exists (select 1 from pg_policy where polrelid=c.oid)")"
+expect "authenticated has no privileges on secret tables" "0" "$(q "select count(*) from information_schema.role_table_grants where table_schema='public' and table_name in ('app_settings','rate_limits','submissions','grades','grade_history') and grantee='authenticated'")"
 expect "authenticated cannot write audit_log" "false,false,false,false" "$(q "select has_table_privilege('authenticated','public.audit_log','insert') || ',' || has_table_privilege('authenticated','public.audit_log','update') || ',' || has_table_privilege('authenticated','public.audit_log','delete') || ',' || has_table_privilege('authenticated','public.audit_log','truncate')")"
 expect "profiles: exactly four user-editable columns" "age_band,display_prefs,full_name,locale" "$(q "select string_agg(column_name,',' order by column_name) from information_schema.columns where table_schema='public' and table_name='profiles' and has_column_privilege('authenticated','public.profiles',column_name,'UPDATE')")"
 expect "profiles.role is not user-editable" "f" "$(q "select has_column_privilege('authenticated','public.profiles','role','UPDATE')")"
