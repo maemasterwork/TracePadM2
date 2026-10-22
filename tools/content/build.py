@@ -22,8 +22,16 @@ BUILD = ROOT / "content" / "build"
 PUBLIC = ROOT / "apps" / "web" / "public" / "content"
 
 
+def chapter_base(number: int) -> int:
+    """Progress keys carry only a chapter number (read:<n>, pred:<n>:<id>, note:<n>:<line>, SQL class_progress), so the
+    chapter numbers the app sees must be unique across lessons. Lesson 1 keeps 1..99 (existing learner data stays valid);
+    lesson N >= 2 uses N*100 + the chapter number printed in the lesson (lesson 2 chapter 3 is 203). The app shows the
+    printed number again with chapterNo() in src/content/chapterNo.ts."""
+    return 0 if number == 1 else number * 100
+
+
 def sh(*args) -> None:
-    r = subprocess.run([sys.executable, "-I", *map(str, args)], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-I", "-X", "utf8", *map(str, args)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     sys.stdout.write(r.stdout)
     if r.returncode != 0:
         sys.stderr.write(r.stderr)
@@ -31,11 +39,17 @@ def sh(*args) -> None:
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):  # Windows consoles default to a legacy code page; lesson text has Persian and symbols
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
     course = yaml.safe_load((ROOT / "content" / "course.yml").read_text(encoding="utf-8"))
     BUILD.mkdir(parents=True, exist_ok=True)
     PUBLIC.mkdir(parents=True, exist_ok=True)
     manifest = {"course": course["course"], "lessons": []}
     concepts: dict[str, dict] = {}
+    seen_chapter_ids: dict[str, str] = {}
     names = yaml.safe_load((ROOT / "content" / "concepts.yml").read_text(encoding="utf-8")) or {}
     for les in course["lessons"]:
         entry = {k: les[k] for k in ("id", "number", "status", "title")}
@@ -47,7 +61,13 @@ def main() -> int:
             sh(HERE / "check_labs.py", ldir, lj, BUILD)
             doc = json.loads(lj.read_text(encoding="utf-8"))
             labs = yaml.safe_load((ldir / "labs.yml").read_text(encoding="utf-8"))
-            labs["chapters"] = {str(k): v for k, v in labs["chapters"].items()}
+            base = chapter_base(les["number"])
+            for c in doc["chapters"]:
+                if c["id"] in seen_chapter_ids:
+                    sys.exit(f"chapter id {c['id']!r} is used by both {seen_chapter_ids[c['id']]} and {les['id']}; chapter ids (the heading slugs) must be unique across lessons because assignments refer to them")
+                seen_chapter_ids[c["id"]] = les["id"]
+                c["n"] += base
+            labs["chapters"] = {str(int(k) + base): v for k, v in (labs.get("chapters") or {}).items()}
             out = PUBLIC / les["id"]
             out.mkdir(parents=True, exist_ok=True)
             blocks_meta = (yaml.safe_load((ldir / "blocks.yml").read_text(encoding="utf-8")) or {}).get("blocks", {}) if (ldir / "blocks.yml").exists() else {}
@@ -81,7 +101,7 @@ def main() -> int:
                         concepts.setdefault(it["tag"], {"tag": it["tag"], "lessons": set(), "chapters": set(), "items": 0})
                         concepts[it["tag"]]["lessons"].add(les["id"])
                         concepts[it["tag"]]["items"] += 1
-                        concepts[it["tag"]]["chapters"].add(f"{les['id']}#{chno}")
+                        concepts[it["tag"]]["chapters"].add(f"{les['id']}#{int(chno) - base}")
             entry["chapters"] = [{"n": c["n"], "id": c["id"], "title": c["title"]} for c in doc["chapters"]]
             entry["path"] = f"content/{les['id']}"
         manifest["lessons"].append(entry)
@@ -94,8 +114,8 @@ def main() -> int:
     if unused:
         print("note: concept names not used by any item:", ", ".join(unused))
     for tag, nm in names.items():
-        if not isinstance(nm, dict) or not nm.get("en") or not nm.get("fa"):
-            print(f"concepts.yml: {tag} needs both en and fa")
+        if not isinstance(nm, dict) or not nm.get("en"):
+            print(f"concepts.yml: {tag} needs an en name (fa is optional until Persian is started)")
             return 1
     cl = sorted(({**v, "lessons": sorted(v["lessons"]), "chapters": sorted(v["chapters"]), "name": names[v["tag"]]} for v in concepts.values()), key=lambda v: v["tag"])
     (PUBLIC / "concepts.json").write_text(json.dumps(cl, ensure_ascii=False, indent=1), encoding="utf-8")

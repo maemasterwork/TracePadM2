@@ -10,6 +10,7 @@ import { useI18n } from '../i18n';
 import { useLabs } from '../learn/hooks';
 import { NotesProvider } from '../notes/NotesContext';
 import { LabsPanel } from '../learn/LabsPanel';
+import { chapterNo } from '../content/chapterNo';
 
 export function LessonPage() {
   const { lessonId = '', chapterId } = useParams();
@@ -95,7 +96,7 @@ export function LessonPage() {
           {lesson.chapters.map((c) => (
             <li key={c.id}>
               <Link to={`/lesson/${lessonId}/${c.id}`} aria-current={c.id === chapterId ? 'true' : undefined} lang="en" dir="ltr">
-                {num(c.n)}. {c.title}{read[`read:${c.n}`] ? ' ✓' : ''}
+                {num(chapterNo(c.n))}. {c.title}{read[`read:${c.n}`] ? ' ✓' : ''}
               </Link>
             </li>
           ))}

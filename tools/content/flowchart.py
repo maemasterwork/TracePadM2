@@ -664,6 +664,10 @@ def build(code: str) -> dict:
         return {"skip": f"does not parse as a program ({e.msg})"}
     if not tree.body:
         return {"skip": "empty"}
+    try:  # ast.parse accepts things only the compiler rejects, such as break outside a loop or return outside a function
+        compile(tree, "<example>", "exec")
+    except SyntaxError as e:
+        return {"skip": f"does not parse as a program ({e.msg})"}
     # a REPL transcript or a snippet that only shows a value is not a program worth drawing
     b = Builder(code.split("\n"))
     try:

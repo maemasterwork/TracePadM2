@@ -177,6 +177,10 @@ class Honesty(unittest.TestCase):
         self.assertIn("If yes:", joined)
         self.assertIn("If no:", joined)
 
+    def test_code_the_compiler_rejects_gets_no_chart(self):
+        for code in ("break\n", "continue\n", "return 1\n", "x = 1\nbreak\npass\n"):
+            self.assertIn("skip", F.build(code), code)
+
 
 if __name__ == "__main__":
     unittest.main()

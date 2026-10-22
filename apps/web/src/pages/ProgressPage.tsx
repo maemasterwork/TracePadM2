@@ -5,6 +5,7 @@ import { useAllLabs, useRows } from '../learn/hooks';
 import { masteryByTag, type ItemRow } from '../learn/mastery';
 import { watchCount } from '../learn/srs';
 import { StreakLine } from './Review';
+import { chapterNo } from '../content/chapterNo';
 
 export function ProgressPage() {
   const { t, pick, num } = useI18n();
@@ -32,7 +33,7 @@ export function ProgressPage() {
               const isRead = data('read:' + c.n)?.done === true;
               return (
                 <li key={c.id}>
-                  <Link to={`/lesson/${l.id}/${c.id}`} dir="ltr" lang="en">{num(c.n)}. {c.title}</Link>
+                  <Link to={`/lesson/${l.id}/${c.id}`} dir="ltr" lang="en">{num(chapterNo(c.n))}. {c.title}</Link>
                   <span className="chip">{t('lab.progress', { done: num(done), total: num(mine.length) })}</span>
                   {isRead && <span className="chip good">✓ {t('lesson.isRead')}</span>}
                 </li>
@@ -62,7 +63,7 @@ export function ProgressPage() {
                     {m.lastOk === false && <span className="chip bad">{t('progress.needsReview')}</span>}
                   </div>
                   <div className="meter" role="img" aria-label={`${name}: ${t('progress.level.' + m.level)}, ${num(pct)}%`}><span style={{ width: pct + '%' }} /></div>
-                  <span className="muted-line">{t('progress.answers', { n: num(m.n) })}{lessonId && chId && <> · <Link to={`/lesson/${lessonId}/${chId}`}>{t('progress.openChapter', { n: num(Number(chn)) })}</Link></>}</span>
+                  <span className="muted-line">{t('progress.answers', { n: num(m.n) })}{lessonId && chId && <> · <Link to={`/lesson/${lessonId}/${chId}`}>{t('progress.openChapter', { n: num(chapterNo(Number(chn))) })}</Link></>}</span>
                 </li>
               );
             })}

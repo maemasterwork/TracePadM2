@@ -6,6 +6,7 @@ A web platform that teaches Python to beginners. Learners read a lesson, run eve
 
 ## What exists today
 
+- **Lesson 2** ("Python Statements": if / elif / else, for and while loops, useful operators, list comprehensions, assessment, Guessing Game capstone; 9 chapters) with 33 predictions, 18 quizzes and 13 exercises, all checked against real CPython. Its practice text is **English only** (Persian not started, by decision).
 - **Lesson 1** ("Python Object and Data Structure Basics", 10 chapters), imported from the original markdown with a verifier that proves no line was lost (1923 source lines, 302 blocks, 0 lost).
 - **In-browser Python** (Pyodide 0.28.3 = CPython 3.13.2, self-hosted, in a Web Worker): Run, Stop, a time limit, live `input()`, and a per-user virtual disk that survives reloads. All 121 runnable examples in the lesson run; 267 snippets are checked to give the same output in Pyodide as in desktop CPython.
 - **Accounts**: email or username sign-up, sign-in, password reset, email change, sign out other devices, two-factor (TOTP) screens, teacher invite code, export my data, delete my account. Learners without an account are *guests*; their progress is kept on the device and moved into the account at first sign-in.
@@ -64,17 +65,20 @@ To run with accounts, start a local Supabase (`supabase start` in this folder ap
 
 ## Adding or changing a lesson (a content task, not a code task)
 
-1. Put the markdown in `content/lessons/<nn>-<slug>/lesson.md`; write the practice items in `labs.yml` and any run instructions in `blocks.yml`; list the lesson in `content/course.yml`.
-2. `npm run content:build` checks everything (no lost lines, schema, safe HTML, every answer and every solution against real CPython) and fails loudly if anything is off.
+1. Create `content/lessons/<nn>-<slug>/` with `lesson.md` (your markdown, never edited by the tools), `labs.yml` and, when needed, `blocks.yml`. Add the lesson to `content/course.yml` (`status: published`, `number`, `id` = the folder name).
+2. `labs.yml`: per chapter (use the numbers printed in the lesson) `predictions` (code + exact answer), `quizzes` (options + `correct` index) and `exercises` (starter, solution, `tests`, 2 to 4 `hints`). Every text has `en`; `fa` is optional for now (the app falls back to English). Test inputs for exercises use `set` (replaces the first line matching `param.pattern`) and `post` (code appended after the program); exercises get no keyboard input, so use variables or functions.
+3. `blocks.yml`: examples that need earlier state (`after`), typed input (`stdin`), random or order-dependent output (`nondeterministic`), or that are not runnable on purpose (`skip`, with a reason). The build tells you which examples fail and why.
+4. New concept tags used in `labs.yml` need an English name in `content/concepts.yml`.
+5. `npm run content:build` checks everything (no lost lines, schema, safe HTML, every answer and every solution against real CPython, a flowchart for every runnable example) and fails loudly if anything is off. Then `npm run content:test`.
 
 ## Tests
 
 | Command | What it covers |
 | --- | --- |
-| `npm test` | content pipeline (7), flowchart generator (21), app unit tests (91): sync merge rules, auth mapping and validation, grading, mastery, spaced review, search, gradebook and analytics logic, CSV safety |
+| `npm test` | content pipeline (7), flowchart generator (22), app unit tests (93): sync merge rules, auth mapping and validation, grading, mastery, spaced review, search, gradebook and analytics logic, CSV safety |
 | `bash supabase/tests/run.sh` | 461 SQL checks on a throw-away PostgreSQL (every table and function as anonymous, student, other student, teacher, other teacher, co-teacher, TA, organization admin, platform admin; scoring, late rules, extensions, grade history, return, notifications, archive, duplicate, export/delete) plus 13 checks that the demo seed loads and removes cleanly |
 | `python3 -I tools/content/check_labs.py ...` and `node tools/content/engine_check.mjs` | labs against CPython; Pyodide vs CPython differential (see `.github/workflows/ci.yml` for exact calls) |
-| `npm run -w apps/web e2e` | 62 browser tests (including the flowchart tests: drawing, text version, trace highlighting and loop counts, redrawing after editing, exercises, predictions, axe in 2 themes and 2 languages, 360 px) (including practice, tracer, memory model, notes, search, review, shortcuts, and Persian accessibility of the new screens): axe accessibility on every page in 3 themes and 2 languages, RTL, 320 px reflow, 200 % text, offline, keyboard, CSP, runner behaviour |
+| `npm run -w apps/web e2e` | 65 browser tests (including the 3 lesson 2 tests and the flowchart tests: drawing, text version, trace highlighting and loop counts, redrawing after editing, exercises, predictions, axe in 2 themes and 2 languages, 360 px) (including practice, tracer, memory model, notes, search, review, shortcuts, and Persian accessibility of the new screens): axe accessibility on every page in 3 themes and 2 languages, RTL, 320 px reflow, 200 % text, offline, keyboard, CSP, runner behaviour |
 | `npm run -w apps/web e2e:auth` | 22 browser tests against the real migrations (see below): the 13 account/sync tests, plus classes: teacher creates class and assignment, learner joins and submits, teacher overrides, comments and returns, learner sees it; late rule refusal; organization with invite, co-teacher, seat limit, code rotation, archive; announcements and comments; every class screen for axe accessibility in English/Persian, light/dark and for sideways scroll at 360 px; the demo organization filling every teacher screen |
 
 ## How it was verified
@@ -94,7 +98,9 @@ Every screen was opened in a real browser at desktop and phone width, light and 
 
 - **Mastery and the dashboards' heat map are self-reported**; only submitted assignments are scored by the server.
 - The concept names, error-coach texts and all new interface strings in Persian were written by the builder and have **not** been reviewed by a native-speaker teacher. Review before relying on them.
-- Practice-item keys carry only the chapter number, so a second lesson needs a key migration (planned for Milestone 4; impossible to collide while there is one lesson).
+- Progress keys still carry only a chapter number. Collisions between lessons are prevented by numbering chapters uniquely in the built content (lesson 1: 1 to 99, lesson N: N x 100 + the printed number; see decision 81). Consequence: a lesson can have at most 99 chapters, and teacher screens and exports show the unique numbers only where a person would never see them (they print the lesson's own chapter number).
+- Chapter ids (the heading slugs, such as `3-for-loops`) must be unique across lessons, because assignments refer to them; the build stops with a message if two lessons repeat one.
+- Lesson 2 flowcharts: 131 drawn, 11 examples without a chart (syntax templates, fragments, and the two largest programs: the Guessing Game solution has more than 45 boxes, and two examples are wider than 1100 px).
 - The memory model and tracer stop after 1500 executed steps and say so.
 - Search and notes work offline only for lessons opened at least once on this device.
 - Exercise types Parsons, fix-the-bug and code-reading are not in the lesson data yet, so they are not built.

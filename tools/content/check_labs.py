@@ -71,8 +71,8 @@ def run_cpython(code: str, stdin: str = "", prelude: str = "") -> dict:
         program = code
     with tempfile.TemporaryDirectory() as t:
         try:
-            r = subprocess.run([sys.executable, "-I", "-c", program], cwd=t, input=stdin, capture_output=True,
-                               text=True, timeout=TIMEOUT)
+            r = subprocess.run([sys.executable, "-I", "-X", "utf8", "-c", program], cwd=t, input=stdin, capture_output=True,
+                               text=True, encoding="utf-8", errors="replace", timeout=TIMEOUT)
             return {"ok": r.returncode == 0, "stdout": r.stdout, "stderr_last": (r.stderr.strip().split("\n") or [""])[-1]}
         except subprocess.TimeoutExpired:
             return {"ok": False, "stdout": "", "stderr_last": "TIMEOUT"}

@@ -49,6 +49,9 @@ Authorization lives in Postgres: RLS on every table, helper functions (`is_teach
 ### Why scoring is in the database
 A teacher's grade must not depend on what a browser says *at grading time*. `submit_assignment` freezes the assignment's item list, copies the learner's stored answers into a snapshot, scores them (`_score_items`: prediction and quiz = right/wrong, exercise = share of tests passed, revealed solution = 0, hints free), applies the late rule with the server clock (`_effective_due` honours extensions) and stores raw, penalty and final. Later edits to the assignment or progress cannot change a submitted score; only a teacher can, through `set_grade`, which writes `grade_history`.
 
+## Several lessons
+`content/course.yml` lists lessons; `tools/content/build.py` builds each published lesson into `public/content/<id>/` and writes `course.json`. The chapter number the app sees is unique across lessons (`chapter_base()` in build.py: lesson 1 = n, lesson N = N*100 + n; `src/content/chapterNo.ts` shows the printed number again). Every storage and SQL key that holds a chapter number therefore stays unique without changing the key format. Cross-lesson screens (review, progress, notes, teacher chapter picker) find a chapter's lesson through `course.json`.
+
 ## Flowcharts (`tools/content/flowchart.py`, `src/flow/`)
 ```
  example code ──► Python `ast` ──► structured layout (build time, plain coordinates) ──► flow.json

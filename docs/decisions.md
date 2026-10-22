@@ -37,7 +37,7 @@ Every decision made without asking, with the reason. Newest milestone last. Data
 28. **Spaced review uses Leitner boxes (1, 2, 4, 8, 16 days)**, a wrong answer moves an item back a box. Reason: explainable to a learner and a teacher; no tuned parameters needed with this little data.
 29. **The streak never shames.** It counts local days with any practice; missing a day shows a welcome message instead of a reset warning. Reason: the audience includes children.
 30. **Notes and marks use `note:` and `mk:` keys.** Reason: the server's `bm:*` rule is monotonic (never goes backwards), which would make deleting a bookmark impossible.
-31. **Practice keys carry only the chapter number.** SQL `class_progress` already parses that format; multi-lesson namespacing is a Milestone 4 migration. Collisions are impossible with one lesson.
+31. **Practice keys carry only the chapter number.** SQL `class_progress` already parses that format; multi-lesson namespacing is a Milestone 4 migration. Collisions are impossible with one lesson. (Superseded by 81 once a second lesson existed.)
 32. **Verdicts are graded against CPython-verified stored answers**, not by running the learner's output through a second oracle in the browser. Reason: the build already proved each answer.
 33. **The first answer after a reveal counts as practice, not mastery.** Reason: seeing the answer first would inflate the estimate.
 34. **Review shuffles quiz options** so position is not memorised.
@@ -92,3 +92,13 @@ Every decision made without asking, with the reason. Newest milestone last. Data
 77. **The generator file ships in `/pyodide/` (immutable cache headers, like `runner.py`).** Consequence: a change to `flowchart.py` or `runner.py` reaches returning visitors only when their cache entry is replaced; renaming the file or bumping the path is the fix. Noted for the deployment guide.
 78. **Accessibility of charts**: the SVG has a role and label and points to a text version (nested list) of the same chart; a polite live region announces "Now at: ..." as the trace moves; the scroll region is focusable and labelled; colour is never the only cue (shape and text carry the meaning); forced-colours styles are provided. Found while testing: a link's accessible name must contain its visible text (see 64).
 79. **The `try` chart is a teaching simplification**: the "error" arrow leaves the "Try this part" box, though in Python an error can happen part-way through the body. The text version says so ("if an error happens, jump to the matching except part").
+
+## Lesson 2 and multi-lesson support
+
+80. **Lesson 2 is "Python Statements" and replaces three planned lessons.** The supplied lesson covers decisions, `for`, `while`, useful operators and list comprehensions plus an assessment and a capstone. The outline in `course.yml` was changed: planned lessons 2 (conditions), 3 (loops) and the comprehension part of 5 are now covered by Lesson 2; the rest were renumbered (3 functions, 4 iterators and generators, 5 errors, 6 modules, 7 OOP, 8 testing, 9 capstones). Reason: the lesson as written is one module with its own capstone.
+81. **Chapter numbers are made unique across lessons at build time** (lesson 1 keeps 1 to 99; lesson N uses N x 100 + the printed number). Reason: progress, notes, read marks, spaced-review keys and the SQL `class_progress` all carry only a chapter number, so this needs no data migration, no schema change and no change to the sync rules, and existing learners keep their progress. `chapterNo()` shows the printed number. Cost: 99 chapters per lesson at most. The alternative (a lesson part in every key) would have meant migrating stored keys and the SQL parsing.
+82. **Chapter ids must be unique across lessons**; the build fails otherwise. Reason: assignments store the chapter id.
+83. **Practice text and concept names may be English only.** The schema already allowed a missing `fa`; the concept-name check now requires only `en`. Reason: Persian was deliberately not started. The interface falls back to English (decision 7 of Milestone 1).
+84. **Flowcharts skip code the Python compiler rejects** (for example `break` outside a loop), not only code that does not parse. Found when a cheat-sheet snippet drew a chart with boxes nothing pointed to.
+85. **Teachers pick an assignment chapter from a list grouped by lesson**, since two lessons both have a chapter 1.
+86. **Notes page now looks up each note in the lesson that owns its chapter** (it used the first lesson only, which would have hidden every Lesson 2 note).

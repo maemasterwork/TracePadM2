@@ -53,3 +53,43 @@ tuple-return: {en: Returning several values, fa: برگرداندن چند مق�
 tuple-shallow: {en: Tuples hold references, fa: چندتایی‌ها ارجاع نگه می‌دارند}
 unpack-star: {en: Star unpacking, fa: باز کردن با ستاره}
 with-stmt: {en: The with statement, fa: دستور with}
+
+# Lesson 2 (English only for now)
+any-all: {en: any() and all()}
+break-in-while: {en: break in a while loop}
+chained-comparison: {en: Chained comparisons and logic}
+comp-filter: {en: Filtering in a comprehension}
+comp-ifelse: {en: if/else inside a comprehension}
+comp-nested: {en: Nested loops in a comprehension}
+comp-when-not: {en: When not to use a comprehension}
+digit-loop: {en: Taking numbers apart digit by digit}
+elif-chain: {en: if / elif / else chains}
+elif-order: {en: Order of elif conditions}
+equals-vs-assign: {en: = versus ==}
+for-vs-while: {en: Choosing for or while}
+gcd: {en: Euclid's greatest common divisor}
+indentation: {en: Blocks and indentation}
+input-string: {en: input() returns text}
+listcomp: {en: List comprehensions}
+loop-break-nested: {en: break in nested loops}
+loop-continue: {en: continue in loops}
+loop-count: {en: Counting loop rounds}
+loop-else: {en: else on a loop}
+max-key: {en: max() with key=}
+modify-while-iterating: {en: Changing a list while looping over it}
+nested-if: {en: Nested if statements}
+nested-loops: {en: Nested loops}
+or-trap: {en: The "x == 1 or 2" trap}
+pass-statement: {en: The pass statement}
+random-seed: {en: Repeatable random numbers}
+range-stop: {en: range() and its end value}
+range-tricks: {en: range() tricks}
+statement-vs-expression: {en: Statements vs. expressions}
+ternary: {en: Conditional expressions (x if c else y)}
+unpacking: {en: Unpacking and divmod}
+while-else: {en: else on a while loop}
+while-trace: {en: Tracing a while loop}
+while-update: {en: Updating the while condition}
+zip-dict: {en: Building a dictionary with zip}
+zip-enumerate: {en: zip() and enumerate()}
+zip-shortest: {en: zip stops at the shortest}

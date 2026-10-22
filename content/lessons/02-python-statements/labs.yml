@@ -1,0 +1,974 @@
+# Lesson 2 labs (English only for now; add `fa:` next to each `en:` when Persian is started).
+# Learner-visible text has en (fa optional). HTML in text is limited to code, em, strong, br (see tools/content/labs.schema.json).
+lesson: 02-python-statements
+schema: 1
+chapters:
+  1:
+    predictions:
+    - id: p1
+      tag: indentation
+      code: |-
+        age = 20
+        if age >= 18:
+            print("adult")
+            print("can vote")
+        print("always")
+      answer: |-
+        adult
+        can vote
+        always
+      why:
+        en: Both indented lines belong to the <code>if</code> block and run because the condition is true. The last line is back at the left edge, so it is outside the block and runs every time.
+    - id: p2
+      tag: nested-if
+      code: |-
+        temperature = 28
+        is_raining = False
+        if temperature > 25:
+            print("It's warm.")
+            if is_raining:
+                print("Take an umbrella.")
+            else:
+                print("Enjoy the sun!")
+      answer: |-
+        It's warm.
+        Enjoy the sun!
+      why:
+        en: The outer condition is true (28 > 25), so its block runs. Inside it, <code>is_raining</code> is <code>False</code>, so the <code>else</code> part of the inner <code>if</code> runs.
+    - id: p3
+      tag: while-trace
+      code: |-
+        count = 0
+        while count < 3:
+            print("count is", count)
+            count += 1
+        print("finished")
+      answer: |-
+        count is 0
+        count is 1
+        count is 2
+        finished
+      why:
+        en: The loop body runs while <code>count</code> is below 3, so it prints 0, 1 and 2. When <code>count</code> reaches 3 the condition is false, the loop ends, and the unindented line runs once.
+    quizzes:
+    - id: q1
+      tag: statement-vs-expression
+      question:
+        en: 'Which of these is an expression (it produces a value you could put on the right of <code>=</code>)?'
+      options:
+      - en: '<code>x = 5</code>'
+      - en: '<code>5 * 2</code>'
+      - en: '<code>if x:</code>'
+      - en: '<code>import math</code>'
+      correct: 1
+      why:
+        en: '<code>5 * 2</code> produces the value 10. Assignment, <code>if</code> and <code>import</code> are statements that perform an action.'
+    - id: q2
+      tag: pass-statement
+      question:
+        en: What does <code>pass</code> do?
+      options:
+      - en: It ends the program
+      - en: It skips to the next loop round
+      - en: It does nothing; it is a placeholder where a statement is required
+      - en: It raises an error
+      correct: 2
+      why:
+        en: A block needs at least one statement. <code>pass</code> fills the gap while you are still working on the rest. Skipping to the next round is <code>continue</code>.
+    - id: q3
+      tag: indentation
+      question:
+        en: What is the standard indentation for one level in Python code?
+      options:
+      - en: 1 tab mixed with spaces
+      - en: 2 spaces
+      - en: 4 spaces
+      - en: 8 spaces
+      correct: 2
+      why:
+        en: The standard (PEP 8) is 4 spaces per level, and tabs and spaces must never be mixed in the same block.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'The indentation is missing, so this program stops with an <code>IndentationError</code>. Indent it so that <em>"It''s hot!"</em> and <em>"Drink water."</em> belong to the <code>if</code> block, but <em>"Have a nice day."</em> always runs.'
+      starter: |
+        temperature = 31
+        if temperature > 30:
+        print("It's hot!")
+        print("Drink water.")
+        print("Have a nice day.")
+      solution: |
+        temperature = 31
+        if temperature > 30:
+            print("It's hot!")
+            print("Drink water.")
+        print("Have a nice day.")
+      param:
+        pattern: ^temperature\s*=.*$
+        flags: m
+      tests:
+      - out: |-
+          It's hot!
+          Drink water.
+          Have a nice day.
+      - set: temperature = 20
+        out: Have a nice day.
+      - set: temperature = 30
+        out: Have a nice day.
+      hints:
+      - en: Lines that belong to a block are indented by the same amount, 4 spaces, under the line that ends with a colon.
+      - en: Indent the two lines about heat and water. Leave the last line at the left edge so it is outside the block.
+    - id: e2
+      prompt:
+        en: 'Write the decision from the lesson. If <code>withdrawal</code> is not more than <code>balance</code>, subtract it and print <code>Done. New balance: ...</code>. Otherwise print <code>Insufficient funds. You are short by ...</code> with the missing amount.'
+      starter: |
+        balance = 250
+        withdrawal = 300
+
+        # your if / else here
+      solution: |
+        balance = 250
+        withdrawal = 300
+
+        if withdrawal <= balance:
+            balance -= withdrawal
+            print(f"Done. New balance: {balance}")
+        else:
+            print(f"Insufficient funds. You are short by {withdrawal - balance}.")
+      param:
+        pattern: ^balance = .*\nwithdrawal = .*$
+        flags: m
+      tests:
+      - out: Insufficient funds. You are short by 50.
+      - set: |-
+          balance = 250
+          withdrawal = 100
+        out: 'Done. New balance: 150'
+      - set: |-
+          balance = 80
+          withdrawal = 80
+        out: 'Done. New balance: 0'
+      hints:
+      - en: You need a two-way decision, so use <code>if</code> and <code>else</code>. The condition is that the withdrawal fits in the balance.
+      - en: '<code>withdrawal &lt;= balance</code> is the condition. In the <code>if</code> part change <code>balance</code> and print it; in the <code>else</code> part print how far short you are.'
+  2:
+    predictions:
+    - id: p1
+      tag: elif-chain
+      code: |-
+        score = 82
+        if score >= 90:
+            grade = "A"
+        elif score >= 80:
+            grade = "B"
+        elif score >= 70:
+            grade = "C"
+        else:
+            grade = "F"
+        print(grade)
+      answer: B
+      why:
+        en: Python checks the conditions from the top and runs only the first block whose condition is true. 82 is not at least 90, but it is at least 80, so the grade is B and the rest are skipped.
+    - id: p2
+      tag: elif-order
+      code: |-
+        score = 95
+        if score >= 60:
+            print("D")
+        elif score >= 90:
+            print("A")
+      answer: D
+      why:
+        en: The broad condition <code>score &gt;= 60</code> is checked first and is true, so its block runs and the <code>elif</code> is never looked at. Put the most specific condition first.
+    - id: p3
+      tag: or-trap
+      code: |-
+        x = 5
+        if x == 1 or 2:
+            print("yes")
+        else:
+            print("no")
+      answer: 'yes'
+      why:
+        en: '<code>x == 1 or 2</code> means <code>(x == 1) or 2</code>. The number 2 is always truthy, so the condition is always true. Write <code>x in (1, 2)</code> instead.'
+    - id: p4
+      tag: truthiness
+      code: |-
+        x = 0
+        if x:
+            print("A")
+        elif x == 0:
+            print("B")
+        else:
+            print("C")
+      answer: B
+      why:
+        en: The number 0 is falsy, so <code>if x:</code> is false. The next condition <code>x == 0</code> is true, so B is printed.
+    - id: p5
+      tag: chained-comparison
+      code: |-
+        x = 15
+        print(10 < x < 20, x % 5 == 0 and x > 20, "a" in "banana")
+      answer: True False True
+      why:
+        en: Chained comparisons read like maths, so <code>10 &lt; x &lt; 20</code> is true. In the second part <code>x &gt; 20</code> is false, so the <code>and</code> is false. <code>"a"</code> is a substring of <code>"banana"</code>.
+    - id: p6
+      tag: ternary
+      code: |-
+        age = 17
+        status = "adult" if age >= 18 else "minor"
+        print(status)
+      answer: minor
+      why:
+        en: A conditional expression picks one of two values. The condition <code>age &gt;= 18</code> is false, so the value after <code>else</code> is used.
+    quizzes:
+    - id: q1
+      tag: or-trap
+      question:
+        en: Which condition correctly tests whether <code>x</code> is 1 or 2?
+      options:
+      - en: '<code>x == 1 or 2</code>'
+      - en: '<code>x in (1, 2)</code>'
+      - en: '<code>x = 1 or 2</code>'
+      - en: '<code>x == 1 | 2</code>'
+      correct: 1
+      why:
+        en: '<code>x in (1, 2)</code> checks membership. <code>x == 1 or 2</code> is always true, <code>=</code> assigns instead of comparing, and <code>1 | 2</code> is the number 3.'
+    - id: q2
+      tag: equals-vs-assign
+      question:
+        en: Which line is a <code>SyntaxError</code>?
+      options:
+      - en: '<code>if x == 5:</code>'
+      - en: '<code>if x = 5:</code>'
+      - en: '<code>if x != 5:</code>'
+      - en: '<code>if not x:</code>'
+      correct: 1
+      why:
+        en: A single <code>=</code> assigns, and an assignment is not allowed as an <code>if</code> condition. Use <code>==</code> to compare.
+    - id: q3
+      tag: truthiness
+      question:
+        en: What is the preferred way to check that a list called <code>items</code> is not empty?
+      options:
+      - en: '<code>if items == True:</code>'
+      - en: '<code>if len(items) &gt; 0 == True:</code>'
+      - en: '<code>if items:</code>'
+      - en: '<code>if items is not []:</code>'
+      correct: 2
+      why:
+        en: An empty list is falsy and a non-empty list is truthy, so <code>if items:</code> says it directly. Never compare with <code>is</code> to a new empty list.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Leap years. A year is a leap year if it is divisible by 4 and not by 100, or if it is divisible by 400. Print <code>2100 is a leap year</code> or <code>2100 is not a leap year</code> (using the value of <code>year</code>).'
+      starter: |
+        year = 2100
+
+        # your if / else here
+      solution: |
+        year = 2100
+
+        if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:
+            print(f"{year} is a leap year")
+        else:
+            print(f"{year} is not a leap year")
+      param:
+        pattern: ^year\s*=.*$
+        flags: m
+      tests:
+      - out: 2100 is not a leap year
+      - set: year = 2024
+        out: 2024 is a leap year
+      - set: year = 2000
+        out: 2000 is a leap year
+      - set: year = 1900
+        out: 1900 is not a leap year
+      - set: year = 2023
+        out: 2023 is not a leap year
+      hints:
+      - en: There are two ways to be a leap year. Join them with <code>or</code>.
+      - en: 'The first way needs two things at once: <code>year % 4 == 0 and year % 100 != 0</code>. The second way is <code>year % 400 == 0</code>.'
+      - en: Put the whole condition after <code>if</code>, using parentheses around the first way, and print in both branches.
+    - id: e2
+      prompt:
+        en: 'Write <code>describe(age)</code> with guard clauses. It returns <code>"invalid"</code> for a negative age, <code>"child"</code> below 13, <code>"teen"</code> below 20, and <code>"adult"</code> otherwise.'
+      starter: |
+        def describe(age):
+            # your code here
+            return "adult"
+      solution: |
+        def describe(age):
+            if age < 0:
+                return "invalid"
+            if age < 13:
+                return "child"
+            if age < 20:
+                return "teen"
+            return "adult"
+      tests:
+      - post: |-
+          print(describe(-5), describe(0), describe(12))
+          print(describe(13), describe(19), describe(20), describe(70))
+        out: |-
+          invalid child child
+          teen teen adult adult
+      hints:
+      - en: Start with the most unusual case, the invalid one, and return straight away.
+      - en: 'Each check can be a separate <code>if ...: return ...</code>. Because a <code>return</code> ends the function, you do not need <code>elif</code> or <code>else</code>.'
+  3:
+    predictions:
+    - id: p1
+      tag: range-stop
+      code: print(list(range(2, 10, 3)), list(range(5, 0, -2)))
+      answer: '[2, 5, 8] [5, 3, 1]'
+      why:
+        en: '<code>range</code> stops before the end value. Starting at 2 and stepping by 3 gives 2, 5, 8 (the next, 11, is past 10). Counting down from 5 by 2 gives 5, 3, 1.'
+    - id: p2
+      tag: loop-continue
+      code: |-
+        for n in range(1, 8):
+            if n % 2 == 0:
+                continue
+            print(n, end=" ")
+      answer: 1 3 5 7
+      why:
+        en: '<code>continue</code> skips the rest of that round, so even numbers are never printed. <code>end=" "</code> keeps the output on one line.'
+    - id: p3
+      tag: loop-else
+      code: |-
+        for n in [3, 5, 7]:
+            if n % 2 == 0:
+                print("Found an even number")
+                break
+        else:
+            print("No even numbers")
+      answer: No even numbers
+      why:
+        en: The <code>else</code> of a loop runs only when the loop was not ended by <code>break</code>. No number was even, so <code>break</code> never ran.
+    - id: p4
+      tag: nested-loops
+      code: |-
+        for i in range(3):
+            for j in range(i):
+                print(i, j)
+      answer: |-
+        1 0
+        2 0
+        2 1
+      why:
+        en: When <code>i</code> is 0 the inner loop has nothing to do (<code>range(0)</code> is empty). For 1 it runs once (j = 0) and for 2 twice (j = 0, 1).
+    - id: p5
+      tag: modify-while-iterating
+      code: |-
+        nums = [2, 4, 6, 8]
+        for n in nums:
+            if n % 2 == 0:
+                nums.remove(n)
+        print(nums)
+      answer: '[4, 8]'
+      why:
+        en: Removing an item shifts the rest to the left, but the loop moves on to the next position, so it skips an item each time. Never change a list while you loop over it. Build a new list instead.
+    - id: p6
+      tag: zip-enumerate
+      code: print(list(zip("ab", [1, 2, 3])), list(enumerate("xy", start=1)))
+      answer: "[('a', 1), ('b', 2)] [(1, 'x'), (2, 'y')]"
+      why:
+        en: '<code>zip</code> pairs items and stops at the shortest input, so the 3 is dropped. <code>enumerate</code> pairs each item with a counter that starts where you say.'
+    quizzes:
+    - id: q1
+      tag: range-stop
+      question:
+        en: How many numbers does <code>range(0, 100, 7)</code> produce?
+      options:
+      - en: '14'
+      - en: '15'
+      - en: '16'
+      - en: '100'
+      correct: 1
+      why:
+        en: 0, 7, 14, ... 98 is 15 numbers (0 up to 14 &times; 7). Use <code>len(range(...))</code> to check without building a list.
+    - id: q2
+      tag: loop-break-nested
+      question:
+        en: In nested loops, what does <code>break</code> in the inner loop do?
+      options:
+      - en: Leaves both loops
+      - en: Leaves only the inner loop
+      - en: Skips one round of the outer loop
+      - en: Stops the program
+      correct: 1
+      why:
+        en: '<code>break</code> only exits the innermost loop. To leave both, use a flag variable or put the loops in a function and <code>return</code>.'
+    - id: q3
+      tag: loop-else
+      question:
+        en: When does the <code>else</code> block of a <code>for</code> loop run?
+      options:
+      - en: Only when the list is empty
+      - en: Every time, after the loop
+      - en: When the loop finished without hitting <code>break</code>
+      - en: When an error happens
+      correct: 2
+      why:
+        en: '<code>else</code> on a loop means "no break happened". An empty loop also finishes without a <code>break</code>, so its <code>else</code> runs too.'
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Compute the factorial of <code>n</code> with a <code>for</code> loop and print it as <code>6! = 720</code>.'
+      starter: |
+        n = 6
+        result = 1
+
+        # your loop here
+
+        print(f"{n}! = {result}")
+      solution: |
+        n = 6
+        result = 1
+
+        for i in range(2, n + 1):
+            result *= i
+
+        print(f"{n}! = {result}")
+      param:
+        pattern: ^n = .*$
+        flags: m
+      tests:
+      - out: 6! = 720
+      - set: n = 1
+        out: 1! = 1
+      - set: n = 0
+        out: 0! = 1
+      - set: n = 10
+        out: 10! = 3628800
+      hints:
+      - en: 'A factorial is 1 &times; 2 &times; ... &times; n. This is an accumulator: start with 1 and multiply in each number.'
+      - en: '<code>range(2, n + 1)</code> gives 2 up to n, because <code>range</code> stops before the end. For n = 0 or 1 it gives nothing and the answer stays 1.'
+    - id: e2
+      prompt:
+        en: 'Count the vowels and the consonants (letters only) in <code>text</code> and print them as <code>6 13</code>. Ignore case.'
+      starter: |
+        text = "Learning Python is fun"
+        vowels = 0
+        consonants = 0
+
+        # your loop here
+
+        print(vowels, consonants)
+      solution: |
+        text = "Learning Python is fun"
+        vowels = 0
+        consonants = 0
+
+        for ch in text.lower():
+            if ch.isalpha():
+                if ch in "aeiou":
+                    vowels += 1
+                else:
+                    consonants += 1
+
+        print(vowels, consonants)
+      param:
+        pattern: ^text = .*$
+        flags: m
+      tests:
+      - out: 6 13
+      - set: text = "AEIOU xyz"
+        out: 5 3
+      - set: text = "123 !!!"
+        out: 0 0
+      - set: text = "Python"
+        out: 1 5
+      hints:
+      - en: Loop over the string (<code>.lower()</code> makes upper and lower case the same). Skip everything that is not a letter with <code>ch.isalpha()</code>.
+      - en: Inside the letter check, use <code>if ch in "aeiou":</code> to count a vowel, and <code>else</code> to count a consonant.
+  4:
+    predictions:
+    - id: p1
+      tag: loop-continue
+      code: |-
+        n = 0
+        while n < 10:
+            n += 1
+            if n % 3 == 0:
+                continue
+            print(n, end=" ")
+      answer: 1 2 4 5 7 8 10
+      why:
+        en: '<code>n</code> is increased first, then multiples of 3 are skipped with <code>continue</code>. The loop ends after printing 10, when <code>n</code> is 10 and the condition is false.'
+    - id: p2
+      tag: while-else
+      code: |-
+        attempts = 0
+        while attempts < 3:
+            attempts += 1
+        else:
+            print("Loop finished normally after", attempts, "attempts")
+      answer: Loop finished normally after 3 attempts
+      why:
+        en: There is no <code>break</code>, so the loop ends because the condition became false and the <code>else</code> block runs.
+    - id: p3
+      tag: digit-loop
+      code: |-
+        n = 90517
+        digit_sum = 0
+        reversed_n = 0
+        while n > 0:
+            digit = n % 10
+            digit_sum += digit
+            reversed_n = reversed_n * 10 + digit
+            n //= 10
+        print(digit_sum, reversed_n)
+      answer: 22 71509
+      why:
+        en: '<code>n % 10</code> is the last digit and <code>n //= 10</code> removes it. Each round adds the digit to the sum and to the end of the reversed number.'
+    - id: p4
+      tag: loop-count
+      code: |-
+        n = 1000
+        steps = 0
+        while n > 1:
+            n //= 2
+            steps += 1
+        print(steps)
+      answer: '9'
+      why:
+        en: 1000 becomes 500, 250, 125, 62, 31, 15, 7, 3 and 1, which is 9 halvings. The number of halvings is about log<sub>2</sub> of the start value.
+    - id: p5
+      tag: gcd
+      code: |-
+        a, b = 84, 36
+        while b != 0:
+            a, b = b, a % b
+        print(a)
+      answer: '12'
+      why:
+        en: This is Euclid's method. (84, 36) becomes (36, 12) and then (12, 0), and the loop stops with the greatest common divisor 12 in <code>a</code>.
+    - id: p6
+      tag: break-in-while
+      code: |-
+        n = 10
+        while n > 0:
+            n -= 3
+            if n == 4:
+                break
+        print(n)
+      answer: '4'
+      why:
+        en: n goes 10, 7, 4. When it reaches 4 the <code>break</code> leaves the loop at once, so 4 is printed (not a negative number).
+    quizzes:
+    - id: q1
+      tag: while-update
+      question:
+        en: Which three things does every <code>while</code> loop need to end safely?
+      options:
+      - en: A list, a counter and a print
+      - en: A starting value, a condition, and an update that eventually makes the condition false
+      - en: '<code>break</code>, <code>continue</code> and <code>else</code>'
+      - en: A function, a return value and a parameter
+      correct: 1
+      why:
+        en: Without the update (for example <code>count += 1</code>) the condition never changes and the loop runs forever.
+    - id: q2
+      tag: while-update
+      question:
+        en: A program is stuck in an accidental infinite loop in the terminal. What do you press?
+      options:
+      - en: '<code>Ctrl + C</code>'
+      - en: '<code>Ctrl + S</code>'
+      - en: '<code>Enter</code>'
+      - en: '<code>Esc</code>'
+      correct: 0
+      why:
+        en: '<code>Ctrl + C</code> raises a <code>KeyboardInterrupt</code> and stops the program. Then fix the missing update.'
+    - id: q3
+      tag: for-vs-while
+      question:
+        en: Which task is the best fit for a <code>while</code> loop?
+      options:
+      - en: Print every item in a list
+      - en: Ask for input until it is valid
+      - en: Add up the numbers 1 to 100
+      - en: Print each letter of a word
+      correct: 1
+      why:
+        en: You do not know how many tries the user needs, so you repeat until a condition is met. The other tasks have a known collection or count, which is what <code>for</code> is for.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Use a <code>while</code> loop and arithmetic only (no strings) to add up the digits of <code>n</code>. Print only the sum.'
+      starter: |
+        n = 90517
+        digit_sum = 0
+
+        # your while loop here
+
+        print(digit_sum)
+      solution: |
+        n = 90517
+        digit_sum = 0
+
+        while n > 0:
+            digit_sum += n % 10
+            n //= 10
+
+        print(digit_sum)
+      param:
+        pattern: ^n = .*$
+        flags: m
+      tests:
+      - out: '22'
+      - set: n = 9
+        out: '9'
+      - set: n = 1000
+        out: '1'
+      - set: n = 9999
+        out: '36'
+      hints:
+      - en: '<code>n % 10</code> is the last digit. Add it to <code>digit_sum</code>.'
+      - en: Remove the last digit with <code>n //= 10</code>. Keep going while <code>n &gt; 0</code>.
+    - id: e2
+      prompt:
+        en: 'The Collatz sequence: while <code>n</code> is not 1, halve it if it is even, otherwise make it <code>3 * n + 1</code>. Count the steps and print <code>Steps: ...</code>.'
+      starter: |
+        n = 27
+        steps = 0
+
+        # your while loop here
+
+        print("Steps:", steps)
+      solution: |
+        n = 27
+        steps = 0
+
+        while n != 1:
+            if n % 2 == 0:
+                n //= 2
+            else:
+                n = 3 * n + 1
+            steps += 1
+
+        print("Steps:", steps)
+      param:
+        pattern: ^n = .*$
+        flags: m
+      tests:
+      - out: 'Steps: 111'
+      - set: n = 1
+        out: 'Steps: 0'
+      - set: n = 6
+        out: 'Steps: 8'
+      - set: n = 7
+        out: 'Steps: 16'
+      hints:
+      - en: 'The loop condition is <code>n != 1</code>. Inside it you need a decision (even or odd) and a counter that goes up by one every round.'
+      - en: 'Even: <code>n //= 2</code>. Odd: <code>n = 3 * n + 1</code>. Add one to <code>steps</code> after either branch.'
+  5:
+    predictions:
+    - id: p1
+      tag: range-tricks
+      code: |-
+        print(list(range(10, 0, -2)), sum(range(1, 101)))
+        print(len(range(0, 100, 7)), 7 in range(0, 100, 7))
+      answer: |-
+        [10, 8, 6, 4, 2] 5050
+        15 True
+      why:
+        en: The numbers are generated on demand, so <code>sum</code>, <code>len</code> and <code>in</code> work without building a list. Counting 0, 7, ... 98 gives 15 values and 7 is one of them.
+    - id: p2
+      tag: zip-dict
+      code: |-
+        names = ["Ali", "Sara", "Reza"]
+        ages = [30, 25, 41]
+        print(dict(zip(names, ages)))
+      answer: "{'Ali': 30, 'Sara': 25, 'Reza': 41}"
+      why:
+        en: '<code>zip</code> pairs the two lists item by item, and <code>dict</code> turns each pair into a key and a value.'
+    - id: p3
+      tag: max-key
+      code: print(max(["pear", "fig", "kiwi"], key=len), max("apple", "banana"))
+      answer: pear banana
+      why:
+        en: With <code>key=len</code> the longest word wins, and when two are equally long (pear and kiwi) the first one is returned. Without a key, strings compare alphabetically, so "banana" is the largest.
+    - id: p4
+      tag: sort-key
+      code: |-
+        students = [("Ali", 17), ("Sara", 20), ("Reza", 17)]
+        print(sorted(students, key=lambda s: (-s[1], s[0])))
+      answer: "[('Sara', 20), ('Ali', 17), ('Reza', 17)]"
+      why:
+        en: The key is a pair. The minus sign puts the highest score first, and ties are then sorted by name.
+    - id: p5
+      tag: any-all
+      code: |-
+        scores = [12, 15, 9, 18]
+        print(all(s >= 10 for s in scores), any(s >= 18 for s in scores))
+      answer: False True
+      why:
+        en: '<code>all</code> needs every item to pass, and 9 does not. <code>any</code> needs just one, and 18 does.'
+    - id: p6
+      tag: unpacking
+      code: |-
+        first, *middle, last = [1, 2, 3, 4, 5]
+        print(first, middle, last, divmod(135, 60))
+      answer: 1 [2, 3, 4] 5 (2, 15)
+      why:
+        en: The starred name collects everything between the first and the last item into a list. <code>divmod(135, 60)</code> gives the quotient and the remainder together.
+    quizzes:
+    - id: q1
+      tag: input-string
+      question:
+        en: What type does <code>input()</code> always return?
+      options:
+      - en: '<code>int</code>'
+      - en: '<code>str</code>'
+      - en: '<code>float</code>'
+      - en: It depends on what you type
+      correct: 1
+      why:
+        en: Even if you type 42, you get the text <code>"42"</code>. Convert it with <code>int()</code> or <code>float()</code>.
+    - id: q2
+      tag: zip-shortest
+      question:
+        en: What does <code>list(zip(range(5), "ab"))</code> return?
+      options:
+      - en: '<code>[(0, ''a''), (1, ''b''), (2, None)]</code>'
+      - en: '<code>[(0, ''a''), (1, ''b'')]</code>'
+      - en: '<code>[(0, ''a''), (1, ''b''), (2, ''a'')]</code>'
+      - en: An error
+      correct: 1
+      why:
+        en: '<code>zip</code> stops as soon as the shortest input runs out.'
+    - id: q3
+      tag: random-seed
+      question:
+        en: Why would you call <code>random.seed(42)</code>?
+      options:
+      - en: To make the numbers more random
+      - en: To get the same "random" numbers every run, for example in tests
+      - en: To speed up <code>random.randint</code>
+      - en: To keep numbers below 42
+      correct: 1
+      why:
+        en: Seeding the generator makes its sequence repeatable, which is what you want when you test a program that uses random numbers.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Write <code>dot(a, b)</code> that returns the dot product of two equal-length lists (multiply the items that are in the same position, then add them up). Use <code>zip</code> and <code>sum</code>.'
+      starter: |
+        def dot(a, b):
+            # your code here
+            return 0
+      solution: |
+        def dot(a, b):
+            return sum(x * y for x, y in zip(a, b))
+      tests:
+      - post: |-
+          print(dot([1, 2, 3], [4, 5, 6]))
+          print(dot([], []))
+          print(dot([2], [-3]))
+        out: |-
+          32
+          0
+          -6
+      hints:
+      - en: '<code>zip(a, b)</code> gives you the pairs (1, 4), (2, 5), (3, 6) one at a time.'
+      - en: Multiply each pair with a generator expression, <code>x * y for x, y in zip(a, b)</code>, and give that to <code>sum</code>.
+    - id: e2
+      prompt:
+        en: 'Write <code>ranking(names, scores)</code> that returns the names ordered from the highest score to the lowest. Equal scores are ordered alphabetically by name.'
+      starter: |
+        def ranking(names, scores):
+            # your code here
+            return names
+      solution: |
+        def ranking(names, scores):
+            pairs = sorted(zip(names, scores), key=lambda p: (-p[1], p[0]))
+            return [name for name, score in pairs]
+      tests:
+      - post: |-
+          print(ranking(["Ali", "Sara", "Reza", "Neda"], [17.5, 19.0, 15.25, 19.0]))
+          print(ranking(["b", "a"], [1, 1]))
+        out: |-
+          ['Neda', 'Sara', 'Ali', 'Reza']
+          ['a', 'b']
+      hints:
+      - en: Combine the two lists with <code>zip</code> so each name travels with its score, then sort those pairs.
+      - en: 'Sort with <code>key=lambda p: (-p[1], p[0])</code>, which puts high scores first and breaks ties by name. Then take only the names.'
+  6:
+    predictions:
+    - id: p1
+      tag: listcomp
+      code: |-
+        squares = [n ** 2 for n in range(1, 6)]
+        print(squares)
+      answer: '[1, 4, 9, 16, 25]'
+      why:
+        en: Read it aloud as "give me n squared for each n in 1 to 5". It is the loop-and-append pattern in one line.
+    - id: p2
+      tag: comp-ifelse
+      code: print([n if n >= 0 else 0 for n in [3, -1, 7, -9]])
+      answer: '[3, 0, 7, 0]'
+      why:
+        en: When <code>if/else</code> chooses a value, it goes at the front of the comprehension. Negative numbers are replaced with 0.
+    - id: p3
+      tag: comp-filter
+      code: print([x for x in range(5) if x % 2])
+      answer: '[1, 3]'
+      why:
+        en: A filter-only <code>if</code> goes at the end. <code>x % 2</code> is 1 (truthy) for odd numbers and 0 (falsy) for even ones, so only 1 and 3 are kept.
+    - id: p4
+      tag: comp-nested
+      code: |-
+        matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        print([x for row in matrix for x in row])
+      answer: '[1, 2, 3, 4, 5, 6, 7, 8, 9]'
+      why:
+        en: Several <code>for</code> clauses read in the same order as nested loops. The first loop walks the rows and the second walks the items in each row.
+    - id: p5
+      tag: comp-nested
+      code: print([x * y for x in range(1, 4) for y in range(1, 4) if x != y])
+      answer: '[2, 3, 2, 6, 3, 6]'
+      why:
+        en: The pairs (x, y) are produced like nested loops and the pairs with x equal to y are skipped. The products are 1&times;2, 1&times;3, 2&times;1, 2&times;3, 3&times;1 and 3&times;2.
+    - id: p6
+      tag: dict-comp
+      code: |-
+        inverted = {v: k for k, v in {"a": 1, "b": 2}.items()}
+        print(inverted)
+      answer: "{1: 'a', 2: 'b'}"
+      why:
+        en: A dictionary comprehension builds keys and values together. Here every value becomes a key and every key becomes a value.
+    quizzes:
+    - id: q1
+      tag: comp-filter
+      question:
+        en: Where does a filter-only <code>if</code> go in a list comprehension?
+      options:
+      - en: At the front, before the expression
+      - en: At the end, after the <code>for</code> clause
+      - en: Either end, it makes no difference
+      - en: Inside the brackets of the expression
+      correct: 1
+      why:
+        en: Filter-only <code>if</code> goes at the end. An <code>if/else</code> that chooses a value goes at the front.
+    - id: q2
+      tag: comp-when-not
+      question:
+        en: Which task should <em>not</em> be written as a comprehension?
+      options:
+      - en: Squares of 1 to 10
+      - en: Printing each item, only for the side effect
+      - en: The lengths of some words
+      - en: Items that pass a test
+      correct: 1
+      why:
+        en: A comprehension is for building a new collection. When you only want a side effect like printing, a plain <code>for</code> loop says what you mean.
+    - id: q3
+      tag: comp-ifelse
+      question:
+        en: Why is <code>[n if n &gt; 0 for n in nums]</code> a <code>SyntaxError</code>?
+      options:
+      - en: Comprehensions cannot use <code>if</code>
+      - en: A value choice with <code>if</code> needs an <code>else</code> part
+      - en: '<code>n</code> is not defined'
+      - en: It needs curly braces
+      correct: 1
+      why:
+        en: At the front, <code>if</code> is part of a conditional expression, which must give a value in both cases. Either add <code>else ...</code> or move the <code>if</code> to the end to filter.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Turn the loop into one list comprehension that keeps the words longer than 3 letters in upper case. Keep the name <code>result</code>.'
+      starter: |
+        words = ["python", "is", "a", "powerful", "language"]
+
+        # The loop version was:
+        #   result = []
+        #   for w in words:
+        #       if len(w) > 3:
+        #           result.append(w.upper())
+        # Write it as one list comprehension:
+        result = []
+
+        print(result)
+      solution: |
+        words = ["python", "is", "a", "powerful", "language"]
+
+        result = [w.upper() for w in words if len(w) > 3]
+
+        print(result)
+      param:
+        pattern: ^words = .*$
+        flags: m
+      tests:
+      - out: "['PYTHON', 'POWERFUL', 'LANGUAGE']"
+      - set: words = ["go", "tree", "fig", "kiwi"]
+        out: "['TREE', 'KIWI']"
+      - set: words = []
+        out: '[]'
+      hints:
+      - en: 'The pattern is <code>[expression for item in iterable if condition]</code>. The expression is what you used to append.'
+      - en: 'Use <code>w.upper()</code> as the expression and <code>len(w) &gt; 3</code> as the condition at the end.'
+    - id: e2
+      prompt:
+        en: 'Write <code>capitalize_all(names)</code> that turns <code>["ali reza", "sara karimi"]</code> into <code>["Ali Reza", "Sara Karimi"]</code> using one list comprehension.'
+      starter: |
+        def capitalize_all(names):
+            # your code here
+            return names
+      solution: |
+        def capitalize_all(names):
+            return [n.title() for n in names]
+      tests:
+      - post: |-
+          print(capitalize_all(["ali reza", "sara karimi"]))
+          print(capitalize_all([]))
+          print(capitalize_all(["NEDA"]))
+        out: |-
+          ['Ali Reza', 'Sara Karimi']
+          []
+          ['Neda']
+      hints:
+      - en: There is a string method that capitalizes the first letter of every word.
+      - en: Apply <code>.title()</code> to each name inside <code>[ ... for n in names]</code>.
+  8:
+    exercises:
+    - id: e1
+      prompt:
+        en: 'The heart of the Guessing Game. Write <code>feedback(guess, secret, previous_guess=None)</code>. For the first guess return <code>"WARM!"</code> if it is within 10 of the secret, otherwise <code>"COLD!"</code>. For later guesses return <code>"WARMER!"</code> if closer than the previous guess, <code>"COLDER!"</code> if farther, and <code>"SAME DISTANCE!"</code> if equal.'
+      starter: |
+        def feedback(guess, secret, previous_guess=None):
+            # your code here
+            return "COLD!"
+      solution: |
+        def feedback(guess, secret, previous_guess=None):
+            if previous_guess is None:
+                return "WARM!" if abs(guess - secret) <= 10 else "COLD!"
+            current = abs(guess - secret)
+            previous = abs(previous_guess - secret)
+            if current < previous:
+                return "WARMER!"
+            if current > previous:
+                return "COLDER!"
+            return "SAME DISTANCE!"
+      tests:
+      - post: |-
+          print(feedback(50, 55))
+          print(feedback(10, 55))
+          print(feedback(65, 55))
+          print(feedback(50, 55, previous_guess=10))
+          print(feedback(10, 55, previous_guess=50))
+          print(feedback(45, 55, previous_guess=65))
+        out: |-
+          WARM!
+          COLD!
+          WARM!
+          WARMER!
+          COLDER!
+          SAME DISTANCE!
+      hints:
+      - en: 'Two cases: <code>previous_guess is None</code> means this is the first guess. Handle it first and return.'
+      - en: 'The distance from the secret is <code>abs(guess - secret)</code>. Compare the distance of the new guess with the distance of the previous guess.'
+      - en: 'After the first-guess case, compute <code>current</code> and <code>previous</code> distances, then return <code>WARMER!</code>, <code>COLDER!</code> or <code>SAME DISTANCE!</code>.'

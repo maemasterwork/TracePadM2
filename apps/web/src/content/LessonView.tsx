@@ -4,6 +4,7 @@ import { CodeBlock } from '../runner/CodeBlock';
 import { Annotated } from '../notes/Annotated';
 import { Markdown } from './Markdown';
 import type { Block, Lesson, ListPart, Section } from './types';
+import { chapterNo } from './chapterNo';
 
 interface Ctx { lesson: Lesson; ch: number; onAnchor: (hash: string) => void }
 
@@ -84,7 +85,7 @@ export function ChapterBody({ lesson, chapterIndex, onAnchor }: { lesson: Lesson
   const ctx: Ctx = { lesson, ch: ch.n, onAnchor };
   return (
     <article className="prose" lang="en" dir="ltr">
-      <p className="chip" aria-hidden="true">{t('lesson.chapter', { n: ch.n })}</p>
+      <p className="chip" aria-hidden="true">{t('lesson.chapter', { n: chapterNo(ch.n) })}</p>
       <h1 id="chapter-title" tabIndex={-1}>{ch.heading}</h1>
       {ch.blocks.map((b, i) => <Fragment key={i}><BlockView b={b} ctx={ctx} /></Fragment>)}
       {ch.sections.map((s) => <SectionView key={s.id} s={s} ctx={ctx} />)}

@@ -7,6 +7,7 @@ import { PredictionCard, QuizCard } from '../learn/Cards';
 import { useAllLabs, useRows } from '../learn/hooks';
 import { activityTimes } from '../learn/record';
 import { DAY, dueItems, revKey, streak, watchCount, type RevState } from '../learn/srs';
+import { chapterNo } from '../content/chapterNo';
 
 export function StreakLine() {
   const { t, num } = useI18n();
@@ -61,7 +62,7 @@ export function Review() {
       {queue && !finished && item && key && (
         <>
           <p className="chip" role="status">{t('review.item', { i: num(pos + 1), n: num(queue.length) })}</p>
-          <p className="muted-line">{t('review.fromChapter', { n: num(item.ch) })}</p>
+          <p className="muted-line">{t('review.fromChapter', { n: num(chapterNo(item.ch)) })}</p>
           {item.kind === 'pred' && <PredictionCard key={key} ch={item.ch} p={item.pred!} concepts={all.concepts} review onResult={(ok) => void onResult(key)(ok)} />}
           {item.kind === 'quiz' && <QuizCard key={key} ch={item.ch} q={item.quiz!} concepts={all.concepts} review onResult={(ok) => void onResult(key)(ok)} />}
           {answered && (

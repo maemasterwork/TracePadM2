@@ -6,6 +6,7 @@ import { ErrorLine, useLoad } from '../hooks';
 import { itemLabel, kindOfKey } from '../labels';
 import { distribution, heatMap, hintUsage, mostMissed, stuckStudents } from '../logic';
 import { studentName, type TabProps } from './shared';
+import { chapterNo } from '../../content/chapterNo';
 
 const level = (pct: number | null) => (pct === null ? 'none' : pct >= 85 ? 'a' : pct >= 60 ? 'b' : pct >= 30 ? 'c' : 'd');
 
@@ -22,7 +23,7 @@ export function Overview({ api, cls, roster, all }: TabProps) {
     const chTitle = new Map(all.lessons.flatMap((l) => l.chapters.map((c) => [String(c.n), c.title] as const)));
     if (by === 'chapter') {
       const order = [...new Set([...all.items.values()].map((i) => String(i.ch)))].sort((a, b) => Number(a) - Number(b));
-      return { ...heatMap(roster, itemRows, all.items, (i) => String(i.ch), order), title: (id: string) => `${num(Number(id))}. ${chTitle.get(id) ?? ''}` };
+      return { ...heatMap(roster, itemRows, all.items, (i) => String(i.ch), order), title: (id: string) => `${num(chapterNo(Number(id)))}. ${chTitle.get(id) ?? ''}` };
     }
     return { ...heatMap(roster, itemRows, all.items, (i) => i.tag ?? null), title: (id: string) => { const c = all.concepts.get(id); return c ? pick(c.name) : id; } };
   }, [by, roster, itemRows, all, pick, num]);

@@ -4,6 +4,7 @@ import { loadCourse, loadLesson } from '../content/api';
 import { Notice, Spinner } from '../design/ui';
 import { useI18n } from '../i18n';
 import { buildIndex, search, type Doc } from '../search';
+import { chapterNo } from '../content/chapterNo';
 
 function Marked({ text, ranges }: { text: string; ranges: [number, number][] }) {
   const out: React.ReactNode[] = []; let at = 0;
@@ -39,7 +40,7 @@ export function Search() {
           <ol className="results">
             {hits.map((h, i) => (
               <li key={i} className="card">
-                <Link to={`/lesson/${h.doc.lessonId}/${h.doc.chapterId}#b${h.doc.start}`} dir="ltr" lang="en"><strong>{h.doc.chapterN}. {h.doc.chapterTitle}</strong>{h.doc.heading !== h.doc.chapterTitle ? ` › ${h.doc.heading}` : ''}</Link>
+                <Link to={`/lesson/${h.doc.lessonId}/${h.doc.chapterId}#b${h.doc.start}`} dir="ltr" lang="en"><strong>{chapterNo(h.doc.chapterN)}. {h.doc.chapterTitle}</strong>{h.doc.heading !== h.doc.chapterTitle ? ` › ${h.doc.heading}` : ''}</Link>
                 <p dir="ltr" lang="en" className={h.doc.kind === 'code' ? 'code-ltr' : ''} style={{ margin: '6px 0 0' }}><Marked text={h.snippet} ranges={h.ranges} /></p>
               </li>
             ))}

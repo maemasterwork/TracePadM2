@@ -1,0 +1,53 @@
+# Sidecar flags for code blocks in lesson.md (the markdown itself is never edited).
+# Keys are block ids '<section>#<n>' as printed by tools/content/extract.py.
+#   after:            run these blocks first, in the same sandbox, when this block depends on earlier state
+#   nondeterministic: output may differ between runs or engines; the block must still run without error
+#   skip:             not runnable (reason required)
+#   stdin:            text fed to input()
+blocks:
+  "1.4#2":
+    after: ["1.4#1"]
+  "1.6#1":
+    skip: "style demonstration: uses price, quantity, shipping and discount without defining them"
+  "1.8#1":
+    skip: "the exercise asks you to fix this code; it is an IndentationError on purpose"
+  "2.2#1":
+    skip: "syntax template with placeholder conditions"
+  "3.2#1":
+    skip: "syntax template (a loop with only a comment as its body)"
+  "4.2#1":
+    skip: "syntax template (a loop with only a comment as its body)"
+  "4.4#1":
+    stdin: "hello\nexit\n"
+  "4.6#1":
+    stdin: "abc\n7\nx\n200\n30\n"
+  "4.7#1":
+    stdin: "5\n2.5\ndone\n1\ndone\n"
+  "4.8#2":
+    stdin: "bad\npython123\n"
+  "4.8#6":
+    stdin: "1\napple\n2\n3\n"
+  "5.8#1":
+    stdin: "Sara\n30\n1.7\n1 2 3\n"
+  "5.9#1":
+    nondeterministic: "uses random numbers"
+  "5.12#1":
+    nondeterministic: "uses random numbers"
+  "5.12#3":
+    nondeterministic: "uses random numbers"
+  "5.12#6":
+    stdin: "Will it rain?\n"
+    nondeterministic: "uses random.choice"
+  "6.10#1":
+    skip: "exercise fragment: uses a list called words that the learner supplies"
+  "7-answer-key#5":
+    stdin: "abc\n1\n20\n"
+  "8.5#1":
+    stdin: "abc\n500\nq\nn\n"
+    nondeterministic: "the secret number is random"
+  "8.5#2":
+    after: ["8.5#1"]
+    stdin: "abc\n500\nq\nn\n"   # the game from 8.5#1 runs first (it reads input), then the tests
+    nondeterministic: "the game that runs first picks a random secret number"
+  "9.1#1":
+    skip: "cheat sheet: syntax outline with placeholders"

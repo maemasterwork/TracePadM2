@@ -6,6 +6,7 @@ import { itemLabel } from '../labels';
 import { DEFAULT_POINTS, itemsMax, type PointRule } from '../logic';
 import type { Assignment, AssignmentInput, LateMode } from '../types';
 import { studentName, type TabProps } from './shared';
+import { chapterNo } from '../../content/chapterNo';
 
 interface Form {
   title: string; description: string; page_id: string; kinds: Record<'pred' | 'quiz' | 'ex', boolean>; pts: PointRule; skip: Set<string>;
@@ -89,7 +90,11 @@ export function AssignmentsTab({ api, cls, all, roster }: TabProps) {
             <Field label={t('tc.asg.desc')}>{(p) => <textarea {...p} rows={3} maxLength={2000} value={form.description} onChange={(e) => upd({ description: e.target.value })} />}</Field>
             <Field label={t('tc.asg.chapter')}>{(p) => (
               <select {...p} value={form.page_id} onChange={(e) => upd({ page_id: e.target.value, skip: new Set() })}>
-                {chapters.map((c) => <option key={c.id} value={c.id}>{num(c.n)}. {c.title}</option>)}
+                {all.lessons.map((l) => (
+                  <optgroup key={l.id} label={pick(l.title)}>
+                    {chapters.filter((c) => c.lessonId === l.id).map((c) => <option key={c.id} value={c.id}>{num(chapterNo(c.n))}. {c.title}</option>)}
+                  </optgroup>
+                ))}
               </select>
             )}</Field>
             <fieldset>
