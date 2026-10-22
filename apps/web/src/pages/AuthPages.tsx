@@ -1,16 +1,53 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { AGE_BANDS, AuthError, validateSignUp, type AgeBand, type FieldErrors } from '../auth/api';
 import { useAuth } from '../auth/AuthProvider';
 import { oauthProviders } from '../auth/supabase';
-import { Field, Notice } from '../design/ui';
+import { Field, Logo, Notice } from '../design/ui';
 import { useI18n } from '../i18n';
 
 function errKey(e: unknown): string { return e instanceof AuthError ? e.key : 'auth.errGeneric'; }
 
+function AuthFrame({ children }: { children: ReactNode }) {
+  const { t, locale, setLocale } = useI18n();
+  return (
+    <div className="auth-page">
+      <header className="auth-header">
+        <div className="auth-header-inner">
+          <Link className="auth-brand" to="/" aria-label={t('app.name')}><Logo /><span>{t('app.name')}</span></Link>
+          <nav className="auth-header-nav" aria-label={t('nav.main')}>
+            <button type="button" className="auth-locale" onClick={() => setLocale(locale === 'fa' ? 'en' : 'fa')} lang={locale === 'fa' ? 'en' : 'fa'}>
+              {locale === 'fa' ? 'English' : 'فارسی'}
+            </button>
+            <Link className="auth-home-link" to="/"><span aria-hidden="true">←</span>{t('auth.backHome')}</Link>
+          </nav>
+        </div>
+      </header>
+      <div className="auth-main">
+        <div className="auth-shell">
+          <aside className="auth-story">
+            <div className="auth-story-decoration" aria-hidden="true"><span>✳</span><span>✦</span><span>·</span></div>
+            <p className="auth-story-kicker">{t('auth.storyEyebrow')}</p>
+            <h2>{t('auth.storyTitle')}</h2>
+            <p className="auth-story-lead">{t('auth.storyLead')}</p>
+            <div className="auth-story-code" dir="ltr" role="img" aria-label={t('auth.storyCodeLabel')}>
+              <span><i>1</i><code>answer = <b>6</b> * <b>7</b></code></span>
+              <span><i>2</i><code>print(answer)</code></span>
+              <span className="auth-story-output"><i>›</i><code>42</code></span>
+            </div>
+            <div className="auth-story-caption"><span aria-hidden="true">✦</span>{t('auth.storyCaption')}</div>
+          </aside>
+          {children}
+        </div>
+      </div>
+      <footer className="auth-footer"><span>{t('auth.footerLine')}</span></footer>
+    </div>
+  );
+}
+
 function Unavailable({ title }: { title: string }) {
   const { t } = useI18n();
-  return <div className="card auth-card"><h1 style={{ marginTop: 0 }}>{title}</h1><Notice kind="info">{t('home.notConfigured')}</Notice><Link className="btn" to="/">{t('auth.guestContinue')}</Link></div>;
+  return <AuthFrame><div className="card auth-card"><h1 style={{ marginTop: 0 }}>{title}</h1><Notice kind="info">{t('auth.notConfigured')}</Notice><Link className="btn" to="/">{t('auth.guestContinue')}</Link></div></AuthFrame>;
 }
 
 function OAuthButtons() {
@@ -47,7 +84,7 @@ export function SignIn() {
     try { await api.sendMagicLink(id); setMsg(t('auth.magicSent')); } catch (x) { setErr(errKey(x)); }
   };
   return (
-    <div className="card auth-card">
+    <AuthFrame><div className="card auth-card">
       <h1 style={{ marginTop: 0 }}>{t('auth.signIn')}</h1>
       <form onSubmit={submit} noValidate>
         <Field label={t('auth.email') + ' / ' + t('auth.username')}>{(p) => <input {...p} type="text" autoComplete="username" value={id} onChange={(e) => setId(e.target.value)} dir="ltr" required />}</Field>
@@ -60,7 +97,7 @@ export function SignIn() {
       <OAuthButtons />
       <p><Link to="/reset">{t('auth.forgot')}</Link></p>
       <p>{t('auth.noAccount')} <Link to="/signup">{t('nav.signup')}</Link></p>
-    </div>
+    </div></AuthFrame>
   );
 }
 
@@ -82,10 +119,10 @@ export function SignUp() {
     setBusy(true);
     try { const r = await api.signUp(input); setDone(r.needsConfirmation ? 'confirm' : 'in'); } catch (x) { setTop(errKey(x)); } finally { setBusy(false); }
   };
-  if (done === 'confirm') return <div className="card auth-card"><Notice kind="good" live>{mode === 'email' ? t('auth.confirmEmail') : t('auth.confirmEmail')}</Notice><Link className="btn" to="/signin">{t('auth.signIn')}</Link></div>;
+  if (done === 'confirm') return <AuthFrame><div className="card auth-card"><h1>{t('auth.confirmTitle')}</h1><Notice kind="good" live>{t('auth.confirmEmail')}</Notice><Link className="btn" to="/signin">{t('auth.signIn')}</Link></div></AuthFrame>;
   const under13 = v.ageBand === 'under13';
   return (
-    <div className="card auth-card">
+    <AuthFrame><div className="card auth-card">
       <h1 style={{ marginTop: 0 }}>{t('auth.signUp')}</h1>
       <form onSubmit={submit} noValidate>
         <Field label={t('auth.fullName')} error={errs.fullName && t(errs.fullName)}>{(p) => <input {...p} type="text" autoComplete="name" value={v.fullName} onChange={set('fullName')} />}</Field>
@@ -106,7 +143,7 @@ export function SignUp() {
       </form>
       <OAuthButtons />
       <p>{t('auth.haveAccount')} <Link to="/signin">{t('auth.signIn')}</Link></p>
-    </div>
+    </div></AuthFrame>
   );
 }
 
@@ -117,7 +154,7 @@ export function Reset() {
   if (!configured || !api) return <Unavailable title={t('auth.resetTitle')} />;
   const submit = async (e: FormEvent) => { e.preventDefault(); setErr(''); try { await api.sendReset(email); setSent(true); } catch (x) { setErr(errKey(x)); } };
   return (
-    <div className="card auth-card">
+    <AuthFrame><div className="card auth-card">
       <h1 style={{ marginTop: 0 }}>{t('auth.resetTitle')}</h1>
       {sent ? <Notice kind="good" live>{t('auth.resetSent')}</Notice> : (
         <form onSubmit={submit} noValidate>
@@ -126,7 +163,7 @@ export function Reset() {
           <button className="btn" disabled={!email}>{t('auth.resetSend')}</button>
         </form>)}
       <p><Link to="/signin">{t('auth.signIn')}</Link></p>
-    </div>
+    </div></AuthFrame>
   );
 }
 
@@ -135,11 +172,11 @@ export function UpdatePassword() {
   const { api, user, configured, status } = useAuth();
   const [pw, setPw] = useState(''); const [err, setErr] = useState(''); const [ok, setOk] = useState(false);
   if (!configured || !api) return <Unavailable title={t('auth.newPassword')} />;
-  if (status === 'loading') return <div className="card auth-card"><h1 style={{ marginTop: 0 }}>{t('auth.newPassword')}</h1><p role="status">{t('app.loading')}</p></div>; // the reset link is still being exchanged
+  if (status === 'loading') return <AuthFrame><div className="card auth-card"><h1 style={{ marginTop: 0 }}>{t('auth.newPassword')}</h1><p role="status">{t('app.loading')}</p></div></AuthFrame>; // the reset link is still being exchanged
   if (!user) return <Navigate to="/signin" replace />;
   const submit = async (e: FormEvent) => { e.preventDefault(); setErr(''); try { await api.updatePassword(pw); setOk(true); } catch (x) { setErr(errKey(x)); } };
   return (
-    <div className="card auth-card">
+    <AuthFrame><div className="card auth-card">
       <h1 style={{ marginTop: 0 }}>{t('auth.newPassword')}</h1>
       {ok ? <><Notice kind="good" live>{t('auth.passwordChanged')}</Notice><Link className="btn" to="/">{t('nav.home')}</Link></> : (
         <form onSubmit={submit} noValidate>
@@ -147,6 +184,6 @@ export function UpdatePassword() {
           {err && <Notice kind="bad" live>{t(err)}</Notice>}
           <button className="btn" disabled={!pw}>{t('auth.setPassword')}</button>
         </form>)}
-    </div>
+    </div></AuthFrame>
   );
 }

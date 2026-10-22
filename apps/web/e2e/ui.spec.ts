@@ -11,6 +11,44 @@ const PAGES = [
   ['not found', '/nope'],
 ] as const;
 
+test('authentication pages omit the application header', async ({ page }) => {
+  for (const url of ['/signin', '/signup', '/reset', '/auth/update-password']) {
+    await page.goto(url);
+    await expect(page.locator('.app-header')).toHaveCount(0);
+  }
+  await page.goto('/signin');
+  await expect(page.locator('.auth-header')).toBeVisible();
+  await expect(page.locator('.auth-story')).toBeVisible();
+  await expect(page.locator('.auth-card')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Keyboard shortcuts|میان‌برهای صفحه‌کلید/ })).toHaveCount(0);
+  await page.goto('/');
+  await expect(page.locator('.app-header')).toHaveCount(0);
+  await expect(page.locator('.landing-header')).toBeVisible();
+});
+
+test('public home is a landing page with no lesson listing', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.landing-header')).toBeVisible();
+  await expect(page.locator('.landing-terminal')).toBeVisible();
+  await expect(page.locator('.landing-card')).toHaveCount(0);
+  await expect(page.locator('.landing-copy h1')).toBeVisible();
+  await expect(page.locator('.lesson-list')).toHaveCount(0);
+  await page.locator('.demo-tabs').getByRole('button', { name: 'Run it' }).click();
+  await expect(page.locator('.demo-output code')).toHaveText('42');
+  await page.locator('.demo-tabs').getByRole('button', { name: 'Understand' }).click();
+  await expect(page.locator('.demo-output code')).toHaveText('12 + 30 = 42');
+});
+
+test('auth pages fit narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  for (const url of ['/signin', '/signup']) {
+    await page.goto(url);
+    await expect(page.locator('.auth-header')).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, `${url} overflows by ${overflow}px`).toBeLessThanOrEqual(0);
+  }
+});
+
 for (const theme of ['light', 'dark', 'contrast'] as const) {
   for (const locale of ['en', 'fa'] as const) {
     test(`accessibility (axe, WCAG 2.2 AA): every page, ${theme}, ${locale}`, async ({ page }) => {

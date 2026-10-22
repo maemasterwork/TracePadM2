@@ -12,7 +12,7 @@ lessons:
     number: 1
     status: published
     title: {en: Python Object and Data Structure Basics, fa: مبانی اشیا و ساختمان‌داده در پایتون}
-  - {number: 2, status: planned, id: 02-comparison-and-conditions, title: {en: Comparison and logic operators, if / elif / else, fa: مقایسه، عملگرهای منطقی و if / elif / else}}
+  - {number: 2, status: planned, id: 02-Python Statements, title: {en: Comparison and logic operators, if / elif / else, fa: مقایسه، عملگرهای منطقی و if / elif / else}}
   - {number: 3, status: planned, id: 03-loops, title: {en: "Loops: for, while, range, break, continue", fa: "حلقه‌ها: for، while، range، break، continue"}}
   - {number: 4, status: planned, id: 04-functions, title: {en: "Methods and functions: parameters, return values, scope, *args / **kwargs, lambda", fa: "متدها و توابع: پارامتر، مقدار بازگشتی، حوزه، *args / **kwargs و lambda"}}
   - {number: 5, status: planned, id: 05-comprehensions-iterators-generators, title: {en: "Comprehensions, iterators and generators", fa: "جامع‌سازی‌ها، تکرارشونده‌ها و مولدها"}}

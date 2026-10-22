@@ -38,10 +38,15 @@ export function Layout() {
   const loc = useLocation();
   const online = useOnline();
   const nav = useNavigate();
+  const isPublicLanding = loc.pathname === '/' && status !== 'signedIn';
+  const isAuthPage = ['/signin', '/signup', '/reset', '/auth/update-password'].includes(loc.pathname);
+  const showHeader = !isAuthPage && !isPublicLanding;
+  const isStandalonePage = isAuthPage || isPublicLanding;
   const [help, setHelp] = useState(false);
   // "/" opens search and "?" lists the shortcuts, except while typing.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (isStandalonePage) return;
       const el = e.target as HTMLElement | null;
       if (e.ctrlKey || e.metaKey || e.altKey || (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)))) return;
       if (e.key === '/') { e.preventDefault(); nav('/search'); }
@@ -49,7 +54,7 @@ export function Layout() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [nav]);
+  }, [isStandalonePage, nav]);
 
   useEffect(() => { document.title = t('app.name'); }, [t, locale]);
   // Move focus to the page heading after navigation so keyboard and screen-reader users start at the new content.
@@ -63,7 +68,7 @@ export function Layout() {
   return (
     <>
       <a className="skip-link" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>{t('app.skip')}</a>
-      <header className="app-header">
+      {showHeader && <header className="app-header">
         <div className="wrap">
           <Link className="brand" to="/"><Logo /><span>{t('app.name')}</span></Link>
           <nav className="nav" aria-label={t('nav.main')}>
@@ -89,13 +94,13 @@ export function Layout() {
             ? <button type="button" className="btn small alt" onClick={() => void api?.signOut()}>{t('nav.signout')}</button>
             : api && <><Link className="btn small alt" to="/signin">{t('nav.signin')}</Link><Link className="btn small" to="/signup">{t('nav.signup')}</Link></>)}
         </div>
-      </header>
-      {!online && <div className="wrap"><div className="notice warn" role="status">{t('sync.offline')}</div></div>}
-      <main id="main" tabIndex={-1} className="wrap" style={{ outline: 'none', paddingBottom: 48 }}>
+      </header>}
+      {!online && !isStandalonePage && <div className="wrap"><div className="notice warn" role="status">{t('sync.offline')}</div></div>}
+      <main id="main" tabIndex={-1} className="wrap" style={{ outline: 'none', paddingBottom: isStandalonePage ? 0 : 48 }}>
         <Outlet />
-        <p style={{ marginTop: 32 }}><button type="button" className="btn small quiet" onClick={() => setHelp(true)}><kbd dir="ltr">?</kbd> {t('shortcuts.title')}</button></p>
+        {!isStandalonePage && <p style={{ marginTop: 32 }}><button type="button" className="btn small quiet" onClick={() => setHelp(true)}><kbd dir="ltr">?</kbd> {t('shortcuts.title')}</button></p>}
       </main>
-      <Shortcuts open={help} onClose={() => setHelp(false)} />
+      {!isStandalonePage && <Shortcuts open={help} onClose={() => setHelp(false)} />}
     </>
   );
 }

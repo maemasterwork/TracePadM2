@@ -1,4 +1,6 @@
-.wrap { max-width: 1180px; margin-inline: auto; padding-inline: var(--gutter); }
+.wrap { 
+  /* max-width: 1180px;  */
+  margin-inline: auto; padding-inline: var(--gutter); }
 .app-header { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
 .app-header .wrap { display: flex; align-items: center; gap: 12px; min-height: 56px; flex-wrap: wrap; padding-block: 6px; }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--ink); text-decoration: none; }

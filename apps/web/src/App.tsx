@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import { AuthProvider } from './auth/AuthProvider';
 import { I18nProvider } from './i18n';
 import { Home } from './pages/Home';
@@ -19,6 +20,15 @@ import { ProgressPage } from './pages/ProgressPage';
 import { Review } from './pages/Review';
 import { Settings } from './pages/Settings';
 import { RunnerProvider } from './runner/RunnerProvider';
+import { Gate } from './teach/hooks';
+
+function SignedInRequired({ children }: { children: ReactNode }) {
+  return (
+    <Gate need="signedIn" titleKey="lesson.accessTitle" guestKey="lesson.accessGuest" noServerKey="lesson.accessNoServer">
+      {children}
+    </Gate>
+  );
+}
 
 export function App() {
   const { SignIn, SignUp, Reset, UpdatePassword } = AuthPagesLazy;
@@ -30,13 +40,13 @@ export function App() {
             <Routes>
               <Route element={<Layout />}>
                 <Route index element={<Home />} />
-                <Route path="lesson/:lessonId" element={<LessonPage />} />
-                <Route path="lesson/:lessonId/:chapterId" element={<LessonPage />} />
+                <Route path="lesson/:lessonId" element={<SignedInRequired><LessonPage /></SignedInRequired>} />
+                <Route path="lesson/:lessonId/:chapterId" element={<SignedInRequired><LessonPage /></SignedInRequired>} />
                 <Route path="signin" element={<SignIn />} />
                 <Route path="signup" element={<SignUp />} />
                 <Route path="reset" element={<Reset />} />
                 <Route path="auth/update-password" element={<UpdatePassword />} />
-                <Route path="search" element={<Search />} />
+                <Route path="search" element={<SignedInRequired><Search /></SignedInRequired>} />
                 <Route path="notes" element={<Notes />} />
                 <Route path="review" element={<Review />} />
                 <Route path="progress" element={<ProgressPage />} />

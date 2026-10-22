@@ -108,13 +108,22 @@ test('progress made on one device appears on another', async ({ page, browser })
   await ctx.close();
 });
 
-test('guest progress is adopted into the account at sign-in', async ({ page }) => {
-  await openChapter1(page);
-  await page.getByRole('button', { name: 'Mark as read' }).click();
-  await expect(page.getByRole('button', { name: /Read$/ })).toBeDisabled();
+test('guests see the landing page but not lesson or search content', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.landing-card')).toBeVisible();
+  await expect(page.locator('.lesson-list')).toHaveCount(0);
+  await page.goto(LESSON);
+  await expect(page.getByRole('heading', { name: 'Sign in to access lessons' })).toBeVisible();
+  await expect(page.locator('.codeblock')).toHaveCount(0);
+  await page.goto('/search');
+  await expect(page.getByRole('heading', { name: 'Sign in to access lessons' })).toBeVisible();
+});
+
+test('signed-in learners can browse the course and open a lesson', async ({ page }) => {
   await signUp(page, { name: 'Ada', email: 'ada@example.com' });
-  await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible();
-  await expect.poll(async () => (await sql(`select 1 from public.progress`)).length, { timeout: 30_000 }).toBe(1);
+  await expect(page.locator('.lesson-list li').first()).toBeVisible();
+  await page.goto(LESSON);
+  await expect(page.locator('.rail ol li a').first()).toBeVisible();
 });
 
 test('claiming the teacher code makes the account a teacher; a wrong code does not', async ({ page }) => {

@@ -59,15 +59,21 @@ export function useAction() {
   return { busy, error, done, run, clear: () => { setError(null); setDone(null); } };
 }
 
-export function Gate({ need, children }: { need: 'signedIn' | 'teacher'; children: ReactNode }) {
+export function Gate({ need, children, titleKey, guestKey, noServerKey }: {
+  need: 'signedIn' | 'teacher';
+  children: ReactNode;
+  titleKey?: string;
+  guestKey?: string;
+  noServerKey?: string;
+}) {
   const { t } = useI18n();
   const { status, profile, configured } = useAuth();
   if (status === 'loading') return <Spinner label={t('app.loading')} />;
   if (!configured || status === 'guest') {
     return (
       <div style={{ maxWidth: 640, margin: '24px auto' }}>
-        <h1>{t('gate.title')}</h1>
-        <Notice kind="info">{t(configured ? 'gate.guest' : 'gate.noServer')}</Notice>
+        <h1>{t(titleKey ?? 'gate.title')}</h1>
+        <Notice kind="info">{t(configured ? guestKey ?? 'gate.guest' : noServerKey ?? 'gate.noServer')}</Notice>
         {configured && <p className="row"><Link className="btn" to="/signin">{t('nav.signin')}</Link><Link className="btn alt" to="/signup">{t('nav.signup')}</Link></p>}
       </div>
     );
