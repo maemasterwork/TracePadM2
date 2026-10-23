@@ -40,6 +40,25 @@ test('sign up with an email, land signed in, profile row has the right data', as
   expect(rows[0].role).toBe('student');
 });
 
+test('learning path filters, searches and opens chapter previews', async ({ page }) => {
+  await signUp(page, { name: 'Ada Lovelace', email: 'ada@example.com' });
+  const cards = page.locator('.course-path-card');
+  await expect(cards.first()).toBeVisible();
+  await page.getByRole('button', { name: /^Ready/ }).click();
+  await expect(page.locator('.course-path-item.is-planned')).toHaveCount(0);
+  await page.getByRole('button', { name: 'All' }).click();
+
+  await page.getByRole('searchbox', { name: 'Find a lesson' }).fill('no matching lesson');
+  await expect(page.getByText('No lessons match your search.')).toBeVisible();
+  await page.getByRole('button', { name: 'Clear filters' }).click();
+
+  await page.getByRole('button', { name: 'Explore chapters' }).first().click();
+  const chapterLink = page.locator('.course-chapter-list a').first();
+  await expect(chapterLink).toBeVisible();
+  await chapterLink.click();
+  await expect(page).toHaveURL(/\/lesson\/[^/]+\/[^/]+$/);
+});
+
 test('sign up with a username only, sign out, sign in again; wrong password is refused', async ({ page }) => {
   await signUp(page, { name: 'Sam', username: 'sam_01', age: '13_15' });
   await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible();

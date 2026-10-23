@@ -26,6 +26,19 @@ test('authentication pages omit the application header', async ({ page }) => {
   await expect(page.locator('.landing-header')).toBeVisible();
 });
 
+test('application header menu opens on mobile and closes after navigation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/search');
+  const toggle = page.getByRole('button', { name: 'Open main menu' });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  const mainNav = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(mainNav.getByRole('link', { name: 'My progress' })).toBeVisible();
+  await mainNav.getByRole('link', { name: 'My progress' }).click();
+  await expect(page).toHaveURL(/\/progress$/);
+  await expect(page.getByRole('button', { name: 'Open main menu' })).toHaveAttribute('aria-expanded', 'false');
+});
+
 test('public home is a landing page with no lesson listing', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.landing-header')).toBeVisible();

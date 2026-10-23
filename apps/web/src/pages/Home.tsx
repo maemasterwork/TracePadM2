@@ -5,16 +5,21 @@ import { loadCourse } from '../content/api';
 import type { Course } from '../content/types';
 import { Logo, Notice, Spinner } from '../design/ui';
 import { useI18n } from '../i18n';
+import { useRows } from '../learn/hooks';
 
 type DemoStep = 'predict' | 'run' | 'understand';
 
 export function Home() {
   const { t, pick, num, locale, setLocale } = useI18n();
   const { status, configured } = useAuth();
+  const readRows = useRows(['read:']);
   const [course, setCourse] = useState<Course | null>(null);
   const [failed, setFailed] = useState(false);
   const [demoStep, setDemoStep] = useState<DemoStep>('predict');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lessonFilter, setLessonFilter] = useState<'all' | 'available' | 'planned'>('all');
+  const [lessonQuery, setLessonQuery] = useState('');
+  const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
   useEffect(() => {
     if (status !== 'signedIn') {
       setCourse(null);
@@ -131,33 +136,188 @@ export function Home() {
     );
   }
   const first = course?.lessons.find((l) => l.status === 'published');
+  const publishedLessons = course?.lessons.filter((lesson) => lesson.status === 'published') ?? [];
+  const plannedLessons = course?.lessons.filter((lesson) => lesson.status === 'planned') ?? [];
+  const readKeys = new Set(readRows.filter((row) => row.data.done === true).map((row) => row.key));
+  const totalChapters = publishedLessons.reduce((total, lesson) => total + (lesson.chapters?.length ?? 0), 0);
+  const completedChapters = publishedLessons.reduce(
+    (total, lesson) => total + (lesson.chapters?.filter((chapter) => readKeys.has(`read:${chapter.n}`)).length ?? 0),
+    0,
+  );
+  const normalizedQuery = lessonQuery.trim().toLocaleLowerCase();
+  const visibleLessons = (course?.lessons ?? []).filter((lesson) => {
+    const matchesFilter = lessonFilter === 'all'
+      || (lessonFilter === 'available' ? lesson.status === 'published' : lesson.status === 'planned');
+    const matchesQuery = !normalizedQuery
+      || lesson.title.en.toLocaleLowerCase().includes(normalizedQuery)
+      || (lesson.title.fa?.toLocaleLowerCase().includes(normalizedQuery) ?? false)
+      || num(lesson.number).includes(normalizedQuery)
+      || String(lesson.number).includes(normalizedQuery);
+    return matchesFilter && matchesQuery;
+  });
   return (
-    <>
-      <section className="hero">
-        <h1>{course ? pick(course.course.title) : t('home.title')}</h1>
-        <p className="lead">{course ? pick(course.course.tagline) : t('home.lead')}</p>
-        {first && <Link className="btn" to={`/lesson/${first.id}`}>{t('home.start')}</Link>}
+    <div className="course-home">
+      <section className="course-welcome" aria-labelledby="course-title">
+        <div className="course-welcome-copy">
+          <p className="course-kicker"><span className="course-kicker-spark" aria-hidden="true">✳</span>{t('home.learningPath')}</p>
+          <h1 id="course-title">{course ? pick(course.course.title) : t('home.title')}</h1>
+          <p className="course-lead">{course ? pick(course.course.tagline) : t('home.lead')}</p>
+          {first && <Link className="course-start" to={`/lesson/${first.id}`}>
+            <span className="course-start-icon" aria-hidden="true">↗</span>
+            <span>{t('home.start')}<small>{pick(first.title)}</small></span>
+          </Link>}
+        </div>
+        <div className="course-welcome-art" aria-hidden="true">
+          <span className="course-art-orbit" />
+          <span className="course-art-bracket">{'{'}</span>
+          <span className="course-art-number">01</span>
+          <span className="course-art-dot" />
+          <span className="course-art-caption">print(42)</span>
+        </div>
       </section>
       {failed && <Notice kind="bad" live>{t('lesson.loadFailed')}</Notice>}
       {!course && !failed && <Spinner label={t('app.loading')} />}
       {course && (
-        <ul className="lesson-list">
-          {course.lessons.map((l) => (
-            <li key={l.id}>
-              <div className={'card' + (l.status === 'planned' ? ' planned' : '')}>
-                <span className="num" aria-hidden="true">{num(l.number)}</span>
-                <h2 style={{ margin: 0, fontSize: '1.1rem' }}><span className="sr-only">{t('home.lesson', { n: num(l.number) })}: </span>{pick(l.title)}</h2>
-                {l.status === 'published'
-                  ? <>
-                      <span className="chip">{t('home.chapters', { n: l.chapters?.length ?? 0 })}</span>
-                      <Link className="btn small" style={{ marginTop: 'auto' }} to={`/lesson/${l.id}`}>{t('home.open')}</Link>
-                    </>
-                  : <span className="chip warn" style={{ marginTop: 'auto' }}>{t('home.planned')}</span>}
+        <>
+          <section className="course-overview" aria-label={t('home.progressLabel')}>
+            <div className="course-progress-summary">
+              <div className="course-progress-heading">
+                <span>{t('home.progressLabel')}</span>
+                <strong>{num(completedChapters)}<i> / {num(totalChapters)}</i></strong>
               </div>
-            </li>
-          ))}
-        </ul>
+              <div
+                className="course-progress-track"
+                role="progressbar"
+                aria-label={t('home.progressLabel')}
+                aria-valuemin={0}
+                aria-valuemax={Math.max(totalChapters, 1)}
+                aria-valuenow={completedChapters}
+              >
+                <span style={{ width: totalChapters ? `${(completedChapters / totalChapters) * 100}%` : '0%' }} />
+              </div>
+            </div>
+            <div className="course-stat">
+              <span className="course-stat-icon" aria-hidden="true">↗</span>
+              <span><strong>{num(publishedLessons.length)}</strong><small>{t('home.availableLessons')}</small></span>
+            </div>
+            <div className="course-stat">
+              <span className="course-stat-icon course-stat-icon-mint" aria-hidden="true">✦</span>
+              <span><strong>{num(plannedLessons.length)}</strong><small>{t('home.upcomingLessons')}</small></span>
+            </div>
+          </section>
+          <section className="course-lessons" aria-labelledby="course-lessons-title">
+            <div className="course-section-heading">
+              <div>
+                <p>{t('home.pathEyebrow')}</p>
+                <h2 id="course-lessons-title">{t('home.learningPath')}</h2>
+              </div>
+              <span className="course-lesson-count">{t('home.lessonCount', { n: num(visibleLessons.length) })}</span>
+            </div>
+            <div className="course-controls">
+              <div className="course-filters" role="group" aria-label={t('home.filterLessons')}>
+                {(['all', 'available', 'planned'] as const).map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    aria-pressed={lessonFilter === filter}
+                    onClick={() => setLessonFilter(filter)}
+                  >
+                    {t(`home.filter.${filter}`)}
+                    <span>{num(filter === 'all' ? course.lessons.length : filter === 'available' ? publishedLessons.length : plannedLessons.length)}</span>
+                  </button>
+                ))}
+              </div>
+              <label className="course-search">
+                <span aria-hidden="true">⌕</span>
+                <span className="sr-only">{t('home.searchLessons')}</span>
+                <input
+                  type="search"
+                  value={lessonQuery}
+                  onChange={(event) => setLessonQuery(event.target.value)}
+                  placeholder={t('home.searchLessons')}
+                />
+              </label>
+            </div>
+            {visibleLessons.length ? (
+              <ol className="course-path-list">
+                {visibleLessons.map((lesson, index) => {
+                  const available = lesson.status === 'published';
+                  const chapters = lesson.chapters ?? [];
+                  const done = chapters.filter((chapter) => readKeys.has(`read:${chapter.n}`)).length;
+                  const isExpanded = expandedLesson === lesson.id;
+                  return (
+                    <li className={'course-path-item' + (available ? '' : ' is-planned')} key={lesson.id}>
+                      <span className="course-path-connector" aria-hidden="true" />
+                      <article className="course-path-card">
+                        <div className="course-path-card-main">
+                          {available
+                            ? <Link className="course-path-link" to={`/lesson/${lesson.id}`} aria-label={`${t('home.open')}: ${pick(lesson.title)}`}>
+                                <span className="course-path-number">{num(lesson.number).padStart(2, '0')}</span>
+                                <span className="course-path-title">
+                                  <small>{t('home.lesson', { n: num(lesson.number) })}</small>
+                                  <strong>{pick(lesson.title)}</strong>
+                                </span>
+                                <span className="course-path-arrow" aria-hidden="true">↗</span>
+                              </Link>
+                            : <div className="course-path-link">
+                                <span className="course-path-number">{num(lesson.number).padStart(2, '0')}</span>
+                                <span className="course-path-title">
+                                  <small>{t('home.lesson', { n: num(lesson.number) })}</small>
+                                  <strong>{pick(lesson.title)}</strong>
+                                </span>
+                                <span className="course-coming-soon">{t('home.planned')}</span>
+                              </div>}
+                        </div>
+                        {available && (
+                          <>
+                            <div className="course-path-footer">
+                              <span className="course-path-chapters">{t('home.chapters', { n: chapters.length })}</span>
+                              {chapters.length > 0 && (
+                                <span className="course-path-completion">
+                                  <span className="course-mini-track" aria-hidden="true"><i style={{ width: `${(done / chapters.length) * 100}%` }} /></span>
+                                  {t('home.chaptersDone', { done: num(done), total: num(chapters.length) })}
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                className="course-expand"
+                                aria-expanded={isExpanded}
+                                aria-controls={`chapters-${lesson.id}`}
+                                onClick={() => setExpandedLesson(isExpanded ? null : lesson.id)}
+                              >
+                                {isExpanded ? t('home.hideChapters') : t('home.exploreChapters')}
+                                <span aria-hidden="true">{isExpanded ? '−' : '+'}</span>
+                              </button>
+                            </div>
+                            {isExpanded && (
+                              <ol className="course-chapter-list" id={`chapters-${lesson.id}`}>
+                                {chapters.map((chapter) => (
+                                  <li key={chapter.id}>
+                                    <Link to={`/lesson/${lesson.id}/${chapter.id}`} lang="en" dir="ltr">
+                                      <span>{chapter.title}</span>
+                                      <span aria-hidden="true">↗</span>
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ol>
+                            )}
+                          </>
+                        )}
+                      </article>
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : (
+              <div className="course-empty">
+                <span aria-hidden="true">⌕</span>
+                <p>{t('home.noLessons')}</p>
+                <button type="button" onClick={() => { setLessonQuery(''); setLessonFilter('all'); }}>{t('home.clearFilters')}</button>
+              </div>
+            )}
+          </section>
+        </>
       )}
-    </>
+    </div>
   );
 }

@@ -10,8 +10,10 @@ import '@fontsource/atkinson-hyperlegible/latin-400.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/components.css';
+import './styles/app-header.css';
 import './styles/auth-pages.css';
 import './styles/home-page.css';
+import './styles/lesson-page.css';
 import { App } from './App';
 import { initPrefs } from './prefs/store';
 

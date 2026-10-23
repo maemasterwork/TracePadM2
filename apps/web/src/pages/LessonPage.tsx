@@ -20,6 +20,9 @@ export function LessonPage() {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [error, setError] = useState(false);
   const [read, setRead] = useState<Record<string, boolean>>({});
+  const [chapterQuery, setChapterQuery] = useState('');
+  const [tocOpen, setTocOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { labs, concepts } = useLabs(lessonId);
   const [toolsOn, setToolsOn] = useState(() => { try { return localStorage.getItem('tracepad.notetools') === '1'; } catch { return false; } });
   const flipTools = () => setToolsOn((v) => { try { localStorage.setItem('tracepad.notetools', v ? '0' : '1'); } catch { /* storage blocked */ } return !v; });
@@ -80,6 +83,10 @@ export function LessonPage() {
   const next = idx >= 0 ? lesson.chapters[idx + 1] : lesson.chapters[0];
   const key = idx >= 0 ? `read:${lesson.chapters[idx].n}` : '';
   const isRead = key ? read[key] === true : false;
+  const chaptersRead = lesson.chapters.filter((chapter) => read[`read:${chapter.n}`]).length;
+  const progressPercent = lesson.chapters.length ? Math.round((chaptersRead / lesson.chapters.length) * 100) : 0;
+  const nextUnread = lesson.chapters.find((chapter) => !read[`read:${chapter.n}`]);
+  const visibleChapters = lesson.chapters.filter((chapter) => chapter.title.toLowerCase().includes(chapterQuery.trim().toLowerCase()));
 
   navTargets.current = { prev: prev?.id, next: next?.id };
 
@@ -88,33 +95,93 @@ export function LessonPage() {
   return (
     <NotesProvider>
     <FlowProvider lessonId={lessonId}>
-    <div className="layout">
-      <nav className="rail" aria-label={t('lesson.contents')}>
-        <h2 style={{ fontSize: '1rem', marginTop: 0 }}>{t('lesson.contents')}</h2>
-        <ol>
-          <li><Link to={`/lesson/${lessonId}`} aria-current={idx < 0 ? 'true' : undefined}>{t('lesson.overview')}</Link></li>
-          {lesson.chapters.map((c) => (
-            <li key={c.id}>
-              <Link to={`/lesson/${lessonId}/${c.id}`} aria-current={c.id === chapterId ? 'true' : undefined} lang="en" dir="ltr">
-                {num(chapterNo(c.n))}. {c.title}{read[`read:${c.n}`] ? ' ✓' : ''}
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </nav>
-      <div className={toolsOn ? 'tools-on' : ''}>
-        <div className="row" style={{ justifyContent: 'flex-end' }}>
+    <div className="lesson-page">
+      <div className="lesson-toolbar">
+        <Link className="lesson-back-link" to="/">{t('lesson.backToLearning')}<span aria-hidden="true">↗</span></Link>
+        <div className="lesson-toolbar-actions">
           <button type="button" className="btn small quiet" aria-pressed={toolsOn} onClick={flipTools} title={t('notes.mode')}>{t('notes.modeShort')}</button>
           <Link className="btn small quiet" to="/notes">{t('notes.mine')}</Link>
         </div>
-        {locale === 'fa' && <Notice kind="info">{t('lesson.notTranslated')}</Notice>}
-        {idx < 0 ? <OverviewBody lesson={lesson} onAnchor={onAnchor} /> : <ChapterBody lesson={lesson} chapterIndex={idx} onAnchor={onAnchor} />}
-        {idx >= 0 && labs?.chapters[String(lesson.chapters[idx].n)] && <LabsPanel ch={lesson.chapters[idx].n} labs={labs.chapters[String(lesson.chapters[idx].n)]} concepts={concepts} />}
-        <div className="row" style={{ marginTop: 28, justifyContent: 'space-between' }}>
-          {prev ? <Link className="btn quiet" to={`/lesson/${lessonId}/${prev.id}`}>← {t('lesson.prev')}</Link> : idx === 0 ? <Link className="btn quiet" to={`/lesson/${lessonId}`}>← {t('lesson.overview')}</Link> : <span />}
-          {key && <button type="button" className="btn alt" onClick={mark} disabled={isRead}>{isRead ? '✓ ' + t('lesson.isRead') : t('lesson.markRead')}</button>}
-          {next ? <Link className="btn" to={`/lesson/${lessonId}/${next.id}`}>{t('lesson.next')} →</Link> : <span />}
-        </div>
+      </div>
+      {locale === 'fa' && <Notice kind="info">{t('lesson.notTranslated')}</Notice>}
+      <button type="button" className="lesson-mobile-toc-toggle" aria-expanded={tocOpen} aria-controls="lesson-chapter-sidebar" onClick={() => setTocOpen((open) => !open)}>
+        <span aria-hidden="true">☷</span>{tocOpen ? t('lesson.hideContents') : t('lesson.showContents')}
+        <span className="lesson-mobile-progress">{num(chaptersRead)}/{num(lesson.chapters.length)}</span>
+      </button>
+      <div className={'lesson-workspace' + (sidebarCollapsed ? ' is-sidebar-collapsed' : '')}>
+        <aside id="lesson-chapter-sidebar" className={'lesson-sidebar' + (tocOpen ? ' is-open' : '') + (sidebarCollapsed ? ' is-collapsed' : '')}>
+          <div className="lesson-sidebar-heading">
+            <div className="lesson-sidebar-title">
+              <p className="lesson-kicker">{t('lesson.learningPath')}</p>
+              <h2>{t('lesson.contents')}</h2>
+            </div>
+            <span className="lesson-completion-count">{num(chaptersRead)}/{num(lesson.chapters.length)}</span>
+            <button
+              type="button"
+              className="lesson-sidebar-toggle"
+              aria-label={sidebarCollapsed ? t('lesson.expandSidebar') : t('lesson.collapseSidebar')}
+              aria-expanded={!sidebarCollapsed}
+              aria-controls="lesson-chapter-sidebar"
+              onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+              title={sidebarCollapsed ? t('lesson.expandSidebar') : t('lesson.collapseSidebar')}
+            >
+              <span aria-hidden="true">{sidebarCollapsed ? '»' : '«'}</span>
+            </button>
+          </div>
+          <div className="lesson-progress-track" role="progressbar" aria-label={t('lesson.progress')} aria-valuemin={0} aria-valuemax={lesson.chapters.length} aria-valuenow={chaptersRead}>
+            <span style={{ width: `${progressPercent}%` }} />
+          </div>
+          <p className="lesson-progress-caption">{t('lesson.chaptersComplete', { done: num(chaptersRead), total: num(lesson.chapters.length) })}</p>
+          <label className="lesson-chapter-search">
+            <span className="sr-only">{t('lesson.searchChapters')}</span>
+            <span aria-hidden="true">⌕</span>
+            <input type="search" value={chapterQuery} onChange={(event) => setChapterQuery(event.target.value)} placeholder={t('lesson.searchChapters')} />
+          </label>
+          <nav aria-label={t('lesson.contents')}>
+            <ol className="lesson-toc">
+              <li>
+                <Link className="lesson-toc-overview" to={`/lesson/${lessonId}`} aria-label={t('lesson.overview')} title={t('lesson.overview')} aria-current={idx < 0 ? 'page' : undefined} onClick={() => setTocOpen(false)}>
+                  <span className="lesson-toc-symbol" aria-hidden="true">✳</span>
+                  <span className="lesson-toc-label">{t('lesson.overview')}</span>
+                  <span className="lesson-toc-arrow" aria-hidden="true">↗</span>
+                </Link>
+              </li>
+              {visibleChapters.map((chapter) => {
+                const chapterRead = read[`read:${chapter.n}`] === true;
+                return (
+                  <li key={chapter.id}>
+                    <Link className="lesson-toc-chapter" to={`/lesson/${lessonId}/${chapter.id}`} aria-current={chapter.id === chapterId ? 'page' : undefined} onClick={() => setTocOpen(false)} lang="en" dir="ltr" title={chapter.title} aria-label={`${chapterNo(chapter.n)}. ${chapter.title}${chapterRead ? `, ${t('lesson.isRead')}` : ''}`}>
+                      <span className={'lesson-toc-number' + (chapterRead ? ' is-read' : '')}>{chapterRead ? '✓' : num(chapterNo(chapter.n))}</span>
+                      <span className="lesson-toc-title">{chapter.title}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
+            {visibleChapters.length === 0 && <p className="lesson-no-results">{t('lesson.noChaptersFound')}</p>}
+          </nav>
+          {nextUnread && <Link className="lesson-continue" to={`/lesson/${lessonId}/${nextUnread.id}`} onClick={() => setTocOpen(false)}>
+            <span className="lesson-continue-icon" aria-hidden="true">→</span>
+            <span><small>{t('lesson.continueLearning')}</small><strong>{nextUnread.title}</strong></span>
+          </Link>}
+        </aside>
+        <main className="lesson-main">
+          <div className="lesson-reading-card">
+            <div className="lesson-reading-meta">
+              <span>{idx < 0 ? t('lesson.overview') : t('lesson.chapter', { n: chapterNo(lesson.chapters[idx].n) })}</span>
+              {idx >= 0 && <span>{t('lesson.chapterPosition', { current: num(idx + 1), total: num(lesson.chapters.length) })}</span>}
+            </div>
+            <div className={toolsOn ? 'tools-on' : ''}>
+              {idx < 0 ? <OverviewBody lesson={lesson} onAnchor={onAnchor} /> : <ChapterBody lesson={lesson} chapterIndex={idx} onAnchor={onAnchor} />}
+              {idx >= 0 && labs?.chapters[String(lesson.chapters[idx].n)] && <LabsPanel ch={lesson.chapters[idx].n} labs={labs.chapters[String(lesson.chapters[idx].n)]} concepts={concepts} />}
+              <div className="lesson-footer-nav">
+                {prev ? <Link className="lesson-nav-link lesson-nav-prev" to={`/lesson/${lessonId}/${prev.id}`}><span aria-hidden="true">←</span><span><small>{t('lesson.prev')}</small><strong>{prev.title}</strong></span></Link> : idx === 0 ? <Link className="lesson-nav-link lesson-nav-prev" to={`/lesson/${lessonId}`}><span aria-hidden="true">←</span><span><small>{t('lesson.prev')}</small><strong>{t('lesson.overview')}</strong></span></Link> : <span />}
+                {key && <button type="button" className="btn alt lesson-mark-read" onClick={mark} disabled={isRead}>{isRead ? '✓ ' + t('lesson.isRead') : t('lesson.markRead')}</button>}
+                {next ? <Link className="lesson-nav-link lesson-nav-next" to={`/lesson/${lessonId}/${next.id}`}><span><small>{t('lesson.next')}</small><strong>{next.title}</strong></span><span aria-hidden="true">→</span></Link> : <span />}
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
     </FlowProvider>
