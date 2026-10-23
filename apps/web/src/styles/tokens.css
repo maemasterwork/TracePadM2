@@ -6,6 +6,15 @@
   --good: #146c43; --good-soft: #dbf0e4; --bad: #b42318; --bad-soft: #fbe3e0; --warn: #7a4f00; --warn-soft: #fbeacb;
   --code-bg: #f6f8fb; --wire: #3b4a63; --grid: rgba(19, 32, 51, 0.07);
   --tok-kw: #7c3aed; --tok-str: #0f766e; --tok-num: #b45309; --tok-com: #5f6b7d; --tok-fn: #1d4ed8;
+  --brand-plum: #211a38; --brand-plum-hover: #34284f; --brand-plum-deep: #171229;
+  --brand-mint: #c7f36b; --brand-apricot: #ffb86b; --brand-violet: #7967e8;
+  --brand-paper: #fbf9f4; --brand-surface: #ffffff; --brand-ink: #34313f; --brand-muted: #645d72; --brand-border: #e7e0d4;
+  --brand-plum-rgb: 33 26 56; --brand-violet-rgb: 121 103 232; --brand-paper-rgb: 251 249 244; --brand-white-rgb: 255 255 255;
+  --brand-dark-paper: #1c1928; --brand-dark-surface: #292536; --brand-dark-ink: #f1eef8; --brand-dark-muted: #bbb3cb;
+  --cosmos-plum: var(--brand-plum); --cosmos-plum-hover: var(--brand-plum-hover);
+  --cosmos-mint: var(--brand-mint); --cosmos-apricot: var(--brand-apricot); --cosmos-violet: var(--brand-violet);
+  --cosmos-paper: var(--brand-paper); --cosmos-surface: var(--brand-surface); --cosmos-ink: var(--brand-ink);
+  --cosmos-muted: #665f73; --cosmos-border: var(--brand-border);
   --font-display: "Bricolage Grotesque", "Vazirmatn", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
