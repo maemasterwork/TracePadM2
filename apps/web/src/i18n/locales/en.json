@@ -30,6 +30,7 @@
   "home.availableLessons": "ready to explore",
   "home.upcomingLessons": "coming up",
   "home.pathEyebrow": "One step at a time",
+  "home.learningPath": "Your learning path",
   "home.lessonCount": "{n, plural, one {# lesson} other {# lessons}}",
   "home.filterLessons": "Filter lessons",
   "home.filter.all": "All",

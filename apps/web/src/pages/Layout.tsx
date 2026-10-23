@@ -149,7 +149,7 @@ export function Layout() {
               {user && <NavLink to="/classes" onClick={() => setMenuOpen(false)}><HeaderIcon name="classes" /><span>{t('nav.classes')}</span></NavLink>}
               {profile?.role === 'teacher' && <NavLink to="/teach" onClick={() => setMenuOpen(false)}><HeaderIcon name="teach" /><span>{t('nav.teach')}</span></NavLink>}
               {user && <NavLink to="/notifications" onClick={() => setMenuOpen(false)}><HeaderIcon name="notifications" /><span>{t('nt.title')}</span>{unread > 0 && <><span className="badge">{num(unread)}</span><span className="sr-only"> {t('nt.unreadSr')}</span></>}</NavLink>}
-              <NavLink to="/settings" onClick={() => setMenuOpen(false)}><HeaderIcon name="settings" /><span>{t('nav.settings')}</span></NavLink>
+              {!user && <NavLink to="/settings" onClick={() => setMenuOpen(false)}><HeaderIcon name="settings" /><span>{t('nav.settings')}</span></NavLink>}
             </nav>
             <div className="app-header-actions">
               <SyncChip />
@@ -190,6 +190,7 @@ export function Layout() {
                           <HeaderIcon name={prefs.theme === 'dark' ? 'moon' : prefs.theme === 'contrast' ? 'contrast' : 'sun'} /><span>{t('settings.theme.' + prefs.theme)}</span>
                         </button>
                       </div>
+                      <Link className="app-header-action" to="/settings" onClick={() => setAccountOpen(false)}><HeaderIcon name="settings" /><span>{t('nav.settings')}</span></Link>
                       <Link className="app-header-action" to="/account" onClick={() => setAccountOpen(false)}><HeaderIcon name="account" /><span>{t('account.manage')}</span></Link>
                       <button type="button" className="app-signout" onClick={() => void api?.signOut()}><HeaderIcon name="signout" /><span>{t('nav.signout')}</span></button>
                     </div>}
