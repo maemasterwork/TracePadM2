@@ -469,6 +469,8 @@
   "progress.level.solid": "Solid",
   "progress.needsReview": "needs review",
   "progress.answers": "{n} answers",
+  "progress.answersTracked": "Tracked answers",
+  "progress.reviewQueue": "Due for review",
   "progress.empty": "Answer some predictions and questions and your concepts will appear here.",
   "progress.chapters": "Chapters",
   "progress.about": "How this is estimated",

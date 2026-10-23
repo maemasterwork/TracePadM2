@@ -192,6 +192,7 @@ export function Layout() {
                       </div>
                       <Link className="app-header-action" to="/settings" onClick={() => setAccountOpen(false)}><HeaderIcon name="settings" /><span>{t('nav.settings')}</span></Link>
                       <Link className="app-header-action" to="/account" onClick={() => setAccountOpen(false)}><HeaderIcon name="account" /><span>{t('account.manage')}</span></Link>
+                      <button type="button" className="app-header-action" onClick={() => { setAccountOpen(false); setHelp(true); }}><span><kbd dir="ltr">?</kbd> {t('shortcuts.title')}</span></button>
                       <button type="button" className="app-signout" onClick={() => void api?.signOut()}><HeaderIcon name="signout" /><span>{t('nav.signout')}</span></button>
                     </div>}
                   </div>
@@ -211,7 +212,6 @@ export function Layout() {
       {!online && !isStandalonePage && <div className="wrap"><div className="notice warn" role="status">{t('sync.offline')}</div></div>}
       <main id="main" tabIndex={-1} className="wrap" style={{ outline: 'none', paddingBottom: isStandalonePage ? 0 : 48 }}>
         <Outlet />
-        {!isStandalonePage && <p style={{ marginTop: 32 }}><button type="button" className="btn small quiet" onClick={() => setHelp(true)}><kbd dir="ltr">?</kbd> {t('shortcuts.title')}</button></p>}
       </main>
       {!isStandalonePage && <Shortcuts open={help} onClose={() => setHelp(false)} />}
     </>

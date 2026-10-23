@@ -469,6 +469,8 @@
   "progress.level.solid": "مسلط",
   "progress.needsReview": "نیاز به مرور",
   "progress.answers": "{n} پاسخ",
+  "progress.answersTracked": "پاسخ‌های ثبت‌شده",
+  "progress.reviewQueue": "نیازمند مرور",
   "progress.empty": "به چند پیش‌بینی و پرسش پاسخ بدهید تا مفهوم‌هایتان اینجا نشان داده شوند.",
   "progress.chapters": "فصل‌ها",
   "progress.about": "این چگونه برآورد می‌شود",

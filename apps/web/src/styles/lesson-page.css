@@ -187,7 +187,7 @@
 .lesson-continue-icon { display: grid; flex: 0 0 34px; width: 34px; height: 34px; place-items: center; border-radius: 11px; background: var(--accent); color: var(--accent-ink); }
 .lesson-continue small, .lesson-continue strong { display: block; }
 .lesson-continue small { margin-bottom: 3px; color: var(--muted); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; }
-.lesson-continue strong { overflow: hidden; font-size: 0.8rem; text-overflow: ellipsis; white-space: nowrap; }
+.lesson-continue strong { overflow: hidden; font-size: 0.8rem; text-overflow: ellipsis;}
 
 .lesson-main { min-width: 0; }
 .lesson-mobile-toc-toggle { display: none; }
