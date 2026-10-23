@@ -48,7 +48,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
 .rail ol { list-style: none; padding: 0; margin: 0; } .rail a { display: block; padding: 6px 10px; border-radius: var(--radius); color: var(--ink); text-decoration: none; }
 .rail a[aria-current="true"], .rail a:hover { background: var(--accent-soft); }
 @media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } .rail { position: static; max-height: none; } }
-.prose { max-width: 78ch; overflow-wrap: break-word; }
+.prose { overflow-wrap: break-word; }
 .table-wrap { overflow-x: auto; margin: 1em 0; max-width: 100%; }
 .table-wrap table { min-width: 36rem; }
 .table-wrap:focus-visible { outline-offset: -3px; }

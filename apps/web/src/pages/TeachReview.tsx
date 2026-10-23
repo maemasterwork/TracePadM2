@@ -40,7 +40,7 @@ function Inner() {
   const flags = sub && a ? integrityNotes(sub.signals, sub.detail, sub.snapshot, a.items.filter((i) => i.key.startsWith('ex:')).length) : [];
 
   if (asg.loading || roster.loading || subs.loading || cells.loading || !all.ready) return <Spinner label={t('app.loading')} />;
-  if (!a || !student) return <div style={{ maxWidth: 640, margin: '24px auto' }}><Notice kind="bad">{t('cl.notFound')}</Notice><p><Link to={`/teach/${classId}?tab=gradebook`}>{t('tc.tab.gradebook')}</Link></p></div>;
+  if (!a || !student) return <div className="teach-workspace teach-not-found"><Notice kind="bad">{t('cl.notFound')}</Notice><p><Link to={`/teach/${classId}?tab=gradebook`}>{t('tc.tab.gradebook')}</Link></p></div>;
 
   const verify = async (key: string) => {
     const it = all.items.get(key);
@@ -63,10 +63,16 @@ function Inner() {
   const shownNote = note ?? cell?.comment ?? '';
 
   return (
-    <div style={{ maxWidth: 900, margin: '24px auto' }}>
-      <p><Link to={`/teach/${classId}?tab=gradebook`}>← {t('tc.tab.gradebook')}</Link></p>
-      <h1>{a.title}</h1>
-      <h2 style={{ marginTop: 0 }}>{studentName(student)}</h2>
+    <div className="teach-workspace teach-review-page">
+      <Link className="teach-back-link no-print" to={`/teach/${classId}?tab=gradebook`}><span aria-hidden="true">←</span>{t('tc.tab.gradebook')}</Link>
+      <header className="teach-review-heading">
+        <div>
+          <p className="teach-eyebrow">{t('tc.review')}</p>
+          <h1>{a.title}</h1>
+          <p>{studentName(student)}</p>
+        </div>
+        <span className="teach-review-avatar" aria-hidden="true">{studentName(student).trim().charAt(0).toLocaleUpperCase()}</span>
+      </header>
       <ErrorLine error={asg.error ?? subs.error ?? cells.error} />
 
       {!sub ? <Notice kind="warn">{t('tc.rv.none')}</Notice> : (

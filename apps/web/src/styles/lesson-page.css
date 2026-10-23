@@ -213,7 +213,7 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
-.lesson-reading-card .prose { max-width: 76ch; margin-inline: auto; }
+.lesson-reading-card .prose { margin-inline: auto; }
 .lesson-reading-card .prose > .chip { display: none; }
 .lesson-reading-card .prose > h1 {
   margin-top: 0;

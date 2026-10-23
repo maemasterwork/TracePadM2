@@ -14,6 +14,7 @@ import './styles/app-header.css';
 import './styles/auth-pages.css';
 import './styles/home-page.css';
 import './styles/progress-page.css';
+import './styles/teach-pages.css';
 import './styles/lesson-page.css';
 import { App } from './App';
 import { initPrefs } from './prefs/store';

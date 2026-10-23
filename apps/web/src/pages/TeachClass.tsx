@@ -29,14 +29,25 @@ function Inner() {
   const tab: Tab = (TABS as readonly string[]).includes(sp.get('tab') ?? '') ? (sp.get('tab') as Tab) : 'overview';
 
   if (classes.loading || roster.loading || !all.ready) return <Spinner label={t('app.loading')} />;
-  if (!cls) return <div style={{ maxWidth: 640, margin: '24px auto' }}><Notice kind="bad">{t('cl.notFound')}</Notice><p><Link to="/teach">{t('tc.title')}</Link></p></div>;
+  if (!cls) return <div className="teach-workspace teach-not-found"><Notice kind="bad">{t('cl.notFound')}</Notice><p><Link to="/teach">{t('tc.title')}</Link></p></div>;
   const props = { api, cls, roster: roster.data ?? [], all, isOwner: cls.teacher_id === user?.id, userId: user!.id, reloadClass: classes.reload, reloadRoster: roster.reload };
   return (
-    <div style={{ maxWidth: 1100, margin: '24px auto' }}>
-      <p className="no-print"><Link to="/teach">← {t('tc.title')}</Link></p>
-      <h1>{cls.name}{cls.term && <small className="muted-line"> · {cls.term}</small>} {cls.archived_at && <span className="chip warn">{t('cl.archived')}</span>}</h1>
+    <div className="teach-workspace teach-class-page">
+      <Link className="teach-back-link no-print" to="/teach"><span aria-hidden="true">←</span>{t('tc.title')}</Link>
+      <header className="teach-class-hero">
+        <div className="teach-class-hero-mark" aria-hidden="true">{cls.name.trim().charAt(0).toLocaleUpperCase()}</div>
+        <div className="teach-class-hero-copy">
+          <p className="teach-eyebrow">{t('tc.classes')}</p>
+          <h1>{cls.name}</h1>
+          <div className="teach-class-meta">
+            {cls.term && <span>{cls.term}</span>}
+            <span>{t('tc.studentsCount', { n: num((roster.data ?? []).length) })}</span>
+            {cls.archived_at && <span className="teach-tag is-archived">{t('cl.archived')}</span>}
+          </div>
+        </div>
+        <Link className="teach-class-hero-action no-print" to="?tab=settings"><span aria-hidden="true">⚙</span>{t('tc.tab.settings')}</Link>
+      </header>
       <ErrorLine error={classes.error ?? roster.error} />
-      <p className="muted-line">{t('tc.studentsCount', { n: num((roster.data ?? []).length) })}</p>
       <div role="tablist" aria-label={t('tc.tabs')} className="tabs no-print">
         {TABS.map((k) => (
           <button key={k} role="tab" type="button" id={'tab-' + k} aria-selected={tab === k} aria-controls="tabpanel" tabIndex={tab === k ? 0 : -1} className={'tab' + (tab === k ? ' on' : '')}
@@ -46,7 +57,7 @@ function Inner() {
           </button>
         ))}
       </div>
-      <div role="tabpanel" id="tabpanel" aria-labelledby={'tab-' + tab} tabIndex={0} style={{ outline: 'none' }}>
+      <div className="teach-tab-panel" role="tabpanel" id="tabpanel" aria-labelledby={'tab-' + tab} tabIndex={0}>
         {tab === 'overview' && <Overview {...props} />}
         {tab === 'students' && <Students {...props} />}
         {tab === 'assignments' && <AssignmentsTab {...props} />}
