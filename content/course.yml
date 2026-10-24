@@ -8,6 +8,10 @@ course:
     en: Predict first, then run, then see the memory.
     fa: اول پیش‌بینی کنید، بعد اجرا کنید، بعد حافظه را ببینید.
 lessons:
+  - id: 00-flowcharts-made-easy
+    number: 0
+    status: published
+    title: {en: "Flowcharts Made Easy (with Python)", fa: "فلوچارت آسان (با پایتون)"}
   - id: 01-objects-and-data-structures
     number: 1
     status: published

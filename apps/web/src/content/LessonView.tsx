@@ -5,6 +5,8 @@ import { Annotated } from '../notes/Annotated';
 import { Markdown } from './Markdown';
 import type { Block, Lesson, ListPart, Section } from './types';
 import { chapterNo } from './chapterNo';
+import { Flowchart } from '../flow/Flowchart';
+import { useFlowEntry } from '../flow/FlowContext';
 
 interface Ctx { lesson: Lesson; ch: number; onAnchor: (hash: string) => void }
 
@@ -30,6 +32,20 @@ function findCode(lesson: Lesson, id: string): string | undefined {
 }
 
 function Code({ lesson, id, lang, code }: { lesson: Lesson; id: string; lang: string; code: string }) {
+  const { t } = useI18n();
+  const flow = useFlowEntry(`block:${id}`);
+  if (lang === 'mermaid' && flow) {
+    // the lesson's own diagram, laid out at build time (tools/content/mermaid_chart.py); the source stays available
+    return (
+      <div className="mermaid-fig">
+        <Flowchart entry={flow} />
+        <details className="flow-outline">
+          <summary>{t('flow.source')}</summary>
+          <pre className="codeblock" style={{ padding: '12px 14px', margin: '8px 0', overflow: 'auto' }}><code>{code}</code></pre>
+        </details>
+      </div>
+    );
+  }
   if (lang !== 'python' || lesson.block_meta?.[id]?.skip) {
     return <pre className="codeblock" style={{ padding: '12px 14px', margin: '14px 0', overflow: 'auto' }}><code>{code}</code></pre>;
   }

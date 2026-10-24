@@ -1,0 +1,483 @@
+# Lesson 0 labs (English only for now; add `fa:` next to each `en:` when Persian is started).
+lesson: 00-flowcharts-made-easy
+schema: 1
+chapters:
+  2:
+    quizzes:
+    - id: q1
+      tag: flow-symbols
+      question:
+        en: Which shape stands for a decision, a yes/no question?
+      options:
+      - en: The rounded box (pill)
+      - en: The rectangle
+      - en: The parallelogram
+      - en: The diamond
+      correct: 3
+      why:
+        en: The diamond is the question. It always has two exits, Yes and No, and in Python it becomes <code>if</code> or <code>while</code>.
+    - id: q2
+      tag: flow-symbols
+      question:
+        en: Which shape do you use for reading input or showing output (<code>input()</code> and <code>print()</code>)?
+      options:
+      - en: The rectangle
+      - en: The diamond
+      - en: The parallelogram
+      - en: The pill
+      correct: 2
+      why:
+        en: The slanted box is for data going in or out. A plain rectangle is for a calculation or other action, such as <code>x = x + 1</code>.
+    - id: q3
+      tag: flow-rules
+      question:
+        en: How many exits must a diamond have?
+      options:
+      - en: One
+      - en: Two, Yes and No
+      - en: Three
+      - en: None
+      correct: 1
+      why:
+        en: A question has two answers, so draw both. A diamond with one exit hides what happens in the other case.
+  4:
+    predictions:
+    - id: p1
+      tag: flow-sequence
+      code: |-
+        a = 2.5
+        b = 4
+        total = a + b
+        print("Sum:", total)
+      answer: 'Sum: 6.5'
+      why:
+        en: A sequence is read top to bottom, one box (one line) at a time. <code>total</code> is 2.5 + 4 = 6.5, and <code>print</code> shows the label and the value separated by a space.
+    quizzes:
+    - id: q1
+      tag: flow-sequence
+      question:
+        en: In a sequence, how many lines of code does one box usually become?
+      options:
+      - en: One
+      - en: Three
+      - en: As many as you like
+      - en: None, boxes are only decoration
+      correct: 0
+      why:
+        en: Keep each box to one simple action, and each box turns into exactly one line of code.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Turn the flowchart into code. The boxes are: read <code>a</code> and <code>b</code> (already given), then <code>total = a + b</code>, then show it. Print <code>Sum: 12</code> for a = 7 and b = 5.'
+      starter: |
+        a = 7
+        b = 5
+
+        # box: total = a + b
+        # box: print "Sum:" and total
+      solution: |
+        a = 7
+        b = 5
+
+        total = a + b
+        print("Sum:", total)
+      param:
+        pattern: ^a = .*\nb = .*$
+        flags: m
+      tests:
+      - out: 'Sum: 12'
+      - set: |-
+          a = 2
+          b = 3
+        out: 'Sum: 5'
+      - set: |-
+          a = -4
+          b = 4
+        out: 'Sum: 0'
+      hints:
+      - en: Each box becomes one line. The first box is an assignment.
+      - en: 'Write <code>total = a + b</code> and then <code>print("Sum:", total)</code>.'
+  5:
+    predictions:
+    - id: p1
+      tag: flow-decision
+      code: |-
+        n = 7
+        if n % 2 == 0:
+            print("Even")
+        else:
+            print("Odd")
+      answer: Odd
+      why:
+        en: The diamond asks <code>n % 2 == 0</code>. 7 leaves a remainder of 1, so the answer is No and the <code>else</code> branch runs.
+    - id: p2
+      tag: flow-elif-chain
+      code: |-
+        score = 85
+        if score >= 90:
+            print("A")
+        elif score >= 80:
+            print("B")
+        elif score >= 70:
+            print("C")
+        else:
+            print("F")
+      answer: B
+      why:
+        en: The first diamond (90 or more) says No, the second one (80 or more) says Yes, so B is printed and the rest of the chain is skipped.
+    - id: p3
+      tag: flow-elif-chain
+      code: |-
+        score = 65
+        if score >= 90:
+            print("A")
+        elif score >= 80:
+            print("B")
+        elif score >= 70:
+            print("C")
+        else:
+            print("F")
+      answer: F
+      why:
+        en: Every diamond answers No, so the flow follows the last No exit, which is the <code>else</code>.
+    quizzes:
+    - id: q1
+      tag: flow-elif-chain
+      question:
+        en: A chain of diamonds, each on the No exit of the one before, becomes...
+      options:
+      - en: a <code>while</code> loop
+      - en: <code>if ... elif ... else</code>
+      - en: a function
+      - en: a <code>for</code> loop
+      correct: 1
+      why:
+        en: The first diamond is <code>if</code>, the next ones are <code>elif</code>, and the last No exit is <code>else</code>.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Practice exercise 1. Write <code>sign(n)</code> that returns <code>"positive"</code>, <code>"negative"</code> or <code>"zero"</code>. (Draw the flowchart first: two diamonds.)'
+      starter: |
+        def sign(n):
+            # your code here
+            return "zero"
+      solution: |
+        def sign(n):
+            if n > 0:
+                return "positive"
+            elif n < 0:
+                return "negative"
+            else:
+                return "zero"
+      tests:
+      - post: |-
+          print(sign(5), sign(-3), sign(0), sign(0.5))
+        out: positive negative zero positive
+      hints:
+      - en: 'Two questions are enough: <code>n &gt; 0</code> and <code>n &lt; 0</code>. Whatever is left is zero.'
+      - en: 'Use <code>if</code> for the first question, <code>elif</code> for the second, and <code>else</code> for zero.'
+  6:
+    predictions:
+    - id: p1
+      tag: flow-while
+      code: |-
+        i = 1
+        while i <= 5:
+            print(i)
+            i = i + 1
+      answer: |-
+        1
+        2
+        3
+        4
+        5
+      why:
+        en: The diamond <code>i &lt;= 5</code> is asked before every round. When <code>i</code> becomes 6 the answer is No and the flow leaves the loop.
+    - id: p2
+      tag: flow-loop-update
+      code: |-
+        i = 1
+        while i <= 5:
+            i = i + 2
+        print(i)
+      answer: '7'
+      why:
+        en: <code>i</code> goes 1, 3, 5, 7. At 5 the question is still Yes, so it becomes 7, and then the question is No. The arrow back up runs three times.
+    - id: p3
+      tag: flow-password-loop
+      code: |-
+        secret = "python123"
+        attempts = ["abc", "123", "python123"]
+        position = 0
+        password = attempts[position]
+
+        while password != secret:
+            print("Wrong, try again")
+            position += 1
+            password = attempts[position]
+
+        print("Welcome!")
+      answer: |-
+        Wrong, try again
+        Wrong, try again
+        Welcome!
+      why:
+        en: The loop goes back to read a new password until it matches. The first two attempts are wrong, the third is right, so the loop is left and Welcome is printed.
+    quizzes:
+    - id: q1
+      tag: flow-while
+      question:
+        en: In a flowchart, what makes a loop?
+      options:
+      - en: A special loop shape
+      - en: An arrow that goes back up to an earlier step
+      - en: Two diamonds side by side
+      - en: A rectangle with double bars
+      correct: 1
+      why:
+        en: A loop is simply an arrow that returns to an earlier box. With a diamond at the top of the loop it is a <code>while</code>.
+    - id: q2
+      tag: flow-for-vs-while
+      question:
+        en: When is <code>while</code> a better fit than <code>for</code>?
+      options:
+      - en: When you know exactly how many times to repeat
+      - en: When you repeat until something happens, such as a correct password
+      - en: Never, <code>for</code> can do everything
+      - en: When there are no numbers
+      correct: 1
+      why:
+        en: Use <code>for</code> when you know how many times, and <code>while</code> when you repeat until something happens.
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Practice exercise 2. Print the multiplication table of <code>n</code> from 1 to 10, one line per row in the form <code>7 x 1 = 7</code>.'
+      starter: |
+        n = 7
+
+        # your loop here
+      solution: |
+        n = 7
+
+        for i in range(1, 11):
+            print(f"{n} x {i} = {n * i}")
+      param:
+        pattern: ^n = .*$
+        flags: m
+      tests:
+      - out: |-
+          7 x 1 = 7
+          7 x 2 = 14
+          7 x 3 = 21
+          7 x 4 = 28
+          7 x 5 = 35
+          7 x 6 = 42
+          7 x 7 = 49
+          7 x 8 = 56
+          7 x 9 = 63
+          7 x 10 = 70
+      - set: n = 1
+        out: |-
+          1 x 1 = 1
+          1 x 2 = 2
+          1 x 3 = 3
+          1 x 4 = 4
+          1 x 5 = 5
+          1 x 6 = 6
+          1 x 7 = 7
+          1 x 8 = 8
+          1 x 9 = 9
+          1 x 10 = 10
+      hints:
+      - en: You know how many times to repeat (ten), so a <code>for</code> loop fits.
+      - en: '<code>range(1, 11)</code> gives 1 to 10. In each round print <code>n</code>, the counter and their product.'
+  7:
+    predictions:
+    - id: p1
+      tag: flow-function
+      code: |-
+        def add_tax(price):
+            print("inside")
+            return price + 10
+
+        print("before")
+        print(add_tax(5))
+        print("after")
+      answer: |-
+        before
+        inside
+        15
+        after
+      why:
+        en: Defining a function runs nothing. The body (its own small flowchart) runs only when it is called, in the middle of the main flow, and then the flow continues after the call.
+    quizzes:
+    - id: q1
+      tag: flow-function
+      question:
+        en: What does a rectangle with double side bars mean in a flowchart?
+      options:
+      - en: Run another flowchart here (a function call)
+      - en: End of the program
+      - en: Read input
+      - en: A decision
+      correct: 0
+      why:
+        en: It stands for a call. The function's own flowchart is drawn separately, with its own start and its own return.
+  8:
+    quizzes:
+    - id: q1
+      tag: flow-method
+      question:
+        en: What is the first step of the 5-step method?
+      options:
+      - en: Write the Python code
+      - en: Read the problem and underline the inputs and outputs
+      - en: Draw the End box
+      - en: Test with large numbers
+      correct: 1
+      why:
+        en: Know what goes in and what must come out before you plan anything else. Code comes last.
+    - id: q2
+      tag: flow-method
+      question:
+        en: Which words in a problem tell you to draw a diamond?
+      options:
+      - en: "\"print\" and \"show\""
+      - en: "\"if\", \"when\", \"until\", \"for each\""
+      - en: "\"start\" and \"end\""
+      - en: "\"number\" and \"text\""
+      correct: 1
+      why:
+        en: Every condition or repetition is a question, and a question is a diamond.
+  9:
+    predictions:
+    - id: p1
+      tag: flow-guess-game
+      code: |-
+        secret = 7
+        guesses = [3, 9, 7]
+        tries = 0
+
+        for guess in guesses:
+            tries += 1
+
+            if guess == secret:
+                print(f"You win! It took {tries} tries.")
+                break
+            elif guess < secret:
+                print("Too low")
+            else:
+                print("Too high")
+      answer: |-
+        Too low
+        Too high
+        You win! It took 3 tries.
+      why:
+        en: 3 is below 7, 9 is above it, and the third guess equals the secret, which prints the win message and leaves the loop with <code>break</code>.
+  11:
+    quizzes:
+    - id: q1
+      tag: flow-mistakes
+      question:
+        en: A loop in your flowchart never ends. What is the usual fix?
+      options:
+      - en: Add more diamonds
+      - en: Make sure something inside the loop changes the condition
+      - en: Remove the Start box
+      - en: Use a rectangle instead of a diamond
+      correct: 1
+      why:
+        en: If nothing in the loop changes what the diamond asks, the answer never changes. For example, add <code>i = i + 1</code>.
+    - id: q2
+      tag: flow-mistakes
+      question:
+        en: What should the text in a flowchart box look like?
+      options:
+      - en: Exact Python syntax
+      - en: Plain language, one action ("Add tax")
+      - en: A whole paragraph
+      - en: Only numbers
+      correct: 1
+      why:
+        en: A flowchart shows the logic, not the syntax. Plain words keep it readable, and one action per box keeps it simple.
+  12:
+    exercises:
+    - id: e1
+      prompt:
+        en: 'Practice exercise 3. Write <code>total_until_zero(numbers)</code> that adds the numbers in the list until it reaches a <code>0</code> and returns the total (the <code>0</code> and anything after it are ignored).'
+      starter: |
+        def total_until_zero(numbers):
+            # your code here
+            return 0
+      solution: |
+        def total_until_zero(numbers):
+            total = 0
+            for n in numbers:
+                if n == 0:
+                    break
+                total += n
+            return total
+      tests:
+      - post: |-
+          print(total_until_zero([5, 10, 0, 99]))
+          print(total_until_zero([0, 4]))
+          print(total_until_zero([3, -1, 2]))
+        out: |-
+          15
+          0
+          4
+      hints:
+      - en: Start a total at 0 and look at the numbers one at a time.
+      - en: When a number is <code>0</code>, leave the loop with <code>break</code>. Otherwise add it to the total.
+    - id: e2
+      prompt:
+        en: 'Practice exercise 4. Write <code>largest(a, b, c)</code> that returns the largest of three numbers without using <code>max</code>.'
+      starter: |
+        def largest(a, b, c):
+            # your code here
+            return a
+      solution: |
+        def largest(a, b, c):
+            if a >= b and a >= c:
+                return a
+            elif b >= c:
+                return b
+            else:
+                return c
+      tests:
+      - post: |-
+          print(largest(1, 2, 3), largest(3, 2, 1), largest(2, 3, 1))
+          print(largest(5, 5, 5), largest(-1, -2, -3), largest(0, 7, 7))
+        out: |-
+          3 3 3
+          5 -1 7
+      hints:
+      - en: Ask "is a at least as big as both of the others?" first.
+      - en: If not, the answer is b or c. One more question, <code>b &gt;= c</code>, decides between them.
+    - id: e3
+      prompt:
+        en: 'Practice exercise 5. Write <code>is_prime(n)</code> that returns <code>True</code> if <code>n</code> is a prime number and <code>False</code> otherwise (numbers below 2 are not prime).'
+      starter: |
+        def is_prime(n):
+            # your code here
+            return False
+      solution: |
+        def is_prime(n):
+            if n < 2:
+                return False
+            d = 2
+            while d * d <= n:
+                if n % d == 0:
+                    return False
+                d += 1
+            return True
+      tests:
+      - post: |-
+          print([n for n in range(0, 20) if is_prime(n)])
+          print(is_prime(97), is_prime(91), is_prime(2))
+        out: |-
+          [2, 3, 5, 7, 11, 13, 17, 19]
+          True False True
+      hints:
+      - en: Numbers below 2 are not prime, so answer that case first.
+      - en: 'Try dividers <code>d</code> from 2 upwards. If <code>n % d == 0</code> for any of them, it is not prime. You can stop when <code>d * d</code> is bigger than <code>n</code>.'

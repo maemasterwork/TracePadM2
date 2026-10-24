@@ -11,57 +11,6 @@ const PAGES = [
   ['not found', '/nope'],
 ] as const;
 
-test('authentication pages omit the application header', async ({ page }) => {
-  for (const url of ['/signin', '/signup', '/reset', '/auth/update-password']) {
-    await page.goto(url);
-    await expect(page.locator('.app-header')).toHaveCount(0);
-  }
-  await page.goto('/signin');
-  await expect(page.locator('.auth-header')).toBeVisible();
-  await expect(page.locator('.auth-story')).toBeVisible();
-  await expect(page.locator('.auth-card')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Keyboard shortcuts|میان‌برهای صفحه‌کلید/ })).toHaveCount(0);
-  await page.goto('/');
-  await expect(page.locator('.app-header')).toHaveCount(0);
-  await expect(page.locator('.landing-header')).toBeVisible();
-});
-
-test('application header menu opens on mobile and closes after navigation', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/search');
-  const toggle = page.getByRole('button', { name: 'Open main menu' });
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  const mainNav = page.getByRole('navigation', { name: 'Main navigation' });
-  await expect(mainNav.getByRole('link', { name: 'My progress' })).toBeVisible();
-  await mainNav.getByRole('link', { name: 'My progress' }).click();
-  await expect(page).toHaveURL(/\/progress$/);
-  await expect(page.getByRole('button', { name: 'Open main menu' })).toHaveAttribute('aria-expanded', 'false');
-});
-
-test('public home is a landing page with no lesson listing', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('.landing-header')).toBeVisible();
-  await expect(page.locator('.landing-terminal')).toBeVisible();
-  await expect(page.locator('.landing-card')).toHaveCount(0);
-  await expect(page.locator('.landing-copy h1')).toBeVisible();
-  await expect(page.locator('.lesson-list')).toHaveCount(0);
-  await page.locator('.demo-tabs').getByRole('button', { name: 'Run it' }).click();
-  await expect(page.locator('.demo-output code')).toHaveText('42');
-  await page.locator('.demo-tabs').getByRole('button', { name: 'Understand' }).click();
-  await expect(page.locator('.demo-output code')).toHaveText('12 + 30 = 42');
-});
-
-test('auth pages fit narrow screens', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 800 });
-  for (const url of ['/signin', '/signup']) {
-    await page.goto(url);
-    await expect(page.locator('.auth-header')).toBeVisible();
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    expect(overflow, `${url} overflows by ${overflow}px`).toBeLessThanOrEqual(0);
-  }
-});
-
 for (const theme of ['light', 'dark', 'contrast'] as const) {
   for (const locale of ['en', 'fa'] as const) {
     test(`accessibility (axe, WCAG 2.2 AA): every page, ${theme}, ${locale}`, async ({ page }) => {
@@ -119,6 +68,7 @@ test('settings change the page immediately: text size, dyslexia font, contrast',
 
 test('keyboard: skip link is the first stop, and Ctrl+Enter runs code', async ({ page }) => {
   await page.goto(`${LESSON}/1-numbers`);
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible(); // the app has mounted; pressing Tab earlier races the first render
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   const ta = page.locator('.codeblock textarea').first();

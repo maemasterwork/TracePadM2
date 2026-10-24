@@ -14,6 +14,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 import flowchart  # noqa: E402
+import mermaid_chart  # noqa: E402
 from verify import iter_blocks  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,8 +26,10 @@ PUBLIC = ROOT / "apps" / "web" / "public" / "content"
 def chapter_base(number: int) -> int:
     """Progress keys carry only a chapter number (read:<n>, pred:<n>:<id>, note:<n>:<line>, SQL class_progress), so the
     chapter numbers the app sees must be unique across lessons. Lesson 1 keeps 1..99 (existing learner data stays valid);
-    lesson N >= 2 uses N*100 + the chapter number printed in the lesson (lesson 2 chapter 3 is 203). The app shows the
+    lesson N >= 2 uses N*100 + the chapter number printed in the lesson (lesson 2 chapter 3 is 203); lesson 0 uses 10000 + it. The app shows the
     printed number again with chapterNo() in src/content/chapterNo.ts."""
+    if number == 0:
+        return 10000  # lesson 0 (the flowchart primer) sits above every numbered lesson: 10001, 10002, ...
     return 0 if number == 1 else number * 100
 
 
@@ -84,9 +87,19 @@ def main() -> int:
                     skipped.append((key, r["skip"]))
                 else:
                     flows[key] = {"charts": r["charts"], "control": r["control"]}
+            def mermaid(key, code):
+                r = mermaid_chart.build(code)
+                if "error" in r:
+                    sys.exit(f"mermaid diagram {key} is malformed: " + "; ".join(r["error"]))
+                if "skip" in r:
+                    skipped.append((key, r["skip"]))
+                else:
+                    flows[key] = {"charts": r["charts"], "control": r["control"]}
             for b in iter_blocks(doc):
                 if b.get("type") == "code" and b.get("lang") in ("python", "py", None, ""):
                     chart(f"block:{b['id']}", b["code"])
+                elif b.get("type") == "code" and b.get("lang") == "mermaid":
+                    mermaid(f"block:{b['id']}", b["code"])  # the lesson's own diagram, laid out here and drawn by the app
             for chno, ch in labs["chapters"].items():
                 for p in ch.get("predictions", []):
                     chart(f"pred:{chno}:{p['id']}", p["code"])

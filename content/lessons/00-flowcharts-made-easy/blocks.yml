@@ -1,0 +1,20 @@
+# Sidecar flags for code blocks in lesson.md (the markdown itself is never edited).
+# Keys are block ids '<section>#<n>' as printed by tools/content/extract.py.
+blocks:
+  "4.0#2":
+    stdin: "3\n4.5\n"
+  "5.0#2":
+    stdin: "7\n"
+  "5-multiple-choices#2":
+    stdin: "85\n"
+  "6.3#2":
+    stdin: "abc\npython123\n"
+  "7.0#3":
+    stdin: "100\n"
+  "9.0#2":
+    stdin: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"
+    nondeterministic: "the secret number is random (the input tries every number from 1 to 10 so the game always ends)"
+  "10.0#2":
+    skip: "needs the graphviz package and the Graphviz program, which are not available in the browser"
+  "12.0#2":
+    stdin: "5\n10\n0\n"

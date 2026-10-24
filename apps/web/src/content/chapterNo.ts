@@ -6,5 +6,5 @@
  */
 export const chapterNo = (n: number): number => (n >= 100 ? n % 100 : n);
 
-/** Which lesson number a key's chapter number belongs to (1 for 1..99). */
-export const lessonOfChapter = (n: number): number => (n >= 100 ? Math.floor(n / 100) : 1);
+/** Which lesson number a key's chapter number belongs to (1 for 1..99, 0 for 10001 and up). */
+export const lessonOfChapter = (n: number): number => (n >= 10000 ? 0 : n >= 100 ? Math.floor(n / 100) : 1);

@@ -18,7 +18,9 @@ export function AssignmentsTab({ api, cls, all, roster }: TabProps) {
   const list = useLoad(() => api.assignments(cls.id), [api, cls.id]);
   const [editing, setEditing] = useState<string | 'new' | null>(null);
   const chapters = all.lessons.flatMap((l) => l.chapters.map((c) => ({ ...c, lessonId: l.id })));
-  const blank = (): Form => ({ title: '', description: '', page_id: chapters[0]?.id ?? '', kinds: { pred: true, quiz: true, ex: true }, pts: { ...DEFAULT_POINTS }, skip: new Set(), release: '', due: '', close: '', mode: 'accept', perDay: 10, max: 50, weight: 1, maxSubs: 1, show: 'on_return' });
+  // only chapters that have practice items can be assigned (the flowchart primer has several chapters with none)
+  const assignable = chapters.filter((c) => [...all.items.values()].some((i) => i.lessonId === c.lessonId && i.ch === c.n));
+  const blank = (): Form => ({ title: '', description: '', page_id: assignable[0]?.id ?? chapters[0]?.id ?? '', kinds: { pred: true, quiz: true, ex: true }, pts: { ...DEFAULT_POINTS }, skip: new Set(), release: '', due: '', close: '', mode: 'accept', perDay: 10, max: 50, weight: 1, maxSubs: 1, show: 'on_return' });
   const [form, setForm] = useState<Form>(blank());
   const save = useAction();
   const del = useAction();
@@ -90,9 +92,9 @@ export function AssignmentsTab({ api, cls, all, roster }: TabProps) {
             <Field label={t('tc.asg.desc')}>{(p) => <textarea {...p} rows={3} maxLength={2000} value={form.description} onChange={(e) => upd({ description: e.target.value })} />}</Field>
             <Field label={t('tc.asg.chapter')}>{(p) => (
               <select {...p} value={form.page_id} onChange={(e) => upd({ page_id: e.target.value, skip: new Set() })}>
-                {all.lessons.map((l) => (
+                {all.lessons.filter((l) => assignable.some((c) => c.lessonId === l.id)).map((l) => (
                   <optgroup key={l.id} label={pick(l.title)}>
-                    {chapters.filter((c) => c.lessonId === l.id).map((c) => <option key={c.id} value={c.id}>{num(chapterNo(c.n))}. {c.title}</option>)}
+                    {assignable.filter((c) => c.lessonId === l.id).map((c) => <option key={c.id} value={c.id}>{num(chapterNo(c.n))}. {c.title}</option>)}
                   </optgroup>
                 ))}
               </select>

@@ -63,6 +63,7 @@ async function publish(page: Page, classId: string, title: string, opts: { late?
   await page.goto(`/teach/${classId}?tab=assignments`);
   await page.getByRole('button', { name: 'New assignment' }).click();
   await page.getByLabel('Title').fill(title);
+  await page.getByLabel('Chapter').selectOption({ label: '1. Numbers' }); // lesson 1 chapter 1: seedWork() fills in answers for it
   if (opts.late) await page.getByLabel('Late work').selectOption(opts.late);
   await page.getByRole('button', { name: 'Publish' }).click();
   await expect(page.getByText('Published. Students in the class were notified.')).toBeVisible();

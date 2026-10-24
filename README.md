@@ -6,6 +6,7 @@ A web platform that teaches Python to beginners. Learners read a lesson, run eve
 
 ## What exists today
 
+- **Lesson 0** ("Flowcharts Made Easy (with Python)", 14 chapters): the flowchart primer. Its 9 Mermaid diagrams are drawn by the app itself (laid out at build time, right-to-left aware, light and dark, with a text version and the Mermaid source on request), its 10 Python examples get generated flowcharts and the tracer, and it has 9 predictions, 12 quizzes and 6 exercises (English only).
 - **Lesson 2** ("Python Statements": if / elif / else, for and while loops, useful operators, list comprehensions, assessment, Guessing Game capstone; 9 chapters) with 33 predictions, 18 quizzes and 13 exercises, all checked against real CPython. Its practice text is **English only** (Persian not started, by decision).
 - **Lesson 1** ("Python Object and Data Structure Basics", 10 chapters), imported from the original markdown with a verifier that proves no line was lost (1923 source lines, 302 blocks, 0 lost).
 - **In-browser Python** (Pyodide 0.28.3 = CPython 3.13.2, self-hosted, in a Web Worker): Run, Stop, a time limit, live `input()`, and a per-user virtual disk that survives reloads. All 121 runnable examples in the lesson run; 267 snippets are checked to give the same output in Pyodide as in desktop CPython.
@@ -55,6 +56,7 @@ Requirements: Node 22, Python 3.13 with `pyyaml jsonschema`, PostgreSQL 16 binar
 
 ```bash
 npm ci
+pip install pyyaml jsonschema
 npm run build            # builds lesson content, copies Pyodide, type-checks, builds the app
 npm run dev              # http://localhost:5173 in guest mode (no backend needed)
 ```
@@ -69,16 +71,17 @@ To run with accounts, start a local Supabase (`supabase start` in this folder ap
 2. `labs.yml`: per chapter (use the numbers printed in the lesson) `predictions` (code + exact answer), `quizzes` (options + `correct` index) and `exercises` (starter, solution, `tests`, 2 to 4 `hints`). Every text has `en`; `fa` is optional for now (the app falls back to English). Test inputs for exercises use `set` (replaces the first line matching `param.pattern`) and `post` (code appended after the program); exercises get no keyboard input, so use variables or functions.
 3. `blocks.yml`: examples that need earlier state (`after`), typed input (`stdin`), random or order-dependent output (`nondeterministic`), or that are not runnable on purpose (`skip`, with a reason). The build tells you which examples fail and why.
 4. New concept tags used in `labs.yml` need an English name in `content/concepts.yml`.
-5. `npm run content:build` checks everything (no lost lines, schema, safe HTML, every answer and every solution against real CPython, a flowchart for every runnable example) and fails loudly if anything is off. Then `npm run content:test`.
+5. Fenced ```mermaid blocks in `lesson.md` are drawn as flowcharts automatically (see the limits under Known limitations). Raw HTML such as `<details>` is not allowed in lesson text.
+6. `npm run content:build` checks everything (no lost lines, schema, safe HTML, every answer and every solution against real CPython, a flowchart for every runnable example) and fails loudly if anything is off. Then `npm run content:test`.
 
 ## Tests
 
 | Command | What it covers |
 | --- | --- |
-| `npm test` | content pipeline (7), flowchart generator (22), app unit tests (93): sync merge rules, auth mapping and validation, grading, mastery, spaced review, search, gradebook and analytics logic, CSV safety |
+| `npm test` | content pipeline (7), flowchart generator (22), Mermaid layout (10), app unit tests (94): sync merge rules, auth mapping and validation, grading, mastery, spaced review, search, gradebook and analytics logic, CSV safety |
 | `bash supabase/tests/run.sh` | 461 SQL checks on a throw-away PostgreSQL (every table and function as anonymous, student, other student, teacher, other teacher, co-teacher, TA, organization admin, platform admin; scoring, late rules, extensions, grade history, return, notifications, archive, duplicate, export/delete) plus 13 checks that the demo seed loads and removes cleanly |
 | `python3 -I tools/content/check_labs.py ...` and `node tools/content/engine_check.mjs` | labs against CPython; Pyodide vs CPython differential (see `.github/workflows/ci.yml` for exact calls) |
-| `npm run -w apps/web e2e` | 65 browser tests (including the 3 lesson 2 tests and the flowchart tests: drawing, text version, trace highlighting and loop counts, redrawing after editing, exercises, predictions, axe in 2 themes and 2 languages, 360 px) (including practice, tracer, memory model, notes, search, review, shortcuts, and Persian accessibility of the new screens): axe accessibility on every page in 3 themes and 2 languages, RTL, 320 px reflow, 200 % text, offline, keyboard, CSP, runner behaviour |
+| `npm run -w apps/web e2e` | 71 browser tests (including the 6 lesson 0 tests, the 3 lesson 2 tests and the flowchart tests: drawing, text version, trace highlighting and loop counts, redrawing after editing, exercises, predictions, axe in 2 themes and 2 languages, 360 px) (including practice, tracer, memory model, notes, search, review, shortcuts, and Persian accessibility of the new screens): axe accessibility on every page in 3 themes and 2 languages, RTL, 320 px reflow, 200 % text, offline, keyboard, CSP, runner behaviour |
 | `npm run -w apps/web e2e:auth` | 22 browser tests against the real migrations (see below): the 13 account/sync tests, plus classes: teacher creates class and assignment, learner joins and submits, teacher overrides, comments and returns, learner sees it; late rule refusal; organization with invite, co-teacher, seat limit, code rotation, archive; announcements and comments; every class screen for axe accessibility in English/Persian, light/dark and for sideways scroll at 360 px; the demo organization filling every teacher screen |
 
 ## How it was verified
@@ -98,7 +101,8 @@ Every screen was opened in a real browser at desktop and phone width, light and 
 
 - **Mastery and the dashboards' heat map are self-reported**; only submitted assignments are scored by the server.
 - The concept names, error-coach texts and all new interface strings in Persian were written by the builder and have **not** been reviewed by a native-speaker teacher. Review before relying on them.
-- Progress keys still carry only a chapter number. Collisions between lessons are prevented by numbering chapters uniquely in the built content (lesson 1: 1 to 99, lesson N: N x 100 + the printed number; see decision 81). Consequence: a lesson can have at most 99 chapters, and teacher screens and exports show the unique numbers only where a person would never see them (they print the lesson's own chapter number).
+- Progress keys still carry only a chapter number. Collisions between lessons are prevented by numbering chapters uniquely in the built content (lesson 1: 1 to 99, lesson N: N x 100 + the printed number, lesson 0: 10000 + the printed number; see decisions 81 and 87). Consequence: a lesson can have at most 99 chapters, and teacher screens and exports show the unique numbers only where a person would never see them (they print the lesson's own chapter number).
+- Mermaid support is a small subset (top-down `flowchart TD`: pill, box, input/output, question and subroutine shapes, plain and labelled arrows). Anything else (LR layouts, subgraphs, styling, other arrow types, more than 24 boxes) is skipped with a reason at build time and shown as plain text. Mermaid blocks in the lesson are drawn only when the build can lay them out; the Mermaid source is always kept.
 - Chapter ids (the heading slugs, such as `3-for-loops`) must be unique across lessons, because assignments refer to them; the build stops with a message if two lessons repeat one.
 - Lesson 2 flowcharts: 131 drawn, 11 examples without a chart (syntax templates, fragments, and the two largest programs: the Guessing Game solution has more than 45 boxes, and two examples are wider than 1100 px).
 - The memory model and tracer stop after 1500 executed steps and say so.

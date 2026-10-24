@@ -93,3 +93,18 @@ while-update: {en: Updating the while condition}
 zip-dict: {en: Building a dictionary with zip}
 zip-enumerate: {en: zip() and enumerate()}
 zip-shortest: {en: zip stops at the shortest}
+
+# Lesson 0, flowcharts (English only for now)
+flow-decision: {en: 'Decision: a diamond is an if'}
+flow-elif-chain: {en: A chain of diamonds is if / elif / else}
+flow-for-vs-while: {en: 'for or while?'}
+flow-function: {en: 'Function: a flowchart inside a flowchart'}
+flow-guess-game: {en: 'Guess the number: the whole flow'}
+flow-loop-update: {en: Something in the loop must change}
+flow-method: {en: From problem to code in 5 steps}
+flow-mistakes: {en: Common flowchart mistakes}
+flow-password-loop: {en: Loop until the answer is right}
+flow-rules: {en: Rules for drawing a flowchart}
+flow-sequence: {en: 'Sequence: one box, one line'}
+flow-symbols: {en: Flowchart symbols}
+flow-while: {en: 'Loop: an arrow back up'}

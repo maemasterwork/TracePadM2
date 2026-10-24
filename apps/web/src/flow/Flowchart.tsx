@@ -42,6 +42,9 @@ function shape(n: FlowNode) {
   }
 }
 
+/** English labels stay left-to-right inside a right-to-left page (otherwise the "?" of "score >= 90?" jumps to the front). */
+const textDir = (s: string): 'rtl' | 'ltr' => (/[\u0590-\u08FF]/.test(s) ? 'rtl' : 'ltr');
+
 function path(e: FlowEdge, mx: (x: number) => number) {
   return e.pts.map(([x, y], i) => `${i ? 'L' : 'M'}${mx(x)} ${y}`).join(' ');
 }
@@ -56,7 +59,7 @@ export function ChartView({ chart, currentLine, history, arrowId }: { chart: Flo
   return (
     <figure className="flow-fig">
       <figcaption>{chart.title}</figcaption>
-      <div className="flow-scroll" tabIndex={0} role="region" aria-label={t('flow.regionLabel', { title: chart.title })}>
+      <div className="flow-scroll" dir={dir} tabIndex={0} role="region" aria-label={t('flow.regionLabel', { title: chart.title })}>
         <svg className="flow" width="100%" style={{ maxWidth: chart.w, minWidth: Math.round(chart.w * 0.78), aspectRatio: `${chart.w} / ${chart.h}` }} viewBox={`0 0 ${chart.w} ${chart.h}`} role="img" aria-label={t('flow.svgLabel', { title: chart.title })} aria-describedby={outId} focusable="false">
           <defs>
             <marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" className="flow-arrow" /></marker>
@@ -67,7 +70,7 @@ export function ChartView({ chart, currentLine, history, arrowId }: { chart: Flo
               return (
                 <g key={i}>
                   <path d={path(e, mx)} className={'flow-edge' + (e.dashed ? ' dashed' : '') + (e.back ? ' back' : '')} markerEnd={`url(#${arrowId})`} />
-                  {lp && e.label && <text x={mx(lp.x)} y={lp.y} className="flow-elabel" textAnchor={rtl ? (lp.anchor === 'start' ? 'end' : 'middle') : lp.anchor}>{e.label}</text>}
+                  {lp && e.label && <text x={mx(lp.x)} y={lp.y} className="flow-elabel" direction={textDir(e.label)} textAnchor={rtl ? (lp.anchor === 'start' ? 'end' : 'middle') : lp.anchor}>{e.label}</text>}
                 </g>
               );
             })}
@@ -86,7 +89,7 @@ export function ChartView({ chart, currentLine, history, arrowId }: { chart: Flo
               return (
                 <g key={n.id} className={`flow-node k-${n.kind}${on ? ' on' : ''}${seen ? ' seen' : ''}`} data-node={n.id} data-on={on || undefined} aria-hidden="true">
                   {shape(nn)}
-                  {textLines.map((s, i) => <text key={i} x={nn.x} y={y0 + i * lh} textAnchor="middle" dominantBaseline="central" className="flow-text">{s}</text>)}
+                  {textLines.map((s, i) => <text key={i} x={nn.x} y={y0 + i * lh} textAnchor="middle" dominantBaseline="central" className="flow-text" direction={textDir(s)}>{s}</text>)}
                   {codeLines.map((s, i) => <text key={'c' + i} x={nn.x - n.w / 2 + 12} y={y0 + (textLines.length + i) * lh} dominantBaseline="central" className="flow-code" direction="ltr">{s}</text>)}
                   {count > 1 && <text x={nn.x + n.w / 2 - 6} y={n.y + 12} textAnchor="end" className="flow-count">×{count}</text>}
                 </g>

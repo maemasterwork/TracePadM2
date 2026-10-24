@@ -81,6 +81,7 @@ class ChapterNumbers(unittest.TestCase):
         self.assertEqual(build.chapter_base(1), 0)      # lesson 1 keeps 1..99 (existing learner data)
         self.assertEqual(build.chapter_base(2), 200)
         self.assertEqual(build.chapter_base(10), 1000)
+        self.assertEqual(build.chapter_base(0), 10000)  # the flowchart primer; never overlaps lessons 1 to 99
 
     def test_unique_across_every_published_lesson(self):
         import build, yaml

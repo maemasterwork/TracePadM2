@@ -59,7 +59,7 @@ test.describe('review, progress and mastery', () => {
     const concept = page.locator('.concepts li').first();
     await expect(concept).toContainText('needs review');
     await expect(concept.locator('.meter')).toHaveAttribute('aria-label', /%/);
-    await expect(page.locator('.chapter-progress li').first()).toContainText('Numbers');
+    await expect(page.locator('.chapter-progress li', { hasText: 'Numbers' }).first()).toBeVisible();
   });
 
   for (const [theme, locale] of [['light', 'en'], ['dark', 'fa']] as const) {
