@@ -108,3 +108,54 @@ flow-rules: {en: Rules for drawing a flowchart}
 flow-sequence: {en: 'Sequence: one box, one line'}
 flow-symbols: {en: Flowchart symbols}
 flow-while: {en: 'Loop: an arrow back up'}
+
+# Lesson 3 (English only for now)
+append-returns-none: {en: "append returns None"}
+args-tuple: {en: "*args is a tuple"}
+args-type: {en: "Types of args and kwargs"}
+base-case: {en: "Recursion base case"}
+chaining: {en: "Method chaining"}
+chaining-none: {en: "Chaining after None"}
+comprehension-scope: {en: "Comprehension scope"}
+default-args: {en: "Default and keyword arguments"}
+default-order: {en: "Order of defaults"}
+dir-help: {en: "dir() and help()"}
+filter-none: {en: "filter(None, ...)"}
+forwarding: {en: "Forwarding arguments"}
+global-keyword: {en: "The global keyword"}
+in-place: {en: "In-place methods"}
+keyword-only: {en: "Keyword-only parameters"}
+kwargs-dict: {en: "**kwargs is a dict"}
+lambda-basic: {en: "Lambda expressions"}
+lambda-limits: {en: "What a lambda can contain"}
+late-binding: {en: "Lambda late binding"}
+late-binding-fix: {en: "Fixing late binding"}
+legb: {en: "LEGB lookup order"}
+local-vs-global: {en: "Local vs global names"}
+map-filter: {en: "map and filter"}
+map-returns: {en: "What map returns"}
+method-vs-function: {en: "Method vs function"}
+mixed-order: {en: "Mixed parameter order"}
+multiple-returns: {en: "Returning several values"}
+mutable-default: {en: "Mutable default argument"}
+mutating-vs-new: {en: "Mutating vs new object"}
+none-default: {en: "The None default pattern"}
+none-from-sort: {en: "sort() returns None"}
+nonlocal-closure: {en: "Closures and nonlocal"}
+nonlocal-vs-global: {en: "nonlocal vs global"}
+param-order: {en: "Parameter order"}
+positional-only: {en: "Positional-only parameters"}
+print-vs-return: {en: "print vs return"}
+pure: {en: "Pure functions"}
+read-global: {en: "Reading a global"}
+recursion: {en: "Recursion"}
+reduce: {en: "reduce"}
+return-vs-print: {en: "return vs print"}
+shadow-builtin: {en: "Shadowing built-ins"}
+side-effect: {en: "Side effects"}
+sorted-new-list: {en: "sorted() returns a new list"}
+star-in-call: {en: "Unpacking with * in a call"}
+two-counters: {en: "Independent closures"}
+unbound: {en: "UnboundLocalError"}
+unpacking-call: {en: "Unpacking arguments"}
+which-style: {en: "Choosing lambda, comprehension or def"}

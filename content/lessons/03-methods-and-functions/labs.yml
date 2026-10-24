@@ -1,0 +1,1026 @@
+# Lesson 3 labs (English only for now; add `fa:` next to each `en:` when Persian is started).
+# Generated once from a script that ran every solution in CPython; edit this file by hand from now on.
+# Learner-visible text has en (fa optional). HTML in text is limited to code, em, strong, br.
+lesson: 03-methods-and-functions
+schema: 1
+chapters:
+  1:
+    predictions:
+    - id: p1
+      tag: mutating-vs-new
+      code: |-
+        s = "python"
+        s.upper()
+        print(s)
+      answer: python
+      why:
+        en: 'String methods never change the string: strings are immutable. <code>s.upper()</code> builds a new string, and because nothing stored it, it was thrown away. <code>s</code> is still <code>python</code>.'
+    - id: p2
+      tag: none-from-sort
+      code: |-
+        x = [3, 1, 2]
+        y = x.sort()
+        print(x, y)
+      answer: '[1, 2, 3] None'
+      why:
+        en: <code>list.sort()</code> changes the list in place and returns <code>None</code>. So <code>x</code> is sorted and <code>y</code> is <code>None</code>.
+    - id: p3
+      tag: sorted-new-list
+      code: |-
+        nums = [3, 1, 2]
+        result = sorted(nums)
+        print(nums, result)
+      answer: '[3, 1, 2] [1, 2, 3]'
+      why:
+        en: <code>sorted()</code> returns a new list and leaves the original alone, so <code>nums</code> keeps its order.
+    - id: p4
+      tag: chaining
+      code: |-
+        text = "  ali REZA  "
+        print(text.strip().title().split())
+      answer: '[''Ali'', ''Reza'']'
+      why:
+        en: 'Each method works on the result of the one before it: strip the spaces, capitalise each word, then split into a list of words.'
+    - id: p5
+      tag: append-returns-none
+      code: |-
+        x = [1, 2]
+        y = x.append(3)
+        print(x, y)
+      answer: '[1, 2, 3] None'
+      why:
+        en: <code>append</code> changes the list and returns <code>None</code>. This is exactly Try It question 1.
+    quizzes:
+    - id: q1
+      tag: method-vs-function
+      question:
+        en: Which one is a <em>method</em> call?
+      options:
+      - en: <code>len(name)</code>
+      - en: <code>name.upper()</code>
+      - en: <code>sorted(name)</code>
+      - en: <code>print(name)</code>
+      correct: 1
+      why:
+        en: A method belongs to an object and is called with a dot after it. <code>len</code>, <code>sorted</code> and <code>print</code> are stand-alone functions.
+    - id: q2
+      tag: dir-help
+      question:
+        en: Which built-in lists the names an object has?
+      options:
+      - en: <code>dir()</code>
+      - en: <code>help()</code>
+      - en: <code>type()</code>
+      - en: <code>id()</code>
+      correct: 0
+      why:
+        en: <code>dir(obj)</code> lists the names, <code>help(obj.method)</code> shows the documentation, and <code>type(obj)</code> tells you the type.
+    - id: q3
+      tag: chaining-none
+      question:
+        en: Why does <code>items.append(1).append(2)</code> fail?
+      options:
+      - en: <code>append</code> only accepts one number
+      - en: <code>append</code> returns <code>None</code>, which has no <code>append</code> method
+      - en: Lists are immutable
+      - en: You cannot call two methods on one line
+      correct: 1
+      why:
+        en: A method that changes an object in place usually returns <code>None</code>. The second call is then made on <code>None</code> and raises an <code>AttributeError</code>.
+    - id: q4
+      tag: in-place
+      question:
+        en: Which of these changes the list it is called on?
+      options:
+      - en: <code>sorted(nums)</code>
+      - en: <code>nums.sort()</code>
+      - en: <code>nums.copy()</code>
+      - en: <code>len(nums)</code>
+      correct: 1
+      why:
+        en: <code>nums.sort()</code> sorts in place. <code>sorted(nums)</code> and <code>nums.copy()</code> give back new lists, and <code>len</code> just reads.
+    exercises:
+    - id: e1
+      prompt:
+        en: The code below tries to uppercase <code>name</code> but prints it unchanged. Fix it so it prints <code>PYTHON</code>.
+      starter: |-
+        name = "python"
+        name.upper()
+        print(name)
+      solution: |-
+        name = "python"
+        name = name.upper()
+        print(name)
+      param:
+        pattern: ^name = .*$
+        flags: m
+      tests:
+      - out: PYTHON
+      - set: name = "tracepad"
+        out: TRACEPAD
+      hints:
+      - en: Strings cannot be changed in place. A method call gives you a new string.
+      - en: Store the result, for example by assigning it back to the same variable name.
+    - id: e2
+      prompt:
+        en: Turn <code>raw</code> into a tidy name using <strong>one chained expression</strong> and print it. For the starting value the output is <code>Ali Reza Karimi</code>.
+      starter: |-
+        raw = "  ali REZA karimi  "
+
+        # your chained expression here
+      solution: |-
+        raw = "  ali REZA karimi  "
+
+        print(raw.strip().title())
+      param:
+        pattern: ^raw = .*$
+        flags: m
+      tests:
+      - out: Ali Reza Karimi
+      - set: raw = "   maryam   MIRZAKHANI "
+        out: Maryam   Mirzakhani
+      - set: raw = "sara"
+        out: Sara
+        hidden: true
+      hints:
+      - en: 'Two methods are enough: one removes the spaces at the ends, one fixes the capital letters.'
+      - en: <code>strip()</code> removes the spaces and <code>title()</code> capitalises every word. Chain them with a dot and print the result.
+    - id: e3
+      prompt:
+        en: Sort <code>scores</code> from high to low <em>without changing</em> the original list. Print the new sorted list, then the original. The first output line is <code>[90, 85, 70]</code>.
+      starter: |-
+        scores = [70, 90, 85]
+
+        # your code here
+      solution: |-
+        scores = [70, 90, 85]
+
+        ranked = sorted(scores, reverse=True)
+        print(ranked)
+        print(scores)
+      param:
+        pattern: ^scores = .*$
+        flags: m
+      tests:
+      - out: |-
+          [90, 85, 70]
+          [70, 90, 85]
+      - set: scores = [5, 1, 3, 2]
+        out: |-
+          [5, 3, 2, 1]
+          [5, 1, 3, 2]
+      hints:
+      - en: You need a function or method that returns a new list. <code>list.sort()</code> would change the original.
+      - en: <code>sorted(scores, reverse=True)</code> gives the new list. Print it, then print <code>scores</code>.
+  2:
+    predictions:
+    - id: p1
+      tag: print-vs-return
+      code: |-
+        def f(x):
+            x = x + 1
+
+        y = f(1)
+        print(y)
+      answer: None
+      why:
+        en: The function has no <code>return</code>, so it gives back <code>None</code>. Changing <code>x</code> inside has no effect on the outside. This is Try It question 2.
+    - id: p2
+      tag: default-args
+      code: |-
+        def greet(name, greeting="Hello"):
+            return f"{greeting}, {name}!"
+
+        print(greet("Sara"))
+        print(greet("Ali", "Hi"))
+        print(greet(greeting="Hey", name="Reza"))
+      answer: |-
+        Hello, Sara!
+        Hi, Ali!
+        Hey, Reza!
+      why:
+        en: A missing argument uses its default. Keyword arguments are matched by name, so their order does not matter.
+    - id: p3
+      tag: mutable-default
+      code: |-
+        def add(item, bag=[]):
+            bag.append(item)
+            return bag
+
+        print(add(1))
+        print(add(2))
+      answer: |-
+        [1]
+        [1, 2]
+      why:
+        en: The default list is created once, when the function is defined, and shared by every call that does not pass its own list. The second call adds to the same list.
+    - id: p4
+      tag: multiple-returns
+      code: |-
+        def min_max(nums):
+            return min(nums), max(nums)
+
+        lo, hi = min_max([4, 9, 1, 7])
+        print(lo, hi)
+        print(min_max([5]))
+      answer: |-
+        1 9
+        (5, 5)
+      why:
+        en: Returning two values returns one tuple, which you can unpack. For a one-item list min and max are the same.
+    - id: p5
+      tag: recursion
+      code: |-
+        def countdown(n):
+            if n == 0:
+                print("go")
+                return
+            print(n)
+            countdown(n - 1)
+
+        countdown(3)
+      answer: |-
+        3
+        2
+        1
+        go
+      why:
+        en: Each call prints and then calls itself with a smaller number. When <code>n</code> reaches 0 (the base case), it prints <code>go</code> and the calls stop.
+    - id: p6
+      tag: side-effect
+      code: |-
+        def add_one(items):
+            items.append(1)
+
+        data = []
+        add_one(data)
+        add_one(data)
+        print(data)
+      answer: '[1, 1]'
+      why:
+        en: 'The function receives the same list object, not a copy. Appending inside changes the list outside as well: a side effect.'
+    quizzes:
+    - id: q1
+      tag: return-vs-print
+      question:
+        en: A function ends with <code>print(result)</code> instead of <code>return result</code>. What does a caller get back from <code>x = f()</code>?
+      options:
+      - en: The value of <code>result</code>
+      - en: <code>None</code>
+      - en: An error
+      - en: An empty string
+      correct: 1
+      why:
+        en: <code>print</code> only shows a value on the screen. Without <code>return</code>, the function returns <code>None</code>.
+    - id: q2
+      tag: default-order
+      question:
+        en: Which definition is a <code>SyntaxError</code>?
+      options:
+      - en: <code>def f(a, b=1):</code>
+      - en: <code>def f(a=1, b):</code>
+      - en: <code>def f(a, b):</code>
+      - en: <code>def f(a=1, b=2):</code>
+      correct: 1
+      why:
+        en: Parameters without a default cannot follow parameters that have one.
+    - id: q3
+      tag: none-default
+      question:
+        en: What is the standard fix for a mutable default such as <code>def f(x, items=[])</code>?
+      options:
+      - en: Use <code>items=()</code> and hope
+      - en: Use <code>items=None</code> and create a new list inside when it is <code>None</code>
+      - en: Make the list global
+      - en: Call <code>f</code> only once
+      correct: 1
+      why:
+        en: A <code>None</code> default is safe because it is immutable. The function creates a fresh list on each call that needs one.
+    - id: q4
+      tag: base-case
+      question:
+        en: What does every recursive function need?
+      options:
+      - en: A global variable
+      - en: A <code>print</code> call
+      - en: A base case that stops the recursion
+      - en: A <code>lambda</code>
+      correct: 2
+      why:
+        en: Without a base case the function calls itself forever until Python raises a <code>RecursionError</code>.
+    - id: q5
+      tag: pure
+      question:
+        en: Which function is <em>pure</em>?
+      options:
+      - en: '<code>def f(x): items.append(x)</code> (items is global)'
+      - en: '<code>def f(x): return x * 2</code>'
+      - en: '<code>def f(x): print(x)</code>'
+      - en: '<code>def f(x): x.clear()</code>'
+      correct: 1
+      why:
+        en: A pure function only uses its arguments and returns a value. It changes nothing outside itself.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>is_leap(year)</code> that returns <code>True</code> for a leap year. A year is a leap year if it is divisible by 4, except century years, which must be divisible by 400.
+      starter: |-
+        def is_leap(year):
+            pass
+      solution: |-
+        def is_leap(year):
+            """Return True if year is a leap year."""
+            return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+      tests:
+      - post: print([is_leap(y) for y in (1900, 2000, 2024, 2026)])
+        out: '[False, True, True, False]'
+      - post: print(is_leap(1600), is_leap(2100), is_leap(2400), is_leap(7))
+        out: True False True False
+      hints:
+      - en: 'Three rules: divisible by 4, but not by 100, unless also divisible by 400.'
+      - en: A condition can combine these with <code>and</code> / <code>or</code>. Use <code>%</code> to test divisibility.
+      - en: <code>year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)</code>, returned directly.
+    - id: e2
+      prompt:
+        en: Write <code>average(numbers)</code> that returns the average, or <code>None</code> for an empty list instead of crashing.
+      starter: |-
+        def average(numbers):
+            return sum(numbers) / len(numbers)
+      solution: |-
+        def average(numbers):
+            """Return the mean of numbers, or None if the list is empty."""
+            if not numbers:
+                return None
+            return sum(numbers) / len(numbers)
+      tests:
+      - post: |-
+          print(average([2, 4, 9]))
+          print(average([]))
+        out: |-
+          5.0
+          None
+      - post: |-
+          print(average([10]))
+          print(average([1, 2]))
+        out: |-
+          10.0
+          1.5
+      hints:
+      - en: The starter crashes with a <code>ZeroDivisionError</code> on an empty list. Check for that case first.
+      - en: An empty list is falsy, so <code>if not numbers:</code> works. Return <code>None</code> there.
+    - id: e3
+      prompt:
+        en: Fix the mutable-default trap. <code>log</code> should start a new list on every call that does not pass one.
+      starter: |-
+        def log(message, history=[]):
+            history.append(message)
+            return history
+      solution: |-
+        def log(message, history=None):
+            """Add message to history (a new list if none is given)."""
+            if history is None:
+                history = []
+            history.append(message)
+            return history
+      tests:
+      - post: |-
+          print(log('a'))
+          print(log('b'))
+        out: |-
+          ['a']
+          ['b']
+      - post: |-
+          h = ['x']
+          print(log('y', h))
+          print(log('z'))
+        out: |-
+          ['x', 'y']
+          ['z']
+      hints:
+      - en: The default list is built once and shared. Use an immutable default instead.
+      - en: 'Use <code>history=None</code>, then inside write <code>if history is None: history = []</code>.'
+    - id: e4
+      prompt:
+        en: Rewrite <code>factorial</code> with a loop instead of recursion. It must return 1 for 0.
+      starter: |-
+        def factorial(n):
+            if n <= 1:
+                return 1
+            return n * factorial(n - 1)
+
+        # Replace the body with a loop (no calls to factorial inside).
+      solution: |-
+        def factorial(n):
+            """Return n! using a loop."""
+            result = 1
+            for k in range(2, n + 1):
+                result *= k
+            return result
+      tests:
+      - post: print(factorial(0), factorial(1), factorial(5), factorial(10))
+        out: 1 1 120 3628800
+      - post: print('factorial' in factorial.__code__.co_names)
+        out: 'False'
+      hints:
+      - en: Start with <code>result = 1</code> and multiply it by each number from 2 to <code>n</code>.
+      - en: '<code>for k in range(2, n + 1): result *= k</code>, then <code>return result</code>.'
+  3:
+    predictions:
+    - id: p1
+      tag: lambda-basic
+      code: |-
+        double = lambda x: x * 2
+        print(double(5))
+        print((lambda a, b: a + b)(2, 3))
+      answer: |-
+        10
+        5
+      why:
+        en: A lambda is a small unnamed function; its single expression is the value it returns.
+    - id: p2
+      tag: sort-key
+      code: |-
+        people = [("Sara", 20), ("Ali", 17), ("Reza", 17)]
+        print(sorted(people, key=lambda p: (-p[1], p[0])))
+      answer: '[(''Sara'', 20), (''Ali'', 17), (''Reza'', 17)]'
+      why:
+        en: 'The key is <code>(-age, name)</code>: oldest first, and ties broken alphabetically.'
+    - id: p3
+      tag: map-filter
+      code: |-
+        nums = [1, 2, 3, 4, 5, 6]
+        evens = list(filter(lambda n: n % 2 == 0, nums))
+        print(list(map(lambda n: n * n, evens)))
+      answer: '[4, 16, 36]'
+      why:
+        en: <code>filter</code> keeps 2, 4, 6. <code>map</code> then squares each. Both return lazy objects, so <code>list()</code> is needed to see the values.
+    - id: p4
+      tag: reduce
+      code: |-
+        from functools import reduce
+        print(reduce(lambda a, b: a * b, [1, 2, 3, 4]))
+        print(reduce(lambda a, b: a + b, [], 0))
+      answer: |-
+        24
+        0
+      why:
+        en: '<code>reduce</code> folds the items into one value: 1*2*3*4. With an empty list it returns the starting value you gave it.'
+    - id: p5
+      tag: late-binding
+      code: |-
+        funcs = [lambda: i for i in range(3)]
+        print([f() for f in funcs])
+      answer: '[2, 2, 2]'
+      why:
+        en: All three lambdas look up <code>i</code> when they are <em>called</em>, after the loop finished, so they all see the last value, 2. This is late binding.
+    - id: p6
+      tag: late-binding-fix
+      code: |-
+        funcs = [lambda i=i: i for i in range(3)]
+        print([f() for f in funcs])
+      answer: '[0, 1, 2]'
+      why:
+        en: The default value <code>i=i</code> is evaluated when each lambda is created, so each one keeps its own number.
+    quizzes:
+    - id: q1
+      tag: lambda-limits
+      question:
+        en: What can the body of a lambda contain?
+      options:
+      - en: Any number of statements
+      - en: A single expression
+      - en: Only a <code>print</code> call
+      - en: A <code>return</code> statement
+      correct: 1
+      why:
+        en: A lambda body is exactly one expression, and its value is returned automatically.
+    - id: q2
+      tag: map-returns
+      question:
+        en: What does <code>map(str, [1, 2])</code> return in Python 3?
+      options:
+      - en: A list <code>['1', '2']</code>
+      - en: A lazy map object
+      - en: A tuple
+      - en: A string
+      correct: 1
+      why:
+        en: In Python 3 <code>map</code> and <code>filter</code> are lazy. Wrap them in <code>list()</code> to see the values.
+    - id: q3
+      tag: filter-none
+      question:
+        en: What does <code>list(filter(None, [0, 1, '', 'a', None]))</code> give?
+      options:
+      - en: <code>[0, '', None]</code>
+      - en: <code>[1, 'a']</code>
+      - en: <code>[]</code>
+      - en: <code>[0, 1, '', 'a', None]</code>
+      correct: 1
+      why:
+        en: <code>filter(None, ...)</code> keeps only the truthy items.
+    - id: q4
+      tag: which-style
+      question:
+        en: You need squares of the even numbers in a list. Which is usually the most readable?
+      options:
+      - en: A long chain of <code>map</code>/<code>filter</code>/<code>lambda</code>
+      - en: A list comprehension
+      - en: A <code>reduce</code>
+      - en: Recursion
+      correct: 1
+      why:
+        en: For a simple transform-and-filter a comprehension is usually clearer than <code>map</code> and <code>filter</code> with lambdas.
+    exercises:
+    - id: e1
+      prompt:
+        en: Sort <code>words</code> by length, shortest first, using <code>sorted</code> with a <code>key</code> lambda. Print the result.
+      starter: |-
+        words = ["banana", "fig", "apple", "kiwi"]
+
+        # your code here
+      solution: |-
+        words = ["banana", "fig", "apple", "kiwi"]
+
+        print(sorted(words, key=lambda w: len(w)))
+      param:
+        pattern: ^words = .*$
+        flags: m
+      tests:
+      - out: '[''fig'', ''kiwi'', ''apple'', ''banana'']'
+      - set: words = ["pear", "a", "plum", "bb"]
+        out: '[''a'', ''bb'', ''pear'', ''plum'']'
+      hints:
+      - en: <code>sorted</code> accepts a <code>key</code> function that turns each item into the value to compare.
+      - en: '<code>key=lambda w: len(w)</code> (or just <code>key=len</code>).'
+    - id: e2
+      prompt:
+        en: Use <code>map</code> and <code>filter</code> to print the squares of the numbers in <code>nums</code> that are odd, as a list.
+      starter: |-
+        nums = [1, 2, 3, 4, 5, 6, 7]
+
+        # your code here
+      solution: |-
+        nums = [1, 2, 3, 4, 5, 6, 7]
+
+        odd = filter(lambda n: n % 2 == 1, nums)
+        print(list(map(lambda n: n * n, odd)))
+      param:
+        pattern: ^nums = .*$
+        flags: m
+      tests:
+      - out: '[1, 9, 25, 49]'
+      - set: nums = [10, 11, 12, 13]
+        out: '[121, 169]'
+      - set: nums = [2, 4]
+        out: '[]'
+      hints:
+      - en: First keep only the odd numbers with <code>filter</code>, then square them with <code>map</code>.
+      - en: Remember <code>list(...)</code> around the result before printing.
+    - id: e3
+      prompt:
+        en: Fix the late-binding bug. The list should hold three functions that return 0, 1 and 2.
+      starter: |-
+        funcs = [lambda: i for i in range(3)]
+        print([f() for f in funcs])
+      solution: |-
+        funcs = [lambda i=i: i for i in range(3)]
+        print([f() for f in funcs])
+      tests:
+      - out: '[0, 1, 2]'
+      hints:
+      - en: Every lambda reads <code>i</code> only when it is called, after the loop ended.
+      - en: Give the lambda a parameter with the default <code>i=i</code> to freeze the current value.
+  4:
+    predictions:
+    - id: p1
+      tag: local-vs-global
+      code: |-
+        x = "global"
+
+        def f():
+            x = "local"
+            print(x)
+
+        f()
+        print(x)
+      answer: |-
+        local
+        global
+      why:
+        en: Assigning inside the function creates a new <em>local</em> <code>x</code>. The global one is untouched.
+    - id: p2
+      tag: read-global
+      code: |-
+        rate = 0.2
+
+        def tax(price):
+            return price * rate
+
+        print(tax(100))
+      answer: '20.0'
+      why:
+        en: 'Reading a global is fine: Python looks in the local scope, then the enclosing ones, then the global scope.'
+    - id: p3
+      tag: global-keyword
+      code: |-
+        count = 0
+
+        def bump():
+            global count
+            count += 1
+
+        bump()
+        bump()
+        print(count)
+      answer: '2'
+      why:
+        en: <code>global count</code> makes the name inside the function refer to the module-level variable, so both calls change it.
+    - id: p4
+      tag: nonlocal-closure
+      code: |-
+        def make_counter():
+            n = 0
+            def counter():
+                nonlocal n
+                n += 1
+                return n
+            return counter
+
+        c = make_counter()
+        print(c(), c(), c())
+      answer: 1 2 3
+      why:
+        en: <code>counter</code> remembers <code>n</code> from the function that created it (a closure). <code>nonlocal</code> lets it update that variable.
+    - id: p5
+      tag: two-counters
+      code: |-
+        def make_counter():
+            n = 0
+            def counter():
+                nonlocal n
+                n += 1
+                return n
+            return counter
+
+        a = make_counter()
+        b = make_counter()
+        print(a(), a(), b())
+      answer: 1 2 1
+      why:
+        en: Each call to <code>make_counter</code> builds its own <code>n</code>, so the two counters are independent.
+    - id: p6
+      tag: comprehension-scope
+      code: |-
+        squares = [j * j for j in range(3)]
+        print(squares)
+        try:
+            print(j)
+        except NameError:
+            print("j is gone")
+      answer: |-
+        [0, 1, 4]
+        j is gone
+      why:
+        en: A comprehension has its own scope. Its loop variable does not leak out, unlike a <code>for</code> loop.
+    - id: p7
+      tag: shadowing
+      code: |-
+        def show():
+            len = 5
+            return len
+
+        print(show())
+        print(len("abc"))
+      answer: |-
+        5
+        3
+      why:
+        en: Inside <code>show</code> the name <code>len</code> is a local variable that hides the built-in, but only there.
+    quizzes:
+    - id: q1
+      tag: legb
+      question:
+        en: In what order does Python look names up?
+      options:
+      - en: Global, Local, Built-in, Enclosing
+      - en: Local, Enclosing, Global, Built-in
+      - en: Built-in, Global, Enclosing, Local
+      - en: Enclosing, Local, Built-in, Global
+      correct: 1
+      why:
+        en: 'LEGB: Local, Enclosing, Global, Built-in.'
+    - id: q2
+      tag: unbound
+      question:
+        en: Inside a function, <code>count += 1</code> is used on a global <code>count</code> with no declaration. What happens?
+      options:
+      - en: It works
+      - en: <code>UnboundLocalError</code>
+      - en: <code>SyntaxError</code>
+      - en: <code>count</code> becomes 1 globally
+      correct: 1
+      why:
+        en: Any assignment inside a function makes the name local for the whole function, so reading it before assigning raises <code>UnboundLocalError</code>.
+    - id: q3
+      tag: nonlocal-vs-global
+      question:
+        en: Which keyword rebinds a variable of the <em>enclosing function</em>?
+      options:
+      - en: <code>global</code>
+      - en: <code>nonlocal</code>
+      - en: <code>local</code>
+      - en: <code>static</code>
+      correct: 1
+      why:
+        en: <code>nonlocal</code> is for enclosing function scopes. <code>global</code> is for module-level names.
+    - id: q4
+      tag: shadow-builtin
+      question:
+        en: After <code>list = [1, 2]</code>, what does <code>list('abc')</code> do?
+      options:
+      - en: Returns <code>['a', 'b', 'c']</code>
+      - en: 'Raises <code>TypeError</code>: a list is not callable'
+      - en: Returns <code>[1, 2]</code>
+      - en: Returns an empty list
+      correct: 1
+      why:
+        en: You replaced the built-in name with a list, and lists cannot be called.
+    exercises:
+    - id: e1
+      prompt:
+        en: The function should add to the global <code>total</code> but crashes with <code>UnboundLocalError</code>. Fix it with the right keyword. After two calls it should print <code>15</code>.
+      starter: |-
+        total = 0
+
+        def add(n):
+            total += n
+
+        add(5)
+        add(10)
+        print(total)
+      solution: |-
+        total = 0
+
+        def add(n):
+            global total
+            total += n
+
+        add(5)
+        add(10)
+        print(total)
+      tests:
+      - out: '15'
+      hints:
+      - en: The assignment makes <code>total</code> local, so it cannot be read before it has a value.
+      - en: Declare <code>global total</code> as the first line of <code>add</code>.
+    - id: e2
+      prompt:
+        en: Write <code>make_accumulator()</code> that returns a function. Each call of that function takes a number, adds it to a running total kept in the closure, and returns the total.
+      starter: |-
+        def make_accumulator():
+            pass
+      solution: |-
+        def make_accumulator():
+            """Return a function that keeps a running total."""
+            total = 0
+            def add(n):
+                nonlocal total
+                total += n
+                return total
+            return add
+      tests:
+      - post: |-
+          acc = make_accumulator()
+          print(acc(5), acc(10), acc(-3))
+        out: 5 15 12
+      - post: |-
+          a = make_accumulator()
+          b = make_accumulator()
+          print(a(1), a(1), b(100))
+        out: 1 2 100
+      hints:
+      - en: Create the total in the outer function, then define an inner function that uses it and return the inner function itself (no parentheses).
+      - en: Inside the inner function write <code>nonlocal total</code> before <code>total += n</code>.
+  5:
+    predictions:
+    - id: p1
+      tag: args-tuple
+      code: |-
+        def total(*numbers):
+            return type(numbers).__name__, sum(numbers)
+
+        print(total())
+        print(total(1, 2, 3, 4))
+      answer: |-
+        ('tuple', 0)
+        ('tuple', 10)
+      why:
+        en: <code>*numbers</code> collects the extra positional arguments into a tuple, which is empty when there are none.
+    - id: p2
+      tag: kwargs-dict
+      code: |-
+        def show(**details):
+            for key in sorted(details):
+                print(key, "=", details[key])
+
+        show(name="Sara", age=24)
+      answer: |-
+        age = 24
+        name = Sara
+      why:
+        en: <code>**details</code> collects extra keyword arguments into a dictionary.
+    - id: p3
+      tag: unpacking-call
+      code: |-
+        def volume(a, b, c):
+            return a * b * c
+
+        print(volume(*[2, 3, 4]))
+        print(volume(**{"a": 1, "b": 5, "c": 6}))
+      answer: |-
+        24
+        30
+      why:
+        en: <code>*</code> spreads a list into positional arguments and <code>**</code> spreads a dictionary into keyword arguments.
+    - id: p4
+      tag: keyword-only
+      code: |-
+        def connect(host, *, port=80):
+            return f"{host}:{port}"
+
+        print(connect("site.org"))
+        print(connect("site.org", port=8080))
+      answer: |-
+        site.org:80
+        site.org:8080
+      why:
+        en: Everything after the bare <code>*</code> must be passed by name.
+    - id: p5
+      tag: mixed-order
+      code: |-
+        def f(a, b=2, *args, key=None, **kwargs):
+            return a, b, args, key, kwargs
+
+        print(f(1))
+        print(f(1, 9, 8, 7, key="k", x=0))
+      answer: |-
+        (1, 2, (), None, {})
+        (1, 9, (8, 7), 'k', {'x': 0})
+      why:
+        en: Positional values fill <code>a</code>, then <code>b</code>, and the rest go to <code>args</code>. <code>key</code> only takes a named value and unknown names land in <code>kwargs</code>.
+    - id: p6
+      tag: forwarding
+      code: |-
+        def loud(func):
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs).upper()
+            return wrapper
+
+        @loud
+        def hello(name, punctuation="!"):
+            return "hello " + name + punctuation
+
+        print(hello("sara"))
+        print(hello("ali", punctuation="?"))
+      answer: |-
+        HELLO SARA!
+        HELLO ALI?
+      why:
+        en: The wrapper accepts anything, passes it on unchanged with <code>*args, **kwargs</code>, then changes the result.
+    quizzes:
+    - id: q1
+      tag: param-order
+      question:
+        en: Which is the correct parameter order?
+      options:
+      - en: <code>def f(**kwargs, *args)</code>
+      - en: <code>def f(a, b=0, *args, key=None, **kwargs)</code>
+      - en: <code>def f(*args, a, b=0)</code> with defaults first
+      - en: <code>def f(a=0, b, *args)</code>
+      correct: 1
+      why:
+        en: Positional, defaults, <code>*args</code>, keyword-only, then <code>**kwargs</code>.
+    - id: q2
+      tag: args-type
+      question:
+        en: Inside <code>def f(*args, **kwargs)</code>, what types are <code>args</code> and <code>kwargs</code>?
+      options:
+      - en: list and set
+      - en: tuple and dict
+      - en: tuple and tuple
+      - en: list and dict
+      correct: 1
+      why:
+        en: <code>args</code> is a tuple and <code>kwargs</code> is a dictionary.
+    - id: q3
+      tag: star-in-call
+      question:
+        en: What does <code>print(*[1, 2, 3])</code> do?
+      options:
+      - en: Prints <code>[1, 2, 3]</code>
+      - en: Prints <code>1 2 3</code>
+      - en: Raises an error
+      - en: Prints nothing
+      correct: 1
+      why:
+        en: The <code>*</code> unpacks the list into three separate arguments.
+    - id: q4
+      tag: positional-only
+      question:
+        en: What does the <code>/</code> in <code>def f(a, /, b)</code> mean?
+      options:
+      - en: <code>b</code> is optional
+      - en: <code>a</code> must be passed by position, not by name
+      - en: <code>a</code> is divided by <code>b</code>
+      - en: Nothing, it is a comment
+      correct: 1
+      why:
+        en: Parameters before <code>/</code> are positional-only.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>average(*numbers)</code> that returns the mean of any number of arguments, and <code>0</code> when none are given.
+      starter: |-
+        def average(*numbers):
+            pass
+      solution: |-
+        def average(*numbers):
+            """Return the mean of the arguments, or 0 if there are none."""
+            if not numbers:
+                return 0
+            return sum(numbers) / len(numbers)
+      tests:
+      - post: |-
+          print(average(2, 4, 9))
+          print(average())
+        out: |-
+          5.0
+          0
+      - post: |-
+          print(average(10))
+          print(average(1, 2))
+        out: |-
+          10.0
+          1.5
+      hints:
+      - en: <code>*numbers</code> is a tuple, so <code>sum</code> and <code>len</code> both work on it.
+      - en: 'Handle the empty case first: <code>if not numbers: return 0</code>.'
+    - id: e2
+      prompt:
+        en: 'Write <code>describe(**fields)</code> that returns the fields sorted by name as <code>name=value</code> joined with <code>, </code>. Example: <code>describe(b=2, a=1)</code> gives <code>a=1, b=2</code>.'
+      starter: |-
+        def describe(**fields):
+            pass
+      solution: |-
+        def describe(**fields):
+            """Return the keyword arguments as 'k=v' pairs sorted by name."""
+            return ", ".join(f"{k}={v}" for k, v in sorted(fields.items()))
+      tests:
+      - post: |-
+          print(describe(b=2, a=1))
+          print(repr(describe()))
+        out: |-
+          a=1, b=2
+          ''
+      - post: print(describe(z='x', y=[1], x=None))
+        out: x=None, y=[1], z=x
+      hints:
+      - en: <code>fields</code> is a dictionary. <code>sorted(fields.items())</code> gives its pairs in name order.
+      - en: Build each piece with an f-string and join them with <code>", ".join(...)</code>.
+    - id: e3
+      prompt:
+        en: Write the decorator <code>logged</code>. It should print <code>calling NAME</code> and then call the original function with the same arguments and return its result.
+      starter: |-
+        def logged(func):
+            pass
+
+        @logged
+        def add(a, b=0):
+            return a + b
+      solution: |-
+        def logged(func):
+            """Print a line before every call of func."""
+            def wrapper(*args, **kwargs):
+                print(f"calling {func.__name__}")
+                return func(*args, **kwargs)
+            return wrapper
+
+        @logged
+        def add(a, b=0):
+            return a + b
+      tests:
+      - post: print(add(1, 2))
+        out: |-
+          calling add
+          3
+      - post: |-
+          print(add(5))
+          print(add(a=1, b=1))
+        out: |-
+          calling add
+          5
+          calling add
+          2
+      hints:
+      - en: The decorator returns a new function. That function must accept any arguments.
+      - en: Inside <code>wrapper(*args, **kwargs)</code> print the message, then return <code>func(*args, **kwargs)</code>.

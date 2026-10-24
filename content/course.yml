@@ -20,7 +20,10 @@ lessons:
     number: 2
     status: published
     title: {en: "Python Statements: if / elif / else, loops, useful operators, comprehensions", fa: "دستورهای پایتون: if / elif / else، حلقه‌ها، عملگرهای مفید و جامع‌سازی‌ها"}
-  - {number: 3, status: planned, id: 03-functions, title: {en: "Methods and functions: parameters, return values, scope, *args / **kwargs, lambda", fa: "متدها و توابع: پارامتر، مقدار بازگشتی، حوزه، *args / **kwargs و lambda"}}
+  - id: 03-methods-and-functions
+    number: 3
+    status: published
+    title: {en: "Methods and Functions: parameters, return values, scope, *args / **kwargs, lambda", fa: "متدها و توابع: پارامتر، مقدار بازگشتی، حوزه، *args / **kwargs و lambda"}
   - {number: 4, status: planned, id: 04-iterators-and-generators, title: {en: "Iterators and generators", fa: "تکرارشونده‌ها و مولدها"}}
   - {number: 5, status: planned, id: 05-errors-and-exceptions, title: {en: "Errors and exceptions: tracebacks, try / except / finally, raising, debugging", fa: "خطاها و استثناها: ردگیری، try / except / finally، raise و اشکال‌زدایی"}}
   - {number: 6, status: planned, id: 06-modules-and-stdlib, title: {en: "Modules, packages and the standard library tour", fa: "ماژول‌ها، بسته‌ها و گشتی در کتابخانهٔ استاندارد"}}

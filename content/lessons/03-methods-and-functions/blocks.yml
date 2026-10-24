@@ -1,0 +1,54 @@
+# Sidecar flags for code blocks in lesson.md (the markdown itself is never edited).
+blocks:
+  "6-level-1-warm-ups#1":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#2":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#3":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#4":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#5":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#6":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#7":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#8":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#9":
+    after: ["6-solutions#1"]
+  "6-level-1-warm-ups#10":
+    after: ["6-solutions#1"]
+  "6-level-2-intermediate#1":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#2":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#3":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#4":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#5":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#6":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#7":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#8":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#9":
+    after: ["6-solutions#2"]
+  "6-level-2-intermediate#10":
+    after: ["6-solutions#2"]
+  "6-level-3-challenges#1":
+    after: ["6-solutions#3"]
+  "6-level-3-challenges#2":
+    after: ["6-solutions#4"]
+  "6-level-3-challenges#3":
+    after: ["6-solutions#6"]
+  "6-level-3-challenges#4":
+    after: ["6-solutions#7"]
+  "6-solutions#5":
+    nondeterministic: true
+  "7.1#1":
+    skip: "cheat sheet: shows global and nonlocal side by side as syntax reminders, which Python rejects when combined"

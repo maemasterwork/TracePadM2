@@ -111,3 +111,11 @@ Every decision made without asking, with the reason. Newest milestone last. Data
 90. **The lesson's Mermaid source stays in the lesson and is shown under "Diagram source" on request.** Reason: it is the author's own text, and learners may want to copy it into other tools.
 91. **One edit to the supplied lesson text: the `<details>` block (solution to exercise 3) became a bold line.** Reason: raw HTML in lesson text is escaped on purpose (a security decision from Milestone 1), so the tags would have shown as text. Nothing else in the text was changed; the verifier proves no line is lost.
 92. **Flowchart scroll area follows the page direction, and English labels stay left-to-right in a right-to-left page.** Found while checking Lesson 0 in Persian mode: a wide chart started scrolled to its far end, and the "?" of "score >= 90?" jumped to the front.
+
+## Lesson 3 (Methods and Functions)
+
+93. **Lesson 3 is published as `03-methods-and-functions`** (the planned `03-functions` entry was renamed to match the lesson). Chapters are numbered 301 to 307 inside the app and shown as 1 to 7.
+94. **The lesson text is unchanged** (2241 lines, 0 lost). It had no raw HTML, so no rewriting was needed.
+95. **Homework problem statements are run against the solutions.** The Section 6 problem blocks only show calls such as `larger_unless_both_even(2, 4)`, so `blocks.yml` makes each run after the solution block that defines the function. The timing example (C3) is marked nondeterministic, and the cheat-sheet line that shows `global` and `nonlocal` together is skipped (Python rejects it).
+96. **Practice items cover chapters 1 to 5 only.** The homework (chapter 6) already has 26 graded problems with solutions, and the appendix is reference material. Expected outputs in predictions and tests were produced by running the code, not typed by hand.
+
