@@ -30,6 +30,19 @@ Master these and you can draw (and code) almost anything.
 | Diamond | **Decision** | Yes/No question | `if` / `while` |
 | Arrow | **Flow line** | Which step comes next | next line of code |
 
+Here is a small example with each shape shown:
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[/Read a number/]
+    B --> C[Check the number]
+    C --> D{Is it positive?}
+    D -->|Yes| E[/Print Positive/]
+    D -->|No| F[/Print Zero or negative/]
+    E --> G([End])
+    F --> G
+```
+
 **Rules of thumb**
 
 - One **Start**, at least one **End**.
