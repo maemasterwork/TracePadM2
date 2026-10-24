@@ -57,7 +57,7 @@ Requirements: Node 22, Python 3.13 with `pyyaml jsonschema`, PostgreSQL 16 binar
 
 ```bash
 npm ci
-pip install pyyaml jsonschema
+pip install -r requirements-build.txt
 npm run build            # builds lesson content, copies Pyodide, type-checks, builds the app
 npm run dev              # http://localhost:5173 in guest mode (no backend needed)
 ```

@@ -9,7 +9,7 @@ jobs:
         with: { python-version: '3.13' }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: pip install pyyaml jsonschema
+      - run: pip install -r requirements-build.txt
       - run: npm ci
       - name: Content pipeline tests
         run: python3 -I tools/content/test_pipeline.py
@@ -31,7 +31,7 @@ jobs:
         with: { python-version: '3.13' }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: pip install pyyaml jsonschema
+      - run: pip install -r requirements-build.txt
       - run: npm ci
       - run: npm run build
       - run: npm test

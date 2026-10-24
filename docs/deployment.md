@@ -10,7 +10,7 @@
 6. Grant platform roles by hand (see database.md). Never put the `service_role` key in the app.
 
 ## 2. The site
-`npm ci && npm run build` with these variables set (they are public and are baked into the bundle):
+For the build environment, use Node 22 and Python 3.13. Run `pip install -r requirements-build.txt && npm ci && npm run build` with these variables set (they are public and are baked into the bundle):
 `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, optionally `VITE_OAUTH_PROVIDERS`, `VITE_USERNAME_DOMAIN`.
 Serve `apps/web/dist` over HTTPS. **The host must send the headers in `dist/_headers`** (Netlify and Cloudflare Pages read that file as is). For other hosts copy them into the server config. The important ones: `Content-Security-Policy` (its `connect-src` already names your Supabase origin), `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp`, and long caching for `/assets/*` and `/pyodide/*`. Without COOP/COEP the app still works but uses the `input()` and Stop fallback.
 Single-page routing: unknown paths must serve `index.html`.
