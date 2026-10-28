@@ -1,6 +1,31 @@
 # Flowcharts Made Easy (with Python)
 
-> Learn to think in flowcharts, then turn them into Python code in minutes.
+> A complete, hands-on course module on planning programs with flowcharts: symbols, sequence, decisions, loops, and functions, each translated step by step into working Python code.
+
+**Level:** Absolute Beginner → Lower-Intermediate
+**Requirements:** Python 3.10+ (examples use f-strings and modern syntax). Optional: `graphviz` for the bonus chapter.
+**Estimated time:** 4–6 hours (reading + practice + exercises)
+
+---
+
+## Table of Contents
+
+1. [What is a flowchart?](#1-what-is-a-flowchart)
+2. [The symbols you need](#2-the-symbols-you-need)
+3. [How to draw flowcharts in this document](#3-how-to-draw-flowcharts-in-this-document)
+4. [Block 1: Sequence](#4-block-1-sequence-step-by-step)
+5. [Block 2: Decision (`if / else`)](#5-block-2-decision-if--else)
+6. [Block 3: Loops](#6-block-3-loops-repeat)
+7. [Block 4: Functions](#7-block-4-functions-reusable-recipes)
+8. [The 5-step method: from problem to code](#8-the-5-step-method-from-problem-to-code)
+9. [Full example: Guess the number game](#9-full-example-guess-the-number-game)
+10. [Bonus: generate a flowchart from Python](#10-bonus-generate-a-flowchart-from-python)
+11. [Common mistakes](#11-common-mistakes)
+12. [Practice exercises](#12-practice-exercises)
+13. [Quick reference](#13-quick-reference)
+14. [Summary](#14-summary)
+
+> **How to use this document:** Type every example yourself (do not copy-paste), draw the flowchart on paper and predict the output *before* running the code, then do the exercises in chapter 12. Solutions for selected exercises are included in collapsible sections.
 
 ---
 
@@ -379,7 +404,8 @@ Draw the flowchart first, then write the Python.
 5. **Medium:** Check if a number is prime.
 6. **Hard:** ATM: ask for a PIN (3 attempts max), then show a menu (balance / withdraw / exit).
 
-**Solution for exercise 3** (try it yourself first):
+<details>
+<summary>Solution for exercise 3</summary>
 
 ```mermaid
 flowchart TD
@@ -403,6 +429,7 @@ while n != 0:
 print("Total:", total)
 ```
 
+</details>
 
 ---
 
