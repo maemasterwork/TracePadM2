@@ -42,7 +42,7 @@ test('Persian: the page is right-to-left, code stays left-to-right', async ({ pa
   expect(dir).toBe('ltr');
   await expect(page.getByRole('link', { name: 'تنظیمات' })).toBeVisible();
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('پایتون از صفر');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('یادگیریت رو ادامه بده');
   await expect(page.getByText('درس ۱').first()).toBeAttached(); // Persian digits
 });
 

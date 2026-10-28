@@ -46,7 +46,9 @@ function SyncChip() {
   if (status === 'loading') return null;
   const kind = state === 'offline' ? 'warn' : state === 'saved' ? 'good' : '';
   const icon = state === 'offline' ? 'cloudOff' : state === 'saved' ? 'cloud' : 'sync';
-  return <span className={'app-sync-status ' + kind} role="status" aria-live="polite"><HeaderIcon name={icon} /><span>{t('sync.' + state)}</span></span>;
+  return <span className={'app-sync-status ' + kind} role="status" aria-live="polite"><HeaderIcon name={icon} />
+  {/* <span>{t('sync.' + state)}</span> */}
+  </span>;
 }
 
 function useOnline() {

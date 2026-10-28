@@ -135,10 +135,17 @@ export function Home() {
       </div>
     );
   }
-  const first = course?.lessons.find((l) => l.status === 'published');
   const publishedLessons = course?.lessons.filter((lesson) => lesson.status === 'published') ?? [];
   const plannedLessons = course?.lessons.filter((lesson) => lesson.status === 'planned') ?? [];
   const readKeys = new Set(readRows.filter((row) => row.data.done === true).map((row) => row.key));
+  const first = publishedLessons[0];
+  const nextChapter = publishedLessons.flatMap((lesson) =>
+    (lesson.chapters ?? []).map((chapter) => ({ lesson, chapter })),
+  ).find(({ chapter }) => !readKeys.has(`read:${chapter.n}`));
+  const continueLesson = nextChapter?.lesson ?? first;
+  const continuePath = nextChapter
+    ? `/lesson/${nextChapter.lesson.id}/${nextChapter.chapter.id}`
+    : continueLesson ? `/lesson/${continueLesson.id}` : null;
   const totalChapters = publishedLessons.reduce((total, lesson) => total + (lesson.chapters?.length ?? 0), 0);
   const completedChapters = publishedLessons.reduce(
     (total, lesson) => total + (lesson.chapters?.filter((chapter) => readKeys.has(`read:${chapter.n}`)).length ?? 0),
@@ -162,9 +169,9 @@ export function Home() {
           <p className="course-kicker"><span className="course-kicker-spark" aria-hidden="true">✳</span>{t('home.learningPath')}</p>
           <h1 id="course-title">{course ? pick(course.course.title) : t('home.title')}</h1>
           <p className="course-lead">{course ? pick(course.course.tagline) : t('home.lead')}</p>
-          {first && <Link className="course-start" to={`/lesson/${first.id}`}>
+          {continueLesson && continuePath && <Link className="course-start" to={continuePath}>
             <span className="course-start-icon" aria-hidden="true">↗</span>
-            <span>{t('home.start')}<small>{pick(first.title)}</small></span>
+            <span>{t('home.start')}{num(continueLesson.number)}<small>{nextChapter ? nextChapter.chapter.title : pick(continueLesson.title)}</small></span>
           </Link>}
         </div>
         <div className="course-welcome-art" aria-hidden="true">
