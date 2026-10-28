@@ -1,6 +1,7 @@
 export interface LText { en: string; fa?: string; fa_status?: 'machine' | 'reviewed' }
 export interface CourseLesson {
   id: string; number: number; status: 'published' | 'planned'; title: LText; path?: string;
+  kind?: 'project'; label?: LText; // a project card shows its label (P1) instead of the lesson number
   chapters?: { n: number; id: string; title: string }[];
 }
 export interface Course {
@@ -24,6 +25,6 @@ export interface Lesson {
   id: string; title: string;
   preamble: { blocks: Block[]; sections: Section[] };
   chapters: Chapter[];
-  block_meta: Record<string, { after?: string[]; nondeterministic?: string; skip?: string; stdin?: string }>;
+  block_meta: Record<string, { after?: string[]; nondeterministic?: string; skip?: string; stdin?: string; interactive?: string | boolean }>;
 }
 export interface ConceptInfo { tag: string; name: LText; lessons: string[]; chapters: string[]; items: number }

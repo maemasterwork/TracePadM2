@@ -40,7 +40,7 @@ function HeaderIcon({ name }: { name: HeaderIconName }) {
 }
 
 function SyncChip() {
-  const { t } = useI18n();
+  // const { t } = useI18n();
   const { progress, status } = useAuth();
   const state = useSyncExternalStore((cb) => progress.subscribe(cb), () => progress.getState());
   if (status === 'loading') return null;

@@ -159,3 +159,47 @@ two-counters: {en: "Independent closures"}
 unbound: {en: "UnboundLocalError"}
 unpacking-call: {en: "Unpacking arguments"}
 which-style: {en: "Choosing lambda, comprehension or def"}
+
+# Milestone Project 1 (English only for now)
+board-copy-trap: {en: "One list repeated three times"}
+board-indexing: {en: "Board indexing"}
+check-order: {en: "Check a win before a tie"}
+decide-or-talk: {en: "Deciding vs talking functions"}
+design-is-yours: {en: "The design is yours"}
+eight-lines: {en: "The eight winning lines"}
+extra-requirements: {en: "Beyond the brief"}
+f-string-board: {en: "Drawing with f-strings"}
+fake-input: {en: "Faking input in tests"}
+flow-exits: {en: "Exits of the game loop"}
+index-zero-trap: {en: "The unused index 0"}
+int-crash: {en: "int() on bad text"}
+isdecimal: {en: "isdecimal()"}
+loop-exit: {en: "How the game loop ends"}
+main-loop: {en: "The replay loop"}
+markers-dict: {en: "Markers by player name"}
+mutable-arg: {en: "Changing the caller's list"}
+off-by-one: {en: "Off-by-one squares"}
+overwrite: {en: "Overwriting a square"}
+overwrite-check: {en: "Checking before placing"}
+place-returns-none: {en: "place_marker returns None"}
+position-error: {en: "Checking a typed position"}
+print-not-return: {en: "Printing the board"}
+random-test: {en: "Testing randomness"}
+requirements: {en: "Reading the requirements"}
+return-bool: {en: "Returning a bool"}
+return-int: {en: "Returning an int"}
+return-none: {en: "Returning None for a tie"}
+shadow-ok: {en: "Shadowing on purpose"}
+startswith-y: {en: "Forgiving yes/no answers"}
+stretch: {en: "Stretch goals"}
+strip-upper: {en: "strip() and upper()"}
+test-split: {en: "Separating checking from asking"}
+tie-def: {en: "What a tie is"}
+turn-switch: {en: "Switching turns"}
+which-player: {en: "Whose win to check"}
+while-valid: {en: "Loop until valid"}
+why-fake: {en: "Why fake input"}
+why-ten: {en: "Why ten items"}
+win-before-tie: {en: "Win before tie"}
+win-diagonal: {en: "Winning on a diagonal"}
+win-mixed-column: {en: "A broken column"}

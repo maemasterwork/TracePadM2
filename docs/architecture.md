@@ -52,6 +52,8 @@ A teacher's grade must not depend on what a browser says *at grading time*. `sub
 ## Several lessons
 `content/course.yml` lists lessons; `tools/content/build.py` builds each published lesson into `public/content/<id>/` and writes `course.json`. The chapter number the app sees is unique across lessons (`chapter_base()` in build.py: lesson 1 = n, lesson N = N*100 + n; `src/content/chapterNo.ts` shows the printed number again). Every storage and SQL key that holds a chapter number therefore stays unique without changing the key format. Cross-lesson screens (review, progress, notes, teacher chapter picker) find a chapter's lesson through `course.json`.
 
+A course entry may be a **project**: `kind: project` and a short `label` (`P1`) make the course page show the label instead of the number and "Project" instead of "Lesson" for screen readers. A project is otherwise an ordinary lesson (same files, same checks); its `number` (10) only decides the chapter numbers, 1001 to 1099.
+
 ## Mermaid diagrams in lessons (`tools/content/mermaid_chart.py`)
 A fenced `mermaid` block in `lesson.md` is parsed (small subset), laid out in layers and columns, validated with the same rules as generated charts, and written to `flow.json` under `block:<id>` like any example. `LessonView` shows it with the normal `<Flowchart>` (no tracer) plus the source in a `<details>`. A block the layout cannot handle is skipped with a reason and shown as plain text.
 

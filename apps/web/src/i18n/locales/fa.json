@@ -23,6 +23,7 @@
   "home.lead": "اول پیش‌بینی کنید، بعد اجرا کنید، بعد حافظه را ببینید. همه‌چیز در مرورگر شما اجرا می‌شود.",
   "home.start": "درس ",
   "home.lesson": "درس {n}",
+  "home.project": "پروژه",
   "home.planned": "به‌زودی",
   "home.open": "باز کردن درس",
   "home.chapters": "{n, plural, one {# فصل} other {# فصل}}",

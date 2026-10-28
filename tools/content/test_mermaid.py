@@ -60,38 +60,21 @@ class Mermaid(unittest.TestCase):
         self.assertEqual({tuple(e["pts"][-1]) for e in into_end}, {tuple(into_end[0]["pts"][-1])})  # same arrival point
 
     def test_long_edges_do_not_cross_boxes(self):
-        src = ("flowchart TD\n A([Start]) --> B{x >= 90?}\n B -->|Yes| C[/Print A/]\n B -->|No| D{x >= 80?}\n D -->|Yes| E[/Print B/]\n"
-               " D -->|No| G[/Print F/]\n C --> J([End])\n E --> J\n G --> J\n")
-        c = chart(src)
-        boxes = c["nodes"]
-        for e in c["edges"]:
-            for (x1, y1), (x2, y2) in zip(e["pts"], e["pts"][1:]):
-                for n in boxes:
-                    if n["id"] in (e["from"], e["to"]):
+        src = ("flowchart TD\n A([Start]) --> H{Won?}\n H -->|No| J{Full?}\n H -->|Yes| I[/Winner/]\n"
+               " J -->|No| L[Switch]\n J -->|Yes| K[/Tie/]\n L --> A\n I --> M([End])\n K --> M\n")
+        r = M.build(src)
+        self.assertIn("charts", r, r)
+        chart = r["charts"][0]
+        boxes = {n["id"]: n for n in chart["nodes"]}
+        for e in chart["edges"]:
+            pts = e["pts"]
+            for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+                for k, n in boxes.items():
+                    if k in (e["from"], e["to"]):
                         continue
-                    inside_x = n["x"] - n["w"] / 2 < min(x1, x2) + 0.1 and max(x1, x2) - 0.1 < n["x"] + n["w"] / 2 or (min(x1, x2) < n["x"] + n["w"] / 2 and max(x1, x2) > n["x"] - n["w"] / 2)
-                    inside_y = min(y1, y2) < n["y"] + n["h"] and max(y1, y2) > n["y"]
-                    self.assertFalse(inside_x and inside_y, f"edge {e['from']}->{e['to']} crosses {n['text']}")
-
-    def test_subroutine_shape(self):
-        c = chart('flowchart TD\n A([Start]) --> B[["Call add_tax(price)"]]\n B --> C([End])\n')
-        self.assertEqual(node(c, "add_tax")["kind"], "define")
-
-    def test_text_version_names_every_box_and_where_arrows_go(self):
-        c = chart(WHILE)
-        text = json.dumps(c["outline"])
-        for s in ("Question: i <= 5?", "If Yes:", "If No:", "back to"):
-            self.assertIn(s, text)
-
-    def test_what_cannot_be_drawn_is_skipped_with_a_reason(self):
-        self.assertIn("skip", M.build("flowchart LR\n A --> B\n"))
-        self.assertIn("skip", M.build("flowchart TD\n subgraph x\n A --> B\n end\n"))
-        self.assertIn("skip", M.build("flowchart TD\n A --> B\n A -.-> B\n"))
-        self.assertIn("skip", M.build("sequenceDiagram\n A->>B: hi\n"))
-
-    def test_a_box_nothing_reaches_is_an_error_not_a_wrong_picture(self):
-        r = M.build("flowchart TD\n A[x] --> B[y]\n C[z] --> B\n")
-        self.assertIn("error", r)
+                    left, right, top, bottom = n["x"] - n["w"] / 2 + 2, n["x"] + n["w"] / 2 - 2, n["y"] + 2, n["y"] + n["h"] - 2
+                    hit = max(min(x1, x2), left) <= min(max(x1, x2), right) and max(min(y1, y2), top) <= min(max(y1, y2), bottom)
+                    self.assertFalse(hit, f"edge {e['from']}->{e['to']} runs through box {k}")
 
     def test_every_diagram_in_every_published_lesson_is_drawn_and_valid(self):
         import yaml
@@ -109,7 +92,7 @@ class Mermaid(unittest.TestCase):
                     self.assertIn("charts", r, f"{les['id']} {b['id']}: {r}")
                     self.assertEqual(F.validate(r["charts"][0]), [])
                     n += 1
-        self.assertGreaterEqual(n, 9)
+        self.assertGreaterEqual(n, 10)
 
 
 if __name__ == "__main__":

@@ -24,6 +24,12 @@ lessons:
     number: 3
     status: published
     title: {en: "Methods and Functions: parameters, return values, scope, *args / **kwargs, lambda", fa: "متدها و توابع: پارامتر، مقدار بازگشتی، حوزه، *args / **kwargs و lambda"}
+  - id: 10-milestone-project-1-tic-tac-toe
+    number: 10
+    kind: project
+    label: {en: P1, fa: پ۱}
+    status: published
+    title: {en: "Milestone Project 1: Tic Tac Toe", fa: "پروژهٔ مرحله‌ای ۱: دوز"}
   - {number: 4, status: planned, id: 04-iterators-and-generators, title: {en: "Iterators and generators", fa: "تکرارشونده‌ها و مولدها"}}
   - {number: 5, status: planned, id: 05-errors-and-exceptions, title: {en: "Errors and exceptions: tracebacks, try / except / finally, raising, debugging", fa: "خطاها و استثناها: ردگیری، try / except / finally، raise و اشکال‌زدایی"}}
   - {number: 6, status: planned, id: 06-modules-and-stdlib, title: {en: "Modules, packages and the standard library tour", fa: "ماژول‌ها، بسته‌ها و گشتی در کتابخانهٔ استاندارد"}}

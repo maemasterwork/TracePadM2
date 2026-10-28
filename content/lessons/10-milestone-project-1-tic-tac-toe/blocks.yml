@@ -1,0 +1,17 @@
+# Sidecar flags for code blocks in lesson.md (the markdown itself is never edited).
+#   stdin:       answers fed to input() when the build checks the block
+#   interactive: the page does NOT pre-fill those answers, so the learner is asked live (the point of this project)
+blocks:
+  "4.4#1":
+    stdin: "z\nx\n"
+    interactive: "the learner answers the question"
+  "5.5#1":
+    stdin: "abc\n5\n3\n"
+    interactive: "the learner answers the question"
+  "8.3#1":
+    stdin: "Yes\n"
+    interactive: "the learner answers the question"
+  "9.4#1":
+    stdin: "z\nX\n1\n4\nabc\n2\n5\n3\nn\n"
+    interactive: "the learner plays the game"
+    nondeterministic: "who goes first is random, so the output differs between runs (the game always ends after five moves)"

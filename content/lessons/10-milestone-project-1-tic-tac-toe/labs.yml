@@ -1,0 +1,932 @@
+# Milestone Project 1 labs (English only for now; add `fa:` next to each `en:` when Persian is started).
+# Generated once from a script that ran every solution in CPython; edit this file by hand from now on.
+# Learner-visible text has en (fa optional). HTML in text is limited to code, em, strong, br.
+lesson: 10-milestone-project-1-tic-tac-toe
+schema: 1
+chapters:
+  1:
+    quizzes:
+    - id: q1
+      tag: requirements
+      question:
+        en: Which requirement of the brief is about <em>input</em>?
+      options:
+      - en: The board is printed after every move
+      - en: The program accepts the player's position
+      - en: Two players sit at the same computer
+      - en: A symbol is placed on the board
+      correct: 1
+      why:
+        en: Reading the position the player types is the input requirement. Printing the board is output, and placing the symbol changes the board.
+    - id: q2
+      tag: design-is-yours
+      question:
+        en: The brief does not say how to store the board or which functions to write. What does that mean?
+      options:
+      - en: 'Nothing: the design is yours to choose'
+      - en: You must ask the teacher
+      - en: A list is the only allowed choice
+      - en: The program cannot be written
+      correct: 0
+      why:
+        en: A brief says <em>what</em> the program must do. How it is built is your design, as long as every requirement is met.
+    - id: q3
+      tag: extra-requirements
+      question:
+        en: R5 to R7 (win and tie, bad input, play again) are not in the brief. Why does the module include them?
+      options:
+      - en: They are required to pass
+      - en: They turn the assignment into a game people can enjoy and trust
+      - en: Python needs them
+      - en: They make the program shorter
+      correct: 1
+      why:
+        en: The brief is the minimum. A real game must decide winners and survive bad input.
+  2:
+    predictions:
+    - id: p1
+      tag: board-indexing
+      code: |-
+        board = [" "] * 10
+        board[5] = "X"
+        print(board[5], len(board), board.count(" "))
+      answer: X 10 9
+      why:
+        en: The list has ten items. Setting item 5 leaves nine spaces. The number the player types is the index, because item 0 is never used.
+    - id: p2
+      tag: board-copy-trap
+      code: |-
+        row = [" "] * 3
+        rows = [row] * 3
+        rows[0][0] = "X"
+        print(rows)
+      answer: '[[''X'', '' '', '' ''], [''X'', '' '', '' ''], [''X'', '' '', '' '']]'
+      why:
+        en: <code>[row] * 3</code> repeats the <em>same</em> list three times, so changing one row changes all of them. This is why the board is one flat list, not a list of copies.
+    quizzes:
+    - id: q1
+      tag: why-ten
+      question:
+        en: Why does the board have ten items although the game has nine squares?
+      options:
+      - en: Python lists need an extra item
+      - en: So square 1 is <code>board[1]</code> and no <code>- 1</code> is needed
+      - en: Item 0 stores the winner
+      - en: Ten items make the game faster
+      correct: 1
+      why:
+        en: Ignoring item 0 lets the typed number be the index. It is a design choice that hides off-by-one mistakes.
+    - id: q2
+      tag: decide-or-talk
+      question:
+        en: Which kind of function is easiest to test with <code>assert</code>?
+      options:
+      - en: One that calls <code>input()</code>
+      - en: One that prints the board
+      - en: One that only looks at its arguments and returns an answer
+      - en: One that picks a random player
+      correct: 2
+      why:
+        en: A function that returns an answer for given arguments can be tested directly. Input, output and randomness are harder to test.
+    - id: q3
+      tag: flow-exits
+      question:
+        en: How many ways out of the game loop does the flowchart show?
+      options:
+      - en: 'One: a win'
+      - en: 'Two: a win or a tie'
+      - en: 'Three: a win, a tie, or a bad input'
+      - en: 'None: it repeats forever'
+      correct: 1
+      why:
+        en: The loop ends on a win or on a full board (a tie). Everything else switches the player and repeats.
+  3:
+    predictions:
+    - id: p1
+      tag: f-string-board
+      code: |-
+        board = [" ", "X", "O", " ", " ", "X", " ", " ", " ", "O"]
+        print(f"[{board[1]}][{board[2]}][{board[3]}]")
+        print(board[9])
+      answer: |-
+        [X][O][ ]
+        O
+      why:
+        en: Squares are read with the number as the index. Square 3 is a space, so the brackets around it look empty.
+    quizzes:
+    - id: q1
+      tag: print-not-return
+      question:
+        en: What should <code>display_board</code> do with the text of the board?
+      options:
+      - en: Return it
+      - en: Print it
+      - en: Store it in a global variable
+      - en: Ignore it
+      correct: 1
+      why:
+        en: Its job is to show the board. It prints and returns nothing.
+    - id: q2
+      tag: off-by-one
+      question:
+        en: A board is drawn one square off. What is the most likely cause?
+      options:
+      - en: Using <code>board[0]</code> for the first square
+      - en: Forgetting a <code>print</code>
+      - en: Using a <code>while</code> loop
+      - en: A missing docstring
+      correct: 0
+      why:
+        en: Square 1 is <code>board[1]</code>. Using index 0 shifts every square.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>display_board(board)</code>. It prints three rows, with a line <code>---+---+---</code> between them. Each square has a space before and after its symbol, like <code> X | O |   </code>.
+      starter: |-
+        def display_board(board):
+            print(board)
+      solution: |-
+        def display_board(board):
+            """Print the board as three rows of three squares."""
+            print(f" {board[1]} | {board[2]} | {board[3]} ")
+            print("---+---+---")
+            print(f" {board[4]} | {board[5]} | {board[6]} ")
+            print("---+---+---")
+            print(f" {board[7]} | {board[8]} | {board[9]} ")
+      tests:
+      - post: display_board([" ", "X", "O", " ", " ", "X", " ", " ", " ", "O"])
+        out: " X | O |   \n---+---+---\n   | X |   \n---+---+---\n   |   | O "
+      - post: display_board([" "] * 10)
+        out: "   |   |   \n---+---+---\n   |   |   \n---+---+---\n   |   |   "
+      - post: display_board(["#", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        out: " 1 | 2 | 3 \n---+---+---\n 4 | 5 | 6 \n---+---+---\n 7 | 8 | 9 "
+        hidden: true
+      hints:
+      - en: Square 1 is <code>board[1]</code>, not <code>board[0]</code>. Each row shows three squares.
+      - en: 'Use one f-string per row: <code>f" {board[1]} | {board[2]} | {board[3]} "</code>.'
+      - en: Print the three rows and put <code>print("---+---+---")</code> between them.
+  4:
+    predictions:
+    - id: p1
+      tag: place-returns-none
+      code: |-
+        def place_marker(board, marker, position):
+            board[position] = marker
+
+        board = [" "] * 10
+        result = place_marker(board, "X", 3)
+        print(result, board[3])
+      answer: None X
+      why:
+        en: The function changes the caller's list and returns nothing, so <code>result</code> is <code>None</code>.
+    - id: p2
+      tag: overwrite
+      code: |-
+        board = [" "] * 10
+        board[3] = "X"
+        board[3] = "O"
+        print(board[3])
+      answer: O
+      why:
+        en: Assigning again simply replaces the old value. Nothing stops a square from being overwritten, so the program must check <code>space_check</code> before it places a marker.
+    quizzes:
+    - id: q1
+      tag: mutable-arg
+      question:
+        en: Why does <code>place_marker</code> not need to <code>return</code> the board?
+      options:
+      - en: Python forbids returning lists
+      - en: The function receives the same list and changes it in place
+      - en: It returns a copy automatically
+      - en: The board is a global variable
+      correct: 1
+      why:
+        en: Lists are mutable and the function gets the same object, so the caller sees the change.
+    - id: q2
+      tag: while-valid
+      question:
+        en: Which loop pattern keeps asking Player 1 until the answer is X or O?
+      options:
+      - en: <code>for</code> over the letters
+      - en: <code>while marker not in ("X", "O"):</code>
+      - en: <code>if marker == "X":</code> only
+      - en: Recursion with no base case
+      correct: 1
+      why:
+        en: 'A <code>while</code> loop repeats until the condition is false: the answer is valid.'
+    - id: q3
+      tag: strip-upper
+      question:
+        en: What do <code>.strip()</code> and <code>.upper()</code> do to the answer?
+      options:
+      - en: Remove spaces at the ends and make it uppercase
+      - en: Remove all letters
+      - en: Split it into words
+      - en: Convert it to a number
+      correct: 0
+      why:
+        en: They make ' x ' and 'X' count as the same answer.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>place_marker(board, marker, position)</code> that puts <code>marker</code> on the board at <code>position</code>. It changes the given list and returns nothing.
+      starter: |-
+        def place_marker(board, marker, position):
+            pass
+      solution: |-
+        def place_marker(board, marker, position):
+            """Put marker on the board at position (1 to 9)."""
+            board[position] = marker
+      tests:
+      - post: |-
+          b = [" "] * 10
+          result = place_marker(b, "X", 5)
+          print(result)
+          print(b)
+        out: |-
+          None
+          [' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ']
+      - post: |-
+          b = [" "] * 10
+          place_marker(b, "X", 1)
+          place_marker(b, "O", 9)
+          print(b[1], b[9], b.count(" "))
+        out: X O 8
+      - post: |-
+          b = list("#XOXOXOXOX")
+          b.append(" ")
+          place_marker(b, "O", 9)
+          print(b[9])
+        out: O
+        hidden: true
+      hints:
+      - en: The board is a list and the position is the index, so one assignment is enough.
+      - en: <code>board[position] = marker</code>. Do not build a new list and do not return anything.
+  5:
+    predictions:
+    - id: p1
+      tag: isdecimal
+      code: |-
+        for text in ["5", " 5", "five", "", "5.5"]:
+            print(repr(text), text.isdecimal())
+      answer: |-
+        '5' True
+        ' 5' False
+        'five' False
+        '' False
+        '5.5' False
+      why:
+        en: <code>isdecimal()</code> is true only for a non-empty string made of digits. A space, a letter, a dot or an empty string make it false. This is why the text is stripped first.
+    - id: p2
+      tag: position-error
+      code: |-
+        def space_check(board, position):
+            return board[position] == " "
+
+
+        def position_error(text, board):
+            text = text.strip()
+            if not text.isdecimal():
+                return "Please type a number from 1 to 9."
+            position = int(text)
+            if not 1 <= position <= 9:
+                return "The number must be from 1 to 9."
+            if not space_check(board, position):
+                return "That square is already taken."
+            return ""
+
+        board = [" "] * 10
+        board[5] = "X"
+        for text in ["4", " 5 ", "0", "x"]:
+            print(repr(position_error(text, board)))
+      answer: |-
+        ''
+        'That square is already taken.'
+        'The number must be from 1 to 9.'
+        'Please type a number from 1 to 9.'
+      why:
+        en: 'A valid free square gives an empty string. Otherwise the first failing rule decides the message. The order matters: digits first, then the range, then whether the square is free.'
+    quizzes:
+    - id: q1
+      tag: int-crash
+      question:
+        en: What happens with <code>int(input(...))</code> when the player types <code>five</code>?
+      options:
+      - en: It returns 5
+      - en: It returns 0
+      - en: It raises a <code>ValueError</code> and the program crashes
+      - en: It asks again automatically
+      correct: 2
+      why:
+        en: <code>int()</code> cannot read letters. Check the text first, or catch the error.
+    - id: q2
+      tag: overwrite-check
+      question:
+        en: A player types a number from 1 to 9. What else must be checked before placing the marker?
+      options:
+      - en: That the number is even
+      - en: That the square is empty
+      - en: That it is Player 1's turn
+      - en: Nothing
+      correct: 1
+      why:
+        en: Otherwise a player could overwrite the other player's symbol.
+    - id: q3
+      tag: test-split
+      question:
+        en: Why is the checker (<code>position_error</code>) separate from the function that asks?
+      options:
+      - en: Python requires two functions
+      - en: The checker can be tested with <code>assert</code> without typing
+      - en: It makes the program slower
+      - en: It hides the board
+      correct: 1
+      why:
+        en: A function that neither asks nor prints can be tested with ordinary calls.
+    - id: q4
+      tag: return-int
+      question:
+        en: What must <code>player_choice_position</code> return?
+      options:
+      - en: The typed text
+      - en: The position as an <code>int</code>
+      - en: The board
+      - en: A message
+      correct: 1
+      why:
+        en: The text <code>"5"</code> would break <code>board[position]</code>. Convert it with <code>int()</code> once it is known to be valid.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>space_check(board, position)</code> that returns <code>True</code> when the square at <code>position</code> is empty (holds a single space).
+      starter: |-
+        def space_check(board, position):
+            return board[position] != " "
+      solution: |-
+        def space_check(board, position):
+            """Return True if the square at position is empty."""
+            return board[position] == " "
+      tests:
+      - post: |-
+          b = [" "] * 10
+          b[5] = "X"
+          print(space_check(b, 5), space_check(b, 6))
+        out: False True
+      - post: |-
+          b = [" "] * 10
+          b[1] = "O"
+          print(space_check(b, 1), space_check(b, 9))
+        out: False True
+      hints:
+      - en: The starter has the answer upside down.
+      - en: An empty square holds <code>" "</code>. Return the comparison <code>board[position] == " "</code>.
+    - id: e2
+      prompt:
+        en: 'Write <code>position_error(text, board)</code>. It returns <code>""</code> when <code>text</code> (spaces allowed around it) is a number from 1 to 9 for an empty square. Otherwise it returns one of: <code>Please type a number from 1 to 9.</code>, <code>The number must be from 1 to 9.</code>, <code>That square is already taken.</code>'
+      starter: |-
+        def space_check(board, position):
+            return board[position] == " "
+
+
+        def position_error(text, board):
+            text = text.strip()
+            if not text.isdecimal():
+                return "Please type a number from 1 to 9."
+            return ""
+      solution: |-
+        def space_check(board, position):
+            return board[position] == " "
+
+
+        def position_error(text, board):
+            """Return why text is not a usable position, or '' if it is."""
+            text = text.strip()
+            if not text.isdecimal():
+                return "Please type a number from 1 to 9."
+            position = int(text)
+            if not 1 <= position <= 9:
+                return "The number must be from 1 to 9."
+            if not space_check(board, position):
+                return "That square is already taken."
+            return ""
+      tests:
+      - post: |-
+          b = [" "] * 10
+          b[5] = "X"
+          for t in ["3", " 7 ", "5", "0", "10", "abc", "", "-2", "5.5"]:
+              print(repr(position_error(t, b)))
+        out: |-
+          ''
+          ''
+          'That square is already taken.'
+          'The number must be from 1 to 9.'
+          'The number must be from 1 to 9.'
+          'Please type a number from 1 to 9.'
+          'Please type a number from 1 to 9.'
+          'Please type a number from 1 to 9.'
+          'Please type a number from 1 to 9.'
+      - post: |-
+          b = [" "] * 10
+          print(repr(position_error("9", b)))
+        out: ''''''
+        hidden: true
+      hints:
+      - en: 'Three rules, in this order: is it a whole number? is it from 1 to 9? is the square free?'
+      - en: Strip the text first, check <code>isdecimal()</code>, convert with <code>int()</code>, then compare with the range.
+      - en: Use the <code>space_check</code> function you already have for the last rule. Return <code>""</code> when all rules pass.
+  6:
+    predictions:
+    - id: p1
+      tag: win-diagonal
+      code: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            return any(all(board[i] == mark for i in line) for line in WIN_LINES)
+
+        board = ["#", "X", "O", "O", " ", "X", " ", " ", " ", "X"]
+        print(win_check(board, "X"), win_check(board, "O"))
+      answer: True False
+      why:
+        en: Squares 1, 5 and 9 form a diagonal and all hold X. O has only two squares, so it has no line.
+    - id: p2
+      tag: win-mixed-column
+      code: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            return any(all(board[i] == mark for i in line) for line in WIN_LINES)
+
+        board = ["#", " ", "X", " ", " ", "X", " ", " ", "O", " "]
+        print(win_check(board, "X"))
+      answer: 'False'
+      why:
+        en: The middle column is squares 2, 5 and 8. Square 8 holds O, so the column is not all X.
+    quizzes:
+    - id: q1
+      tag: eight-lines
+      question:
+        en: How many winning lines does Tic Tac Toe have?
+      options:
+      - en: Six
+      - en: Seven
+      - en: Eight
+      - en: Nine
+      correct: 2
+      why:
+        en: Three rows, three columns and two diagonals make eight.
+    - id: q2
+      tag: any-all
+      question:
+        en: In <code>any(all(board[i] == mark for i in line) for line in WIN_LINES)</code>, what does <code>all</code> check?
+      options:
+      - en: That every square of one line holds the mark
+      - en: That every line has a winner
+      - en: That the board is full
+      - en: That the mark is X
+      correct: 0
+      why:
+        en: '<code>all</code> looks at one line: are all three squares the mark? <code>any</code> asks whether that is true for at least one line.'
+    - id: q3
+      tag: which-player
+      question:
+        en: After a move, whose win must the game check?
+      options:
+      - en: Both players
+      - en: Only the player who just moved
+      - en: Only Player 1
+      - en: 'Neither: wins are found at the end'
+      correct: 1
+      why:
+        en: Only the last move can have created a new line, and it was made by the player who just moved.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>win_check(board, mark)</code> that returns <code>True</code> when <code>mark</code> fills a row, a column or a diagonal. Remember there are eight lines.
+      starter: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            return False
+      solution: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            """Return True if mark fills any of the eight winning lines."""
+            return any(all(board[i] == mark for i in line) for line in WIN_LINES)
+      tests:
+      - post: |-
+          b = ["#", "X", "X", "X", " ", " ", " ", " ", " ", " "]
+          print(win_check(b, "X"), win_check(b, "O"))
+        out: True False
+      - post: |-
+          b = ["#", " ", " ", "O", " ", "O", " ", "O", " ", " "]
+          print(win_check(b, "O"))
+        out: 'True'
+      - post: |-
+          b = ["#", "X", "O", "X", "O", "X", "O", "O", "X", "O"]
+          print(win_check(b, "X"), win_check(b, "O"))
+        out: False False
+      - post: |-
+          for line in WIN_LINES:
+              b = [" "] * 10
+              for i in line:
+                  b[i] = "X"
+              assert win_check(b, "X"), line
+          print("all eight lines")
+        out: all eight lines
+        hidden: true
+      hints:
+      - en: Store the eight lines as data (the starter already has <code>WIN_LINES</code>).
+      - en: A line wins when <em>all</em> three of its squares equal <code>mark</code>. The board wins when <em>any</em> line does.
+      - en: <code>return any(all(board[i] == mark for i in line) for line in WIN_LINES)</code>
+  7:
+    predictions:
+    - id: p1
+      tag: index-zero-trap
+      code: |-
+        board = [" ", "X", "O", "X", "O", "X", "O", "O", "X", "O"]
+        print(" " not in board)
+        print(" " not in board[1:])
+      answer: |-
+        False
+        True
+      why:
+        en: Index 0 holds a space, so the first test finds one and says the board is not full. The slice <code>board[1:]</code> skips that unused item.
+    - id: p2
+      tag: win-before-tie
+      code: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            return any(all(board[i] == mark for i in line) for line in WIN_LINES)
+
+        board = ["#", "O", "X", "X", "X", "X", "O", "X", "O", "O"]
+        print(win_check(board, "X"), " " not in board[1:])
+      answer: True True
+      why:
+        en: The last move completed the diagonal 3-5-7 and also filled the board. Both are true, so a win must be checked <em>before</em> a tie.
+    quizzes:
+    - id: q1
+      tag: tie-def
+      question:
+        en: When is the game a tie?
+      options:
+      - en: The board is full and nobody has three in a row
+      - en: Both players have the same number of squares
+      - en: Nine moves have been made, whatever the result
+      - en: The board is empty
+      correct: 0
+      why:
+        en: A full board only means a tie when there is no winner.
+    - id: q2
+      tag: check-order
+      question:
+        en: The ninth move completes a winning line. What should the game announce?
+      options:
+      - en: A tie, because the board is full
+      - en: A win
+      - en: Both
+      - en: Nothing
+      correct: 1
+      why:
+        en: Check the win first, then the full board.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>full_board_check(board)</code> that returns <code>True</code> when squares 1 to 9 have no empty square. Item 0 of the list is unused and holds a space.
+      starter: |-
+        def full_board_check(board):
+            return " " not in board
+      solution: |-
+        def full_board_check(board):
+            """Return True if no empty square is left (index 0 is ignored)."""
+            return " " not in board[1:]
+      tests:
+      - post: |-
+          b = [" "] + list("XOXOXOOXO")
+          print(full_board_check(b))
+        out: 'True'
+      - post: |-
+          b = [" "] + list("XOXO XOOX")
+          print(full_board_check(b))
+        out: 'False'
+      - post: print(full_board_check([" "] * 10))
+        out: 'False'
+        hidden: true
+      hints:
+      - en: The starter says the board is never full. Think about what item 0 holds.
+      - en: Look only at squares 1 to 9 with the slice <code>board[1:]</code>.
+  8:
+    predictions:
+    - id: p1
+      tag: startswith-y
+      code: |-
+        for answer in ["Y", " yes ", "no", "", "yeah"]:
+            print(answer.strip().lower().startswith("y"))
+      answer: |-
+        True
+        True
+        False
+        False
+        True
+      why:
+        en: Stripping and lowercasing make the test forgiving, and <code>startswith</code> accepts anything that begins with y. Empty answers and anything else mean no.
+    quizzes:
+    - id: q1
+      tag: random-test
+      question:
+        en: <code>choose_first()</code> picks a random player. What can a test check?
+      options:
+      - en: That it returns <code>"Player 1"</code> every time
+      - en: That the result is always one of the two names
+      - en: That it returns a number
+      - en: Nothing can be tested
+      correct: 1
+      why:
+        en: You cannot predict the exact value, but you can test what is always true.
+    - id: q2
+      tag: return-bool
+      question:
+        en: Why does <code>replay</code> return a bool?
+      options:
+      - en: So the caller can use it directly in an <code>if</code>
+      - en: Because <code>input</code> returns a bool
+      - en: To print the answer
+      - en: Because Python requires it
+      correct: 0
+      why:
+        en: <code>if not replay():</code> reads naturally and the function stays easy to reuse.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>wants_replay(text)</code> that returns <code>True</code> when the answer, ignoring spaces and capital letters, starts with <code>y</code>, and <code>False</code> otherwise.
+      starter: |-
+        def wants_replay(text):
+            return text == "y"
+      solution: |-
+        def wants_replay(text):
+            """Return True when the answer starts with y (any case, spaces ignored)."""
+            return text.strip().lower().startswith("y")
+      tests:
+      - post: print([wants_replay(t) for t in ["y", "Y", " yes ", "YES", "yeah"]])
+        out: '[True, True, True, True, True]'
+      - post: print([wants_replay(t) for t in ["n", "no", "", " ", "maybe"]])
+        out: '[False, False, False, False, False]'
+      hints:
+      - en: The starter only accepts a lowercase <code>y</code> with nothing else.
+      - en: Clean the text with <code>strip()</code> and <code>lower()</code>, then test the first letter with <code>startswith</code>.
+  9:
+    predictions:
+    - id: p1
+      tag: turn-switch
+      code: |-
+        turn = "Player 1"
+        for _ in range(3):
+            turn = "Player 2" if turn == "Player 1" else "Player 1"
+            print(turn)
+      answer: |-
+        Player 2
+        Player 1
+        Player 2
+      why:
+        en: The conditional expression flips the name each time, so it alternates starting with Player 2.
+    - id: p2
+      tag: markers-dict
+      code: |-
+        player1, player2 = ("O", "X")
+        markers = {"Player 1": player1, "Player 2": player2}
+        turn = "Player 2"
+        print(markers[turn])
+      answer: X
+      why:
+        en: The dictionary links each player's name to a marker. Player 1 chose O, so Player 2 is X.
+    quizzes:
+    - id: q1
+      tag: loop-exit
+      question:
+        en: How does the game loop in <code>play_game</code> end?
+      options:
+      - en: After nine turns exactly
+      - en: A <code>return</code> runs after a win or a full board
+      - en: When the player types q
+      - en: It never ends
+      correct: 1
+      why:
+        en: The loop has no counter. It ends through the <code>return</code> statements after a win or a tie.
+    - id: q2
+      tag: return-none
+      question:
+        en: What does <code>play_game()</code> return after a tie?
+      options:
+      - en: <code>"Tie"</code>
+      - en: <code>None</code>
+      - en: <code>False</code>
+      - en: An empty board
+      correct: 1
+      why:
+        en: The tie branch returns <code>None</code>, meaning there is no winner.
+    - id: q3
+      tag: main-loop
+      question:
+        en: What decides whether <code>main</code> plays another game?
+      options:
+      - en: The winner of the last game
+      - en: The answer to <code>replay()</code>
+      - en: The number of moves
+      - en: The marker
+      correct: 1
+      why:
+        en: <code>main</code> loops until <code>replay()</code> returns false.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>next_turn(turn)</code> that returns <code>"Player 2"</code> when given <code>"Player 1"</code> and <code>"Player 1"</code> when given <code>"Player 2"</code>.
+      starter: |-
+        def next_turn(turn):
+            return turn
+      solution: |-
+        def next_turn(turn):
+            """Return the name of the other player."""
+            return "Player 2" if turn == "Player 1" else "Player 1"
+      tests:
+      - post: print(next_turn("Player 1"), next_turn("Player 2"))
+        out: Player 2 Player 1
+      - post: |-
+          t = "Player 1"
+          for _ in range(4):
+              t = next_turn(t)
+          print(t)
+        out: Player 1
+      hints:
+      - en: The starter never changes the player, so the same person would move forever.
+      - en: 'A conditional expression does it: <code>"Player 2" if turn == "Player 1" else "Player 1"</code>.'
+    - id: e2
+      prompt:
+        en: Write <code>game_result(board, marker)</code> for the player who just moved. Return <code>"win"</code> if that marker has three in a row, otherwise <code>"tie"</code> if the board is full, otherwise <code>"continue"</code>. A move that wins and fills the board is a win.
+      starter: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            return any(all(board[i] == mark for i in line) for line in WIN_LINES)
+
+
+        def full_board_check(board):
+            return " " not in board[1:]
+
+
+        def game_result(board, marker):
+            if full_board_check(board):
+                return "tie"
+            if win_check(board, marker):
+                return "win"
+            return "continue"
+      solution: |-
+        WIN_LINES = [
+            (1, 2, 3), (4, 5, 6), (7, 8, 9),
+            (1, 4, 7), (2, 5, 8), (3, 6, 9),
+            (1, 5, 9), (3, 5, 7),
+        ]
+
+
+        def win_check(board, mark):
+            return any(all(board[i] == mark for i in line) for line in WIN_LINES)
+
+
+        def full_board_check(board):
+            return " " not in board[1:]
+
+
+        def game_result(board, marker):
+            """Return 'win', 'tie' or 'continue' after marker just moved."""
+            if win_check(board, marker):
+                return "win"
+            if full_board_check(board):
+                return "tie"
+            return "continue"
+      tests:
+      - post: print(game_result(["#", "X", "X", "X", " ", " ", " ", " ", " ", " "], "X"))
+        out: win
+      - post: print(game_result(["#", "X", "O", "X", "X", "O", "O", "O", "X", "X"], "X"))
+        out: tie
+      - post: print(game_result(["#", "O", "X", "X", "X", "X", "O", "X", "O", "O"], "X"))
+        out: win
+      - post: print(game_result(["#", "X", "O", " ", " ", " ", " ", " ", " ", " "], "O"))
+        out: continue
+        hidden: true
+      hints:
+      - en: Three outcomes, and the order of the checks matters.
+      - en: The starter checks for a full board first, so a winning last move is called a tie. Check the win first.
+      - en: Win first, then full board, then <code>"continue"</code>.
+  10:
+    predictions:
+    - id: p1
+      tag: fake-input
+      code: |-
+        input = lambda prompt="": "7"
+        print(int(input("Number? ")) + 1)
+      answer: '8'
+      why:
+        en: A global called <code>input</code> is found before the built-in one, so the call uses the lambda. Tests use this trick to avoid typing.
+    quizzes:
+    - id: q1
+      tag: why-fake
+      question:
+        en: Why do tests replace <code>input</code> with a fake?
+      options:
+      - en: So tests run without a person typing
+      - en: To make the game faster
+      - en: Because <code>input</code> is broken
+      - en: To hide the board
+      correct: 0
+      why:
+        en: Automatic tests cannot type, so they hand out prepared answers instead.
+    - id: q2
+      tag: shadow-ok
+      question:
+        en: Replacing a built-in name is usually a mistake. Why is it acceptable here?
+      options:
+      - en: It never is
+      - en: It is deliberate and only affects this script
+      - en: Because Python allows only one input
+      - en: Because the fake is faster
+      correct: 1
+      why:
+        en: The shadowing is on purpose and limited to the test.
+    - id: q3
+      tag: stretch
+      question:
+        en: Which stretch goal changes only <em>one</em> function if the board is stored well?
+      options:
+      - en: Showing a different symbol for empty squares
+      - en: Adding a computer player
+      - en: Adding a scoreboard
+      - en: Playing on a bigger board
+      correct: 0
+      why:
+        en: Only <code>display_board</code> draws squares, so the look of an empty square is a one-function change.
+    exercises:
+    - id: e1
+      prompt:
+        en: Write <code>fake_input(answers)</code> that returns a function. Each call of that function (it may receive a prompt, which it ignores) returns the next answer from the list, in order.
+      starter: |-
+        def fake_input(answers):
+            return None
+      solution: |-
+        def fake_input(answers):
+            """Return a function that hands out the answers one at a time."""
+            answers = iter(answers)
+            return lambda prompt="": next(answers)
+      tests:
+      - post: |-
+          f = fake_input(["a", "b"])
+          print(f("Name? "), f())
+        out: a b
+      - post: |-
+          f = fake_input(["x"])
+          f()
+          try:
+              f()
+          except StopIteration:
+              print("out of answers")
+        out: out of answers
+      - post: |-
+          g = fake_input(["1", "2"])
+          h = fake_input(["z"])
+          print(g(), h(), g())
+        out: 1 z 2
+        hidden: true
+      hints:
+      - en: The starter returns nothing. It must return a <em>function</em>.
+      - en: <code>iter(answers)</code> remembers its place, and <code>next(...)</code> takes the next item.
+      - en: '<code>return lambda prompt="": next(answers)</code> after <code>answers = iter(answers)</code>.'

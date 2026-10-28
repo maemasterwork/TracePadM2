@@ -17,4 +17,10 @@ describe('chapter numbers are unique across lessons but print as in the lesson',
     expect(lessonOfChapter(203)).toBe(2);
     expect(lessonOfChapter(309)).toBe(3);
   });
+  it('the project (course number 10) uses 1001 to 1099 and never meets lessons 2 to 9', () => {
+    expect(chapterNo(1001)).toBe(1);
+    expect(chapterNo(1010)).toBe(10);
+    expect(lessonOfChapter(1010)).toBe(10);
+    expect(lessonOfChapter(909)).toBe(9);
+  });
 });

@@ -13,7 +13,7 @@ interface Ctx { lesson: Lesson; ch: number; onAnchor: (hash: string) => void }
 function codeMeta(lesson: Lesson, id: string) {
   const m = lesson.block_meta?.[id];
   const prelude = (m?.after ?? []).map((a) => findCode(lesson, a)).filter(Boolean).join('\n');
-  return { prelude: prelude || undefined, stdin: m?.stdin, usesEarlier: !!m?.after?.length };
+  return { prelude: prelude || undefined, stdin: m?.interactive ? undefined : m?.stdin, usesEarlier: !!m?.after?.length };
 }
 
 function findCode(lesson: Lesson, id: string): string | undefined {

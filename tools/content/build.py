@@ -55,7 +55,7 @@ def main() -> int:
     seen_chapter_ids: dict[str, str] = {}
     names = yaml.safe_load((ROOT / "content" / "concepts.yml").read_text(encoding="utf-8")) or {}
     for les in course["lessons"]:
-        entry = {k: les[k] for k in ("id", "number", "status", "title")}
+        entry = {k: les[k] for k in ("id", "number", "status", "title", "kind", "label") if k in les}
         if les["status"] == "published":
             ldir = ROOT / "content" / "lessons" / les["id"]
             lj = BUILD / f"{les['id'][:2]}.json"

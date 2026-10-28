@@ -282,6 +282,11 @@ def build(src: str) -> dict:
         wps = [(la + 1 + j, cx[c]) for j, c in enumerate(slots[i])] + [(lb, B["x"])]
         x1 = wps[0][1]
         decision_exit = A["kind"] == "decision" and len(children[a]) >= 2
+        if decision_exit and abs(x1 - A["x"]) > 1:
+            # a side exit runs along the box's own row: if another box sits in the way, leave from the bottom and use the free strip
+            lo, hi = sorted((A["x"], x1))
+            if any(o != a and layer[o] == la and lo < info[o]["x"] < hi for o in nodes):
+                decision_exit = False
         if decision_exit and x1 < A["x"] - 1:
             start = (A["x"] - A["w"] / 2, A["y"] + A["h"] / 2)
             tip = True
