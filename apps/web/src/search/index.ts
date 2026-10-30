@@ -1,6 +1,6 @@
 import type { Block, Lesson } from '../content/types';
 
-export interface Doc { lessonId: string; chapterN: number; chapterId: string; chapterTitle: string; heading: string; start: number; kind: 'text' | 'code' | 'heading'; text: string }
+export interface Doc { lang: 'fa' | 'en'; lessonId: string; chapterN: number; chapterId: string; chapterTitle: string; heading: string; start: number; kind: 'text' | 'code' | 'heading'; text: string }
 export interface Hit { doc: Doc; score: number; snippet: string; ranges: [number, number][] }
 
 const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
@@ -47,7 +47,7 @@ export function buildIndex(lessons: Lesson[]): Doc[] {
   const docs: Doc[] = [];
   for (const l of lessons) {
     for (const c of l.chapters) {
-      const base = { lessonId: l.id, chapterN: c.n, chapterId: c.id, chapterTitle: c.title };
+      const base = { lang: (l.lang ?? 'en') as 'fa' | 'en', lessonId: l.id, chapterN: c.n, chapterId: c.id, chapterTitle: c.title };
       docs.push({ ...base, heading: c.heading, start: c.line, kind: 'heading', text: c.heading });
       docs.push(...blockDocs(c.blocks, { ...base, heading: c.heading }));
       for (const s of c.sections) {

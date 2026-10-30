@@ -4,7 +4,7 @@
 Every block keeps its exact source line range and raw text, so tools/content/verify.py can prove that no source
 line was lost or altered. The markdown itself is never edited: it is the source of truth.
 
-Usage: python3 -I tools/content/extract.py <lesson-dir> <out.json>
+Usage: python3 -I tools/content/extract.py <lesson-dir> <out.json> [lesson.fa.md]
 """
 from __future__ import annotations
 
@@ -328,11 +328,12 @@ def assign_code_ids(doc: dict) -> None:
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 3:
+    if len(argv) not in (3, 4):
         print(__doc__)
         return 2
     lesson_dir, out = Path(argv[1]), Path(argv[2])
-    md = (lesson_dir / "lesson.md").read_text(encoding="utf-8")
+    source = argv[3] if len(argv) == 4 else "lesson.md"  # a translation is read from lesson.fa.md
+    md = (lesson_dir / source).read_text(encoding="utf-8")
     doc = extract(md, lesson_dir.name)
     assign_code_ids(doc)
     out.parent.mkdir(parents=True, exist_ok=True)

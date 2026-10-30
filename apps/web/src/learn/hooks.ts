@@ -42,7 +42,7 @@ export function useLabs(lessonId: string): LabsState {
   return { labs, items, concepts: cmap, failed };
 }
 
-export interface AllLabs { ready: boolean; items: Map<string, IndexedItem & { lessonId: string; chapterId?: string }>; concepts: Map<string, ConceptInfo>; lessons: { id: string; title: { en: string; fa?: string }; chapters: { n: number; id: string; title: string }[] }[] }
+export interface AllLabs { ready: boolean; items: Map<string, IndexedItem & { lessonId: string; chapterId?: string }>; concepts: Map<string, ConceptInfo>; lessons: { id: string; title: { en: string; fa?: string }; chapters: { n: number; id: string; title: string; title_fa?: string }[] }[] }
 
 /** Practice items of every published lesson (review and progress cross lesson boundaries). */
 export function useAllLabs(): AllLabs {

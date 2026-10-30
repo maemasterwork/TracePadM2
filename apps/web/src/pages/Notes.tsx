@@ -19,10 +19,10 @@ function findBlock(l: Lesson, ch: number, start: number): { text: string; chapte
 }
 
 export function Notes() {
-  const { t, num } = useI18n();
+  const { t, num, locale } = useI18n();
   const rows = useRows(['note:', 'mk:']);
   const [lessons, setLessons] = useState<Lesson[] | null>(null);
-  useEffect(() => { loadCourse().then((c) => Promise.all(c.lessons.filter((l) => l.status === 'published').map((l) => loadLesson(l.id)))).then(setLessons).catch(() => setLessons([])); }, []);
+  useEffect(() => { loadCourse().then((c) => Promise.all(c.lessons.filter((l) => l.status === 'published').map((l) => loadLesson(l.id, locale === 'fa')))).then(setLessons).catch(() => setLessons([])); }, [locale]);
   if (!lessons) return <Spinner label={t('app.loading')} />;
   const entries = rows.map((r) => {
     const [kind, chs, st] = r.key.split(':');
@@ -41,8 +41,8 @@ export function Notes() {
         <ul className="notes-list">
           {entries.map((e) => (
             <li key={e.key} className="card">
-              <p className="muted-line" dir="ltr" lang="en">{e.b ? `${chapterNo(e.ch)}. ${e.b.heading}` : ''} <span className="chip">{e.isNote ? t('notes.note') : t('notes.mark')}</span></p>
-              <p dir="ltr" lang="en" style={{ margin: '4px 0' }}>{e.b?.text}</p>
+              <p className="muted-line" dir={e.lesson?.lang === 'fa' ? 'rtl' : 'ltr'} lang={e.lesson?.lang ?? 'en'}>{e.b ? `${chapterNo(e.ch)}. ${e.b.heading}` : ''} <span className="chip">{e.isNote ? t('notes.note') : t('notes.mark')}</span></p>
+              <p dir={e.lesson?.lang === 'fa' ? 'rtl' : 'ltr'} lang={e.lesson?.lang ?? 'en'} style={{ margin: '4px 0' }}>{e.b?.text}</p>
               {e.isNote && <p className="note-box" dir="auto" style={{ whiteSpace: 'pre-wrap' }}>{e.text}</p>}
               {e.lesson && e.b?.chapterId && <Link className="btn small quiet" to={`/lesson/${e.lesson.id}/${e.b.chapterId}#b${e.start}`}>{t('notes.goto')} ({num(e.start)})</Link>}
             </li>

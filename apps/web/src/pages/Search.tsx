@@ -14,13 +14,13 @@ function Marked({ text, ranges }: { text: string; ranges: [number, number][] }) 
 }
 
 export function Search() {
-  const { t, num } = useI18n();
+  const { t, num, locale } = useI18n();
   const [params, setParams] = useSearchParams();
   const q = params.get('q') ?? '';
   const [input, setInput] = useState(q);
   const [docs, setDocs] = useState<Doc[] | null>(null);
   const [failed, setFailed] = useState(false);
-  useEffect(() => { loadCourse().then((c) => Promise.all(c.lessons.filter((l) => l.status === 'published').map((l) => loadLesson(l.id)))).then((ls) => setDocs(buildIndex(ls))).catch(() => setFailed(true)); }, []);
+  useEffect(() => { loadCourse().then((c) => Promise.all(c.lessons.filter((l) => l.status === 'published').map((l) => loadLesson(l.id, locale === 'fa')))).then((ls) => setDocs(buildIndex(ls))).catch(() => setFailed(true)); }, [locale]);
   useEffect(() => setInput(q), [q]);
   const hits = useMemo(() => (docs ? search(docs, q) : []), [docs, q]);
   return (
@@ -40,8 +40,8 @@ export function Search() {
           <ol className="results">
             {hits.map((h, i) => (
               <li key={i} className="card">
-                <Link to={`/lesson/${h.doc.lessonId}/${h.doc.chapterId}#b${h.doc.start}`} dir="ltr" lang="en"><strong>{chapterNo(h.doc.chapterN)}. {h.doc.chapterTitle}</strong>{h.doc.heading !== h.doc.chapterTitle ? ` › ${h.doc.heading}` : ''}</Link>
-                <p dir="ltr" lang="en" className={h.doc.kind === 'code' ? 'code-ltr' : ''} style={{ margin: '6px 0 0' }}><Marked text={h.snippet} ranges={h.ranges} /></p>
+                <Link to={`/lesson/${h.doc.lessonId}/${h.doc.chapterId}#b${h.doc.start}`} dir={h.doc.lang === 'fa' ? 'rtl' : 'ltr'} lang={h.doc.lang}><strong>{chapterNo(h.doc.chapterN)}. {h.doc.chapterTitle}</strong>{h.doc.heading !== h.doc.chapterTitle ? ` › ${h.doc.heading}` : ''}</Link>
+                <p dir={h.doc.kind === 'code' || h.doc.lang !== 'fa' ? 'ltr' : 'rtl'} lang={h.doc.kind === 'code' ? 'en' : h.doc.lang} className={h.doc.kind === 'code' ? 'code-ltr' : ''} style={{ margin: '6px 0 0' }}><Marked text={h.snippet} ranges={h.ranges} /></p>
               </li>
             ))}
           </ol>

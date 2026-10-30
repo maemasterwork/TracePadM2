@@ -95,19 +95,19 @@ zip-enumerate: {en: zip() and enumerate()}
 zip-shortest: {en: zip stops at the shortest}
 
 # Lesson 0, flowcharts (English only for now)
-flow-decision: {en: 'Decision: a diamond is an if'}
-flow-elif-chain: {en: A chain of diamonds is if / elif / else}
-flow-for-vs-while: {en: 'for or while?'}
-flow-function: {en: 'Function: a flowchart inside a flowchart'}
-flow-guess-game: {en: 'Guess the number: the whole flow'}
-flow-loop-update: {en: Something in the loop must change}
-flow-method: {en: From problem to code in 5 steps}
-flow-mistakes: {en: Common flowchart mistakes}
-flow-password-loop: {en: Loop until the answer is right}
-flow-rules: {en: Rules for drawing a flowchart}
-flow-sequence: {en: 'Sequence: one box, one line'}
-flow-symbols: {en: Flowchart symbols}
-flow-while: {en: 'Loop: an arrow back up'}
+flow-decision: {en: 'Decision: a diamond is an if', fa: "تصمیم: لوزی همان if است"}
+flow-elif-chain: {en: A chain of diamonds is if / elif / else, fa: "زنجیرهٔ لوزی‌ها همان if / elif / else است"}
+flow-for-vs-while: {en: 'for or while?', fa: "for یا while؟"}
+flow-function: {en: 'Function: a flowchart inside a flowchart', fa: "تابع: فلوچارتی درون فلوچارت"}
+flow-guess-game: {en: 'Guess the number: the whole flow', fa: "حدس عدد: کل جریان"}
+flow-loop-update: {en: Something in the loop must change, fa: "چیزی در حلقه باید تغییر کند"}
+flow-method: {en: From problem to code in 5 steps, fa: "از مسئله تا کد در ۵ گام"}
+flow-mistakes: {en: Common flowchart mistakes, fa: "اشتباه‌های رایج فلوچارت"}
+flow-password-loop: {en: Loop until the answer is right, fa: "حلقه تا درست شدن پاسخ"}
+flow-rules: {en: Rules for drawing a flowchart, fa: "قاعده‌های کشیدن فلوچارت"}
+flow-sequence: {en: 'Sequence: one box, one line', fa: "دنباله: یک جعبه، یک خط"}
+flow-symbols: {en: Flowchart symbols, fa: "نمادهای فلوچارت"}
+flow-while: {en: 'Loop: an arrow back up', fa: "حلقه: پیکانی که به بالا برمی‌گردد"}
 
 # Lesson 3 (English only for now)
 append-returns-none: {en: "append returns None"}

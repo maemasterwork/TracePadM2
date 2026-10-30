@@ -33,7 +33,7 @@ function findCode(lesson: Lesson, id: string): string | undefined {
 
 function Code({ lesson, id, lang, code }: { lesson: Lesson; id: string; lang: string; code: string }) {
   const { t } = useI18n();
-  const flow = useFlowEntry(`block:${id}`);
+  const flow = useFlowEntry(`block:${id}` + (lesson.lang === 'fa' && lang === 'mermaid' ? ':fa' : '')); // translated diagrams have their own chart
   if (lang === 'mermaid' && flow) {
     // the lesson's own diagram, laid out at build time (tools/content/mermaid_chart.py); the source stays available
     return (
@@ -100,7 +100,7 @@ export function ChapterBody({ lesson, chapterIndex, onAnchor }: { lesson: Lesson
   const ch = lesson.chapters[chapterIndex];
   const ctx: Ctx = { lesson, ch: ch.n, onAnchor };
   return (
-    <article className="prose" lang="en" dir="ltr">
+    <article className="prose" lang={lesson.lang ?? 'en'} dir={lesson.lang === 'fa' ? 'rtl' : 'ltr'}>
       <p className="chip" aria-hidden="true">{t('lesson.chapter', { n: chapterNo(ch.n) })}</p>
       <h1 id="chapter-title" tabIndex={-1}>{ch.heading}</h1>
       {ch.blocks.map((b, i) => <Fragment key={i}><BlockView b={b} ctx={ctx} /></Fragment>)}
@@ -112,7 +112,7 @@ export function ChapterBody({ lesson, chapterIndex, onAnchor }: { lesson: Lesson
 export function OverviewBody({ lesson, onAnchor }: { lesson: Lesson; onAnchor: (h: string) => void }) {
   const ctx: Ctx = { lesson, ch: 0, onAnchor };
   return (
-    <article className="prose" lang="en" dir="ltr">
+    <article className="prose" lang={lesson.lang ?? 'en'} dir={lesson.lang === 'fa' ? 'rtl' : 'ltr'}>
       <h1 id="chapter-title" tabIndex={-1}>{lesson.title}</h1>
       {lesson.preamble.blocks.map((b, i) => <BlockView key={i} b={b} ctx={ctx} />)}
       {lesson.preamble.sections.map((s) => <SectionView key={s.id} s={s} ctx={ctx} />)}

@@ -49,6 +49,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
 .rail a[aria-current="true"], .rail a:hover { background: var(--accent-soft); }
 @media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } .rail { position: static; max-height: none; } }
 .prose { overflow-wrap: break-word; }
+/* Persian lesson text: the words run right to left, but code and its inline snippets stay left to right */
+.prose[dir="rtl"] code { direction: ltr; unicode-bidi: isolate; }
+.prose[dir="rtl"] pre, .prose[dir="rtl"] .codeblock { direction: ltr; text-align: left; }
 .table-wrap { overflow-x: auto; margin: 1em 0; max-width: 100%; }
 .table-wrap table { min-width: 36rem; }
 .table-wrap:focus-visible { outline-offset: -3px; }

@@ -15,6 +15,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).parent))
 import flowchart  # noqa: E402
 import mermaid_chart  # noqa: E402
+import translate  # noqa: E402
 from verify import iter_blocks  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -76,6 +77,19 @@ def main() -> int:
             blocks_meta = (yaml.safe_load((ldir / "blocks.yml").read_text(encoding="utf-8")) or {}).get("blocks", {}) if (ldir / "blocks.yml").exists() else {}
             doc["block_meta"] = blocks_meta
             (out / "lesson.json").write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+            merged = None
+            if (ldir / "lesson.fa.md").exists():
+                # a Persian translation of the lesson text: same structure as the English one, checked block by block
+                faj = BUILD / f"{les['id'][:2]}.fa.json"
+                sh(HERE / "extract.py", ldir, faj, "lesson.fa.md")
+                sh(HERE / "verify.py", ldir, faj, "lesson.fa.md")
+                merged, errs = translate.merge(doc, json.loads(faj.read_text(encoding="utf-8")), base)
+                if errs:
+                    sys.exit(f"lesson.fa.md of {les['id']} does not match lesson.md ({len(errs)} problem(s)):\n  - " + "\n  - ".join(errs))
+                (out / "lesson.fa.json").write_text(json.dumps(merged, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+                print(f"persian {les['id']}: lesson text merged onto the English structure ({sum(1 for _ in iter_blocks(merged))} blocks)")
+            elif (out / "lesson.fa.json").exists():
+                (out / "lesson.fa.json").unlink()
             (out / "labs.json").write_text(json.dumps(labs, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
             # flowcharts: one per runnable example (lesson code blocks and prediction programs), generated from the code itself
             flows, skipped = {}, []
@@ -94,12 +108,18 @@ def main() -> int:
                 if "skip" in r:
                     skipped.append((key, r["skip"]))
                 else:
+                    if key.endswith(":fa"):
+                        for c in r["charts"]:
+                            c["title"] = "فلوچارت"  # the caption above a translated chart
                     flows[key] = {"charts": r["charts"], "control": r["control"]}
             for b in iter_blocks(doc):
                 if b.get("type") == "code" and b.get("lang") in ("python", "py", None, ""):
                     chart(f"block:{b['id']}", b["code"])
                 elif b.get("type") == "code" and b.get("lang") == "mermaid":
                     mermaid(f"block:{b['id']}", b["code"])  # the lesson's own diagram, laid out here and drawn by the app
+            if merged is not None:
+                for bid, code in translate.mermaid_blocks(merged):
+                    mermaid(f"block:{bid}:fa", code)  # the translated diagram labels get their own chart
             for chno, ch in labs["chapters"].items():
                 for p in ch.get("predictions", []):
                     chart(f"pred:{chno}:{p['id']}", p["code"])
@@ -115,7 +135,10 @@ def main() -> int:
                         concepts[it["tag"]]["lessons"].add(les["id"])
                         concepts[it["tag"]]["items"] += 1
                         concepts[it["tag"]]["chapters"].add(f"{les['id']}#{int(chno) - base}")
-            entry["chapters"] = [{"n": c["n"], "id": c["id"], "title": c["title"]} for c in doc["chapters"]]
+            entry["chapters"] = [{"n": c["n"], "id": c["id"], "title": c["title"], **({"title_fa": m["title"]} if merged else {})}
+                                 for c, m in zip(doc["chapters"], (merged or doc)["chapters"])]
+            if merged:
+                entry["fa"] = True
             entry["path"] = f"content/{les['id']}"
         manifest["lessons"].append(entry)
     (PUBLIC / "course.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")

@@ -2,7 +2,8 @@ export interface LText { en: string; fa?: string; fa_status?: 'machine' | 'revie
 export interface CourseLesson {
   id: string; number: number; status: 'published' | 'planned'; title: LText; path?: string;
   kind?: 'project'; label?: LText; // a project card shows its label (P1) instead of the lesson number
-  chapters?: { n: number; id: string; title: string }[];
+  fa?: boolean; // the lesson text has a Persian translation (lesson.fa.json)
+  chapters?: { n: number; id: string; title: string; title_fa?: string }[];
 }
 export interface Course {
   course: { id: string; title: LText; tagline: LText };
@@ -23,6 +24,7 @@ export interface Section { id: string; title: string; level: number; heading: st
 export interface Chapter { n: number; id: string; title: string; heading: string; line: number; blocks: Block[]; sections: Section[] }
 export interface Lesson {
   id: string; title: string;
+  lang?: 'fa'; // set on the Persian version, which has the English structure with translated text
   preamble: { blocks: Block[]; sections: Section[] };
   chapters: Chapter[];
   block_meta: Record<string, { after?: string[]; nondeterministic?: string; skip?: string; stdin?: string; interactive?: string | boolean }>;

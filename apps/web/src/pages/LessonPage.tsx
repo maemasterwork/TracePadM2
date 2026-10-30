@@ -29,8 +29,8 @@ export function LessonPage() {
 
   useEffect(() => {
     setLesson(null); setError(false);
-    loadLesson(lessonId).then(setLesson).catch(() => setError(true));
-  }, [lessonId]);
+    loadLesson(lessonId, locale === 'fa').then(setLesson).catch(() => setError(true));
+  }, [lessonId, locale]);
 
   useEffect(() => {
     let alive = true;

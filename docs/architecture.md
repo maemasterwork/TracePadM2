@@ -76,3 +76,7 @@ A fenced `mermaid` block in `lesson.md` is parsed (small subset), laid out in la
 
 ## Frontend structure
 `pages/` (route components), `design/ui.tsx` (Field, Notice, Spinner), `styles/*.css` (tokens, themes, RTL via logical properties), `i18n/` (ICU, Persian digits, Jalali), `prefs/` (theme, language, text size, palette, font, motion; stored locally), `content/` (loading and rendering lessons), `auth/` (client, API wrapper, provider), `db/types.ts` (generated from the migrations).
+
+## Persian lesson text
+
+`content/lessons/<id>/lesson.fa.md` is optional. `build.py` extracts and verifies it like `lesson.md`, then `tools/content/translate.py` merges it onto the English document (same structure required, code identical, Mermaid topology identical) and writes `lesson.fa.json`. The manifest entry has `fa: true` and chapters `title_fa`. In the app, `loadLesson(id, fa)` fetches the Persian file when the locale is Persian and the lesson has one, else the English file with a notice. `Lesson.lang` drives `lang`/`dir` on the article and the rail; code stays left to right (`components.css`). Search indexes whichever language was loaded. Translated Mermaid charts are in the flow data under `block:<id>:fa`. Because the structure is the English one, progress, notes and bookmarks are shared between languages.

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Field, Notice, Spinner } from '../../design/ui';
 import { useI18n } from '../../i18n';
+import { chTitle } from '../../content/chTitle';
 import { ErrorLine, fromLocalInput, toLocalInput, useAction, useLoad } from '../hooks';
 import { itemLabel } from '../labels';
 import { DEFAULT_POINTS, itemsMax, type PointRule } from '../logic';
@@ -14,7 +15,7 @@ interface Form {
 }
 
 export function AssignmentsTab({ api, cls, all, roster }: TabProps) {
-  const { t, pick, date, num } = useI18n();
+  const { t, pick, date, num, locale } = useI18n();
   const list = useLoad(() => api.assignments(cls.id), [api, cls.id]);
   const [editing, setEditing] = useState<string | 'new' | null>(null);
   const chapters = all.lessons.flatMap((l) => l.chapters.map((c) => ({ ...c, lessonId: l.id })));
@@ -94,7 +95,7 @@ export function AssignmentsTab({ api, cls, all, roster }: TabProps) {
               <select {...p} value={form.page_id} onChange={(e) => upd({ page_id: e.target.value, skip: new Set() })}>
                 {all.lessons.filter((l) => assignable.some((c) => c.lessonId === l.id)).map((l) => (
                   <optgroup key={l.id} label={pick(l.title)}>
-                    {assignable.filter((c) => c.lessonId === l.id).map((c) => <option key={c.id} value={c.id}>{num(chapterNo(c.n))}. {c.title}</option>)}
+                    {assignable.filter((c) => c.lessonId === l.id).map((c) => <option key={c.id} value={c.id}>{num(chapterNo(c.n))}. {chTitle(c, locale).text}</option>)}
                   </optgroup>
                 ))}
               </select>

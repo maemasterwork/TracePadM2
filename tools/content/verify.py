@@ -8,7 +8,7 @@ Independent of extract.py's parser: it re-reads the markdown with its own tiny s
   4. rebuilding the whole file from the JSON gives the source back, line for line,
   5. independent counts (fences, tables, quotes, rules, headings, list items) match.
 
-Usage: python3 -I tools/content/verify.py <lesson-dir> <extracted.json>
+Usage: python3 -I tools/content/verify.py <lesson-dir> <extracted.json> [lesson.fa.md]
 """
 from __future__ import annotations
 
@@ -41,11 +41,12 @@ def iter_headings(doc):
 
 
 def main(argv):
-    if len(argv) != 3:
+    if len(argv) not in (3, 4):
         print(__doc__)
         return 2
     lesson_dir, jpath = Path(argv[1]), Path(argv[2])
-    text = (lesson_dir / "lesson.md").read_text(encoding="utf-8")
+    source = argv[3] if len(argv) == 4 else "lesson.md"  # a translation is checked against lesson.fa.md
+    text = (lesson_dir / source).read_text(encoding="utf-8")
     doc = json.loads(jpath.read_text(encoding="utf-8"))
     lines = text.split("\n")
     if lines and lines[-1] == "":
@@ -57,7 +58,7 @@ def main(argv):
 
     # 1. provenance
     if doc["source_sha256"] != hashlib.sha256(text.encode("utf-8")).hexdigest():
-        err("JSON was not built from this lesson.md (sha256 differs)")
+        err(f"JSON was not built from this {source} (sha256 differs)")
     if doc["line_count"] != len(lines):
         err(f"line count {doc['line_count']} != source {len(lines)}")
 

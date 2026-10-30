@@ -1,4 +1,4 @@
-# Lesson 0 labs (English only for now; add `fa:` next to each `en:` when Persian is started).
+# Lesson 0 labs. Every learner-visible text has en and fa. HTML in text is limited to code, em, strong, br (see tools/content/labs.schema.json).
 lesson: 00-flowcharts-made-easy
 schema: 1
 chapters:
@@ -8,38 +8,56 @@ chapters:
       tag: flow-symbols
       question:
         en: Which shape stands for a decision, a yes/no question?
+        fa: کدام شکل نمایندهٔ تصمیم است، یعنی یک پرسش بله/خیر؟
       options:
       - en: The rounded box (pill)
+        fa: جعبهٔ گرد (قرصی)
       - en: The rectangle
+        fa: مستطیل
       - en: The parallelogram
+        fa: متوازی‌الاضلاع
       - en: The diamond
+        fa: لوزی
       correct: 3
       why:
         en: The diamond is the question. It always has two exits, Yes and No, and in Python it becomes <code>if</code> or <code>while</code>.
+        fa: لوزی همان پرسش است. همیشه دو خروجی دارد، بله و خیر، و در پایتون به <code>if</code> یا <code>while</code> تبدیل می‌شود.
     - id: q2
       tag: flow-symbols
       question:
         en: Which shape do you use for reading input or showing output (<code>input()</code> and <code>print()</code>)?
+        fa: برای خواندن ورودی یا نشان دادن خروجی (<code>input()</code> و <code>print()</code>) از کدام شکل استفاده می‌کنید؟
       options:
       - en: The rectangle
+        fa: مستطیل
       - en: The diamond
+        fa: لوزی
       - en: The parallelogram
+        fa: متوازی‌الاضلاع
       - en: The pill
+        fa: جعبهٔ قرصی
       correct: 2
       why:
         en: The slanted box is for data going in or out. A plain rectangle is for a calculation or other action, such as <code>x = x + 1</code>.
+        fa: جعبهٔ مورب برای داده‌ای است که وارد یا خارج می‌شود. مستطیل ساده برای محاسبه یا کارهای دیگر است، مثل <code>x = x + 1</code>.
     - id: q3
       tag: flow-rules
       question:
         en: How many exits must a diamond have?
+        fa: یک لوزی باید چند خروجی داشته باشد؟
       options:
       - en: One
+        fa: یک
       - en: Two, Yes and No
+        fa: دو، بله و خیر
       - en: Three
+        fa: سه
       - en: None
+        fa: هیچ
       correct: 1
       why:
         en: A question has two answers, so draw both. A diamond with one exit hides what happens in the other case.
+        fa: یک پرسش دو پاسخ دارد، پس هر دو را بکشید. لوزی با یک خروجی پنهان می‌کند که در حالت دیگر چه می‌شود.
   4:
     predictions:
     - id: p1
@@ -52,23 +70,31 @@ chapters:
       answer: 'Sum: 6.5'
       why:
         en: A sequence is read top to bottom, one box (one line) at a time. <code>total</code> is 2.5 + 4 = 6.5, and <code>print</code> shows the label and the value separated by a space.
+        fa: دنباله از بالا به پایین و هر بار یک جعبه (یک خط) خوانده می‌شود. <code>total</code> برابر ۲٫۵ + ۴ = ۶٫۵ است و <code>print</code> برچسب و مقدار را با یک فاصله کنار هم نشان می‌دهد.
     quizzes:
     - id: q1
       tag: flow-sequence
       question:
         en: In a sequence, how many lines of code does one box usually become?
+        fa: در یک دنباله، هر جعبه معمولاً چند خط کد می‌شود؟
       options:
       - en: One
+        fa: یک
       - en: Three
+        fa: سه
       - en: As many as you like
+        fa: هر قدر بخواهید
       - en: None, boxes are only decoration
+        fa: هیچ، جعبه‌ها فقط تزئینی‌اند
       correct: 0
       why:
         en: Keep each box to one simple action, and each box turns into exactly one line of code.
+        fa: هر جعبه را به یک کار ساده محدود کنید، آن‌وقت هر جعبه دقیقاً یک خط کد می‌شود.
     exercises:
     - id: e1
       prompt:
         en: 'Turn the flowchart into code. The boxes are: read <code>a</code> and <code>b</code> (already given), then <code>total = a + b</code>, then show it. Print <code>Sum: 12</code> for a = 7 and b = 5.'
+        fa: 'فلوچارت را به کد تبدیل کنید. جعبه‌ها این‌ها هستند: خواندن <code>a</code> و <code>b</code> (از قبل داده شده)، بعد <code>total = a + b</code>، بعد نشان دادن آن. برای a = 7 و b = 5 باید <code>Sum: 12</code> چاپ شود.'
       starter: |
         a = 7
         b = 5
@@ -96,7 +122,9 @@ chapters:
         out: 'Sum: 0'
       hints:
       - en: Each box becomes one line. The first box is an assignment.
-      - en: 'Write <code>total = a + b</code> and then <code>print("Sum:", total)</code>.'
+        fa: هر جعبه یک خط می‌شود. اولین جعبه یک انتساب است.
+      - en: Write <code>total = a + b</code> and then <code>print("Sum:", total)</code>.
+        fa: بنویسید <code>total = a + b</code> و بعد <code>print("Sum:", total)</code>.
   5:
     predictions:
     - id: p1
@@ -110,6 +138,7 @@ chapters:
       answer: Odd
       why:
         en: The diamond asks <code>n % 2 == 0</code>. 7 leaves a remainder of 1, so the answer is No and the <code>else</code> branch runs.
+        fa: لوزی می‌پرسد <code>n % 2 == 0</code>. عدد ۷ باقی‌ماندهٔ ۱ دارد، پس پاسخ خیر است و شاخهٔ <code>else</code> اجرا می‌شود.
     - id: p2
       tag: flow-elif-chain
       code: |-
@@ -125,6 +154,7 @@ chapters:
       answer: B
       why:
         en: The first diamond (90 or more) says No, the second one (80 or more) says Yes, so B is printed and the rest of the chain is skipped.
+        fa: لوزی اول (۹۰ یا بیشتر) می‌گوید خیر و دومی (۸۰ یا بیشتر) می‌گوید بله، پس B چاپ می‌شود و بقیهٔ زنجیره رد می‌شود.
     - id: p3
       tag: flow-elif-chain
       code: |-
@@ -140,23 +170,31 @@ chapters:
       answer: F
       why:
         en: Every diamond answers No, so the flow follows the last No exit, which is the <code>else</code>.
+        fa: همهٔ لوزی‌ها جواب خیر می‌دهند، پس جریان آخرین خروجی خیر را دنبال می‌کند که همان <code>else</code> است.
     quizzes:
     - id: q1
       tag: flow-elif-chain
       question:
         en: A chain of diamonds, each on the No exit of the one before, becomes...
+        fa: زنجیره‌ای از لوزی‌ها که هر کدام روی خروجی خیرِ قبلی است، می‌شود...
       options:
       - en: a <code>while</code> loop
+        fa: یک حلقهٔ <code>while</code>
       - en: <code>if ... elif ... else</code>
+        fa: <code>if ... elif ... else</code>
       - en: a function
+        fa: یک تابع
       - en: a <code>for</code> loop
+        fa: یک حلقهٔ <code>for</code>
       correct: 1
       why:
         en: The first diamond is <code>if</code>, the next ones are <code>elif</code>, and the last No exit is <code>else</code>.
+        fa: اولین لوزی <code>if</code> است، بعدی‌ها <code>elif</code> هستند و آخرین خروجی خیر <code>else</code> است.
     exercises:
     - id: e1
       prompt:
         en: 'Practice exercise 1. Write <code>sign(n)</code> that returns <code>"positive"</code>, <code>"negative"</code> or <code>"zero"</code>. (Draw the flowchart first: two diamonds.)'
+        fa: 'تمرین ۱. تابع <code>sign(n)</code> را بنویسید که <code>"positive"</code>، <code>"negative"</code> یا <code>"zero"</code> را برگرداند. (اول فلوچارت را بکشید: دو لوزی.)'
       starter: |
         def sign(n):
             # your code here
@@ -170,12 +208,13 @@ chapters:
             else:
                 return "zero"
       tests:
-      - post: |-
-          print(sign(5), sign(-3), sign(0), sign(0.5))
+      - post: print(sign(5), sign(-3), sign(0), sign(0.5))
         out: positive negative zero positive
       hints:
       - en: 'Two questions are enough: <code>n &gt; 0</code> and <code>n &lt; 0</code>. Whatever is left is zero.'
-      - en: 'Use <code>if</code> for the first question, <code>elif</code> for the second, and <code>else</code> for zero.'
+        fa: 'دو پرسش کافی است: <code>n &gt; 0</code> و <code>n &lt; 0</code>. هر چه باقی بماند صفر است.'
+      - en: Use <code>if</code> for the first question, <code>elif</code> for the second, and <code>else</code> for zero.
+        fa: برای پرسش اول <code>if</code>، برای دومی <code>elif</code> و برای صفر <code>else</code> بگذارید.
   6:
     predictions:
     - id: p1
@@ -193,6 +232,7 @@ chapters:
         5
       why:
         en: The diamond <code>i &lt;= 5</code> is asked before every round. When <code>i</code> becomes 6 the answer is No and the flow leaves the loop.
+        fa: لوزی <code>i &lt;= 5</code> پیش از هر دور پرسیده می‌شود. وقتی <code>i</code> برابر ۶ شود پاسخ خیر است و جریان از حلقه بیرون می‌رود.
     - id: p2
       tag: flow-loop-update
       code: |-
@@ -203,6 +243,7 @@ chapters:
       answer: '7'
       why:
         en: <code>i</code> goes 1, 3, 5, 7. At 5 the question is still Yes, so it becomes 7, and then the question is No. The arrow back up runs three times.
+        fa: '<code>i</code> این مقدارها را می‌گیرد: ۱، ۳، ۵، ۷. در ۵ پرسش هنوز بله است، پس ۷ می‌شود و بعد پرسش خیر است. پیکان بازگشت سه بار اجرا می‌شود.'
     - id: p3
       tag: flow-password-loop
       code: |-
@@ -223,35 +264,49 @@ chapters:
         Welcome!
       why:
         en: The loop goes back to read a new password until it matches. The first two attempts are wrong, the third is right, so the loop is left and Welcome is printed.
+        fa: حلقه برمی‌گردد و رمز تازه می‌خواند تا زمانی که درست شود. دو تلاش اول اشتباه است و سومی درست، پس از حلقه خارج می‌شود و Welcome چاپ می‌شود.
     quizzes:
     - id: q1
       tag: flow-while
       question:
         en: In a flowchart, what makes a loop?
+        fa: در فلوچارت، چه چیزی یک حلقه می‌سازد؟
       options:
       - en: A special loop shape
+        fa: یک شکل ویژهٔ حلقه
       - en: An arrow that goes back up to an earlier step
+        fa: پیکانی که به یک گام قبلی برمی‌گردد
       - en: Two diamonds side by side
+        fa: دو لوزی کنار هم
       - en: A rectangle with double bars
+        fa: مستطیلی با نوارهای دوتایی
       correct: 1
       why:
         en: A loop is simply an arrow that returns to an earlier box. With a diamond at the top of the loop it is a <code>while</code>.
+        fa: حلقه فقط پیکانی است که به یک جعبهٔ قبلی برمی‌گردد. اگر در بالای حلقه یک لوزی باشد، <code>while</code> است.
     - id: q2
       tag: flow-for-vs-while
       question:
         en: When is <code>while</code> a better fit than <code>for</code>?
+        fa: چه وقت <code>while</code> مناسب‌تر از <code>for</code> است؟
       options:
       - en: When you know exactly how many times to repeat
+        fa: وقتی دقیقاً می‌دانید چند بار تکرار شود
       - en: When you repeat until something happens, such as a correct password
+        fa: وقتی تکرار می‌کنید تا اتفاقی بیفتد، مثلاً درست شدن رمز عبور
       - en: Never, <code>for</code> can do everything
+        fa: هرگز، <code>for</code> همه‌چیز را می‌تواند
       - en: When there are no numbers
+        fa: وقتی عددی در کار نیست
       correct: 1
       why:
         en: Use <code>for</code> when you know how many times, and <code>while</code> when you repeat until something happens.
+        fa: وقتی می‌دانید چند بار تکرار می‌شود از <code>for</code> استفاده کنید و وقتی تکرار می‌کنید تا اتفاقی بیفتد از <code>while</code>.
     exercises:
     - id: e1
       prompt:
-        en: 'Practice exercise 2. Print the multiplication table of <code>n</code> from 1 to 10, one line per row in the form <code>7 x 1 = 7</code>.'
+        en: Practice exercise 2. Print the multiplication table of <code>n</code> from 1 to 10, one line per row in the form <code>7 x 1 = 7</code>.
+        fa: تمرین ۲. جدول ضرب <code>n</code> را از ۱ تا ۱۰ چاپ کنید، هر سطر در یک خط و به شکل <code>7 x 1 = 7</code>.
       starter: |
         n = 7
 
@@ -290,7 +345,9 @@ chapters:
           1 x 10 = 10
       hints:
       - en: You know how many times to repeat (ten), so a <code>for</code> loop fits.
-      - en: '<code>range(1, 11)</code> gives 1 to 10. In each round print <code>n</code>, the counter and their product.'
+        fa: می‌دانید چند بار تکرار می‌شود (ده بار)، پس حلقهٔ <code>for</code> مناسب است.
+      - en: <code>range(1, 11)</code> gives 1 to 10. In each round print <code>n</code>, the counter and their product.
+        fa: <code>range(1, 11)</code> اعداد ۱ تا ۱۰ را می‌دهد. در هر دور <code>n</code>، شمارنده و حاصل‌ضرب‌شان را چاپ کنید.
   7:
     predictions:
     - id: p1
@@ -310,45 +367,64 @@ chapters:
         after
       why:
         en: Defining a function runs nothing. The body (its own small flowchart) runs only when it is called, in the middle of the main flow, and then the flow continues after the call.
+        fa: تعریف یک تابع چیزی را اجرا نمی‌کند. بدنهٔ آن (فلوچارت کوچک خودش) فقط وقتی اجرا می‌شود که صدا زده شود، وسط جریان اصلی، و بعد جریان پس از فراخوانی ادامه پیدا می‌کند.
     quizzes:
     - id: q1
       tag: flow-function
       question:
         en: What does a rectangle with double side bars mean in a flowchart?
+        fa: مستطیلی با نوارهای دوتایی در دو طرف در فلوچارت چه معنایی دارد؟
       options:
       - en: Run another flowchart here (a function call)
+        fa: اینجا فلوچارت دیگری را اجرا کن (فراخوانی تابع)
       - en: End of the program
+        fa: پایان برنامه
       - en: Read input
+        fa: خواندن ورودی
       - en: A decision
+        fa: یک تصمیم
       correct: 0
       why:
         en: It stands for a call. The function's own flowchart is drawn separately, with its own start and its own return.
+        fa: نمایندهٔ یک فراخوانی است. فلوچارت خودِ تابع جداگانه کشیده می‌شود، با شروع و بازگشت خودش.
   8:
     quizzes:
     - id: q1
       tag: flow-method
       question:
         en: What is the first step of the 5-step method?
+        fa: اولین گام روش ۵ گامی چیست؟
       options:
       - en: Write the Python code
+        fa: نوشتن کد پایتون
       - en: Read the problem and underline the inputs and outputs
+        fa: خواندن مسئله و خط کشیدن زیر ورودی‌ها و خروجی‌ها
       - en: Draw the End box
+        fa: کشیدن جعبهٔ پایان
       - en: Test with large numbers
+        fa: آزمایش با عددهای بزرگ
       correct: 1
       why:
         en: Know what goes in and what must come out before you plan anything else. Code comes last.
+        fa: پیش از هر برنامه‌ریزی دیگر بدانید چه چیزی وارد می‌شود و چه چیزی باید بیرون بیاید. کد آخر از همه می‌آید.
     - id: q2
       tag: flow-method
       question:
         en: Which words in a problem tell you to draw a diamond?
+        fa: کدام کلمه‌ها در متن یک مسئله به شما می‌گویند لوزی بکشید؟
       options:
-      - en: "\"print\" and \"show\""
-      - en: "\"if\", \"when\", \"until\", \"for each\""
-      - en: "\"start\" and \"end\""
-      - en: "\"number\" and \"text\""
+      - en: '"print" and "show"'
+        fa: «چاپ کن» و «نشان بده»
+      - en: '"if", "when", "until", "for each"'
+        fa: «اگر»، «وقتی»، «تا»، «برای هر»
+      - en: '"start" and "end"'
+        fa: «شروع» و «پایان»
+      - en: '"number" and "text"'
+        fa: «عدد» و «متن»
       correct: 1
       why:
         en: Every condition or repetition is a question, and a question is a diamond.
+        fa: هر شرط یا تکرار یک پرسش است و هر پرسش یک لوزی.
   9:
     predictions:
     - id: p1
@@ -374,37 +450,51 @@ chapters:
         You win! It took 3 tries.
       why:
         en: 3 is below 7, 9 is above it, and the third guess equals the secret, which prints the win message and leaves the loop with <code>break</code>.
+        fa: ۳ از ۷ کمتر است، ۹ از آن بیشتر است و حدس سوم با عدد مخفی برابر است، پس پیام بردن چاپ می‌شود و برنامه با <code>break</code> از حلقه بیرون می‌رود.
   11:
     quizzes:
     - id: q1
       tag: flow-mistakes
       question:
         en: A loop in your flowchart never ends. What is the usual fix?
+        fa: حلقهٔ فلوچارت شما هرگز تمام نمی‌شود. راه‌حل معمول چیست؟
       options:
       - en: Add more diamonds
+        fa: لوزی‌های بیشتری اضافه کنید
       - en: Make sure something inside the loop changes the condition
+        fa: مطمئن شوید چیزی داخل حلقه شرط را عوض می‌کند
       - en: Remove the Start box
+        fa: جعبهٔ شروع را حذف کنید
       - en: Use a rectangle instead of a diamond
+        fa: به‌جای لوزی از مستطیل استفاده کنید
       correct: 1
       why:
         en: If nothing in the loop changes what the diamond asks, the answer never changes. For example, add <code>i = i + 1</code>.
+        fa: اگر چیزی داخل حلقه آنچه را لوزی می‌پرسد تغییر ندهد، پاسخ هیچ‌وقت عوض نمی‌شود. مثلاً <code>i = i + 1</code> را اضافه کنید.
     - id: q2
       tag: flow-mistakes
       question:
         en: What should the text in a flowchart box look like?
+        fa: متن داخل جعبه‌های فلوچارت چه شکلی باید باشد؟
       options:
       - en: Exact Python syntax
+        fa: نحو دقیق پایتون
       - en: Plain language, one action ("Add tax")
+        fa: زبان ساده، یک کار («مالیات اضافه کن»)
       - en: A whole paragraph
+        fa: یک پاراگراف کامل
       - en: Only numbers
+        fa: فقط عدد
       correct: 1
       why:
         en: A flowchart shows the logic, not the syntax. Plain words keep it readable, and one action per box keeps it simple.
+        fa: فلوچارت منطق را نشان می‌دهد، نه نحو را. کلمات ساده آن را خوانا نگه می‌دارند و یک کار در هر جعبه آن را ساده.
   12:
     exercises:
     - id: e1
       prompt:
-        en: 'Practice exercise 3. Write <code>total_until_zero(numbers)</code> that adds the numbers in the list until it reaches a <code>0</code> and returns the total (the <code>0</code> and anything after it are ignored).'
+        en: Practice exercise 3. Write <code>total_until_zero(numbers)</code> that adds the numbers in the list until it reaches a <code>0</code> and returns the total (the <code>0</code> and anything after it are ignored).
+        fa: تمرین ۳. تابع <code>total_until_zero(numbers)</code> را بنویسید که عددهای فهرست را جمع کند تا به <code>0</code> برسد و مجموع را برگرداند (خودِ <code>0</code> و هر چه بعد از آن است نادیده گرفته می‌شود).
       starter: |
         def total_until_zero(numbers):
             # your code here
@@ -428,10 +518,13 @@ chapters:
           4
       hints:
       - en: Start a total at 0 and look at the numbers one at a time.
+        fa: مجموع را از ۰ شروع کنید و عددها را یکی‌یکی ببینید.
       - en: When a number is <code>0</code>, leave the loop with <code>break</code>. Otherwise add it to the total.
+        fa: وقتی عددی <code>0</code> بود با <code>break</code> از حلقه بیرون بروید. وگرنه آن را به مجموع اضافه کنید.
     - id: e2
       prompt:
-        en: 'Practice exercise 4. Write <code>largest(a, b, c)</code> that returns the largest of three numbers without using <code>max</code>.'
+        en: Practice exercise 4. Write <code>largest(a, b, c)</code> that returns the largest of three numbers without using <code>max</code>.
+        fa: تمرین ۴. تابع <code>largest(a, b, c)</code> را بنویسید که بزرگ‌ترین از سه عدد را بدون استفاده از <code>max</code> برگرداند.
       starter: |
         def largest(a, b, c):
             # your code here
@@ -453,10 +546,13 @@ chapters:
           5 -1 7
       hints:
       - en: Ask "is a at least as big as both of the others?" first.
+        fa: اول بپرسید «آیا a دست‌کم به اندازهٔ هر دو عدد دیگر بزرگ است؟»
       - en: If not, the answer is b or c. One more question, <code>b &gt;= c</code>, decides between them.
+        fa: اگر نه، پاسخ b یا c است. یک پرسش دیگر، <code>b &gt;= c</code>، بین آن دو تصمیم می‌گیرد.
     - id: e3
       prompt:
-        en: 'Practice exercise 5. Write <code>is_prime(n)</code> that returns <code>True</code> if <code>n</code> is a prime number and <code>False</code> otherwise (numbers below 2 are not prime).'
+        en: Practice exercise 5. Write <code>is_prime(n)</code> that returns <code>True</code> if <code>n</code> is a prime number and <code>False</code> otherwise (numbers below 2 are not prime).
+        fa: تمرین ۵. تابع <code>is_prime(n)</code> را بنویسید که اگر <code>n</code> عدد اول است <code>True</code> و در غیر این صورت <code>False</code> برگرداند (عددهای کوچک‌تر از ۲ اول نیستند).
       starter: |
         def is_prime(n):
             # your code here
@@ -480,4 +576,6 @@ chapters:
           True False True
       hints:
       - en: Numbers below 2 are not prime, so answer that case first.
-      - en: 'Try dividers <code>d</code> from 2 upwards. If <code>n % d == 0</code> for any of them, it is not prime. You can stop when <code>d * d</code> is bigger than <code>n</code>.'
+        fa: عددهای کوچک‌تر از ۲ اول نیستند، پس اول همین حالت را جواب بدهید.
+      - en: Try dividers <code>d</code> from 2 upwards. If <code>n % d == 0</code> for any of them, it is not prime. You can stop when <code>d * d</code> is bigger than <code>n</code>.
+        fa: مقسوم‌علیه‌های <code>d</code> را از ۲ به بالا امتحان کنید. اگر به ازای یکی از آن‌ها <code>n % d == 0</code> بود، اول نیست. وقتی <code>d * d</code> از <code>n</code> بزرگ‌تر شد می‌توانید بایستید.

@@ -16,7 +16,14 @@ function getJson<T>(path: string): Promise<T> {
 }
 
 export const loadCourse = () => getJson<Course>('content/course.json');
-export const loadLesson = (id: string) => getJson<Lesson>(`content/${id}/lesson.json`);
+/** The lesson text in the learner's language: the Persian version when it exists and Persian is chosen, else English. */
+export async function loadLesson(id: string, fa = false): Promise<Lesson> {
+  if (fa) {
+    const course = await loadCourse().catch(() => null);
+    if (course?.lessons.find((l) => l.id === id)?.fa) return getJson<Lesson>(`content/${id}/lesson.fa.json`);
+  }
+  return getJson<Lesson>(`content/${id}/lesson.json`);
+}
 export const loadLabs = (id: string) => getJson<import("../learn/types").Labs>(`content/${id}/labs.json`);
 export const loadFlow = (id: string) => getJson<import('../flow/types').FlowMap>(`content/${id}/flow.json`);
 export const loadConcepts = () => getJson<ConceptInfo[]>('content/concepts.json');
